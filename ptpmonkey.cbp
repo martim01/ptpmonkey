@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="ptpmonkey" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Windows Debug">
+				<Option output="bin/Debug/ptpmonkey" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-D_WIN32_WINNT=0x0601" />
+					<Add directory="$(#asio.INCLUDE)" />
+				</Compiler>
+				<Linker>
+					<Add library="ws2_32" />
+					<Add library="IPHLPAPI" />
+				</Linker>
+			</Target>
+			<Target title="Windows Release">
+				<Option output="bin/Release/ptpmonkey" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="$(#asio.INCLUDE)" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="ws2_32" />
+					<Add library="IPHLPAPI" />
+				</Linker>
+			</Target>
+			<Target title="Windows tests">
+				<Option output="bin/tests/ptpmonkey" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/tests/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add directory="$(#asio.INCLUDE)" />
+					<Add directory="$(#catch2.INCLUDE)" />
+				</Compiler>
+				<Linker>
+					<Add library="ws2_32" />
+					<Add library="IPHLPAPI" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-std=c++14" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="handler.h" />
+		<Unit filename="loghander.cpp" />
+		<Unit filename="loghander.h" />
+		<Unit filename="mac.cpp" />
+		<Unit filename="mac.h" />
+		<Unit filename="main.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="parser.h" />
+		<Unit filename="ptpclock.h" />
+		<Unit filename="ptploghandler.cpp" />
+		<Unit filename="ptploghandler.h" />
+		<Unit filename="ptpmanager.cpp" />
+		<Unit filename="ptpmanager.h" />
+		<Unit filename="ptpmanagerhandler.cpp" />
+		<Unit filename="ptpmanagerhandler.h" />
+		<Unit filename="ptpparser.cpp" />
+		<Unit filename="ptpparser.h" />
+		<Unit filename="ptpstructs.cpp" />
+		<Unit filename="ptpstructs.h" />
+		<Unit filename="receiver.h" />
+		<Unit filename="sender.cpp" />
+		<Unit filename="sender.h" />
+		<Unit filename="tests.cpp">
+			<Option target="tests" />
+		</Unit>
+		<Unit filename="timeutils.cpp" />
+		<Unit filename="timeutils.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
