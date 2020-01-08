@@ -2,7 +2,7 @@
 #include <sstream>
 #include <iomanip>
 #include <iostream>
-
+#include <ctime>
 
 time_s_ns GetCurrentTaiTime()
 {
@@ -18,6 +18,15 @@ std::string TimeToString(const time_s_ns& ts)
 {
     std::stringstream ss;
     ss << ts.first.count() << "." << std::setw(9) << std::setfill('0') << ts.second.count();
+    return ss.str();
+}
+
+std::string TimeToIsoString(const time_s_ns& ts)
+{
+    std::time_t t = ts.first.count();
+    std::tm timetm = *std::localtime(&t);
+    std::stringstream ss;
+    ss << std::put_time(&timetm, "%Y-%m-%dT%H:%M:%S") << "." << std::setw(9) << std::setfill('0') << ts.second.count();
     return ss.str();
 }
 

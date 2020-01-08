@@ -47,7 +47,6 @@ std::vector<unsigned char> Sender::CreateRequest()
 
     std::copy(vPayload.begin(), vPayload.end(), std::back_inserter(vMessage));
 
-    std::cout << std::hex << theHeader.source.nSourceId << std::endl;
 
     m_manager.AddDelayRequest(m_nSequence, theHeader.timestamp);
 

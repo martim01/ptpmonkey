@@ -19,6 +19,8 @@
 #include "sender.h"
 #include "mac.h"
 #include "ptpmanager.h"
+#include <thread>
+#include <chrono>
 constexpr short multicast_port = 319;
 
 
@@ -27,6 +29,12 @@ int main(int argc, char* argv[])
 
     PtpManager ptp;
     ptp.Run();
+
+    do
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::cout << TimeToIsoString(ptp.GetPtpTime()) << std::endl;
+    }while(true);
 
 
     return 0;

@@ -25,14 +25,5 @@ void PtpManagerHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std
                 break;
 
         }
-
-        if((int)pPtpH->nType != 11)
-        {
-            std::cout << (int)pPtpH->nType << "\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime) << std::endl;
-        }
-        else
-        {
-            std::cout << (int)pPtpH->nType << "\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << std::endl;
-        }
     }
 }

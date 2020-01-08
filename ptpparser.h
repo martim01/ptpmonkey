@@ -8,13 +8,13 @@ class PtpParser : public Parser
 {
     public:
         PtpParser(std::shared_ptr<Handler> pHandler) : Parser(pHandler){};
-        void ParseMessage(std::vector<unsigned char> vMessage) override;
+        void ParseMessage(const std::string& sSenderIp, std::vector<unsigned char> vMessage) override;
 
         enum {SYNC=0, DELAY_REQ=1, FOLLOW_UP=8, DELAY_RESP=9, ANNOUNCE=11};
 
     protected:
-        void ParseV1(std::vector<unsigned char> vMessage);
-        void ParseV2(std::vector<unsigned char> vMessage);
+        void ParseV1(const std::string& sSenderIp, std::vector<unsigned char> vMessage);
+        void ParseV2(const std::string& sSenderIp, std::vector<unsigned char> vMessage);
 
 
 };

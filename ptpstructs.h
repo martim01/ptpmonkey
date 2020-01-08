@@ -6,6 +6,7 @@
 struct header
 {
     virtual void OutputValues()=0;
+    std::string sIpAddress;
 };
 struct payload
 {

@@ -33,7 +33,7 @@ private:
         {
             if (!ec)
             {
-                m_pParser->ParseMessage(std::vector<unsigned char>(m_data.begin(), m_data.begin()+length));
+                m_pParser->ParseMessage(m_sender_endpoint.address().to_string(), std::vector<unsigned char>(m_data.begin(), m_data.begin()+length));
                 do_receive();
             }
             else

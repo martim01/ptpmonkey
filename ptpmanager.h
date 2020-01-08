@@ -19,6 +19,8 @@ class PtpManager
         void DelayResponse(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload);
         void Announce(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pPayload);
 
+        time_s_ns GetPtpTime() const;
+
     protected:
         std::map<unsigned short, time_s_ns> m_mDelayRequest;
         bool m_bSync;
@@ -32,6 +34,7 @@ class PtpManager
 
         time_s_ns m_offset;
         time_s_ns m_delay;
+        unsigned long long int m_nTotal;
 
         unsigned long long int m_nMax;
         unsigned long long int m_nMin;

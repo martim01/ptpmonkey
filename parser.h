@@ -7,7 +7,7 @@ class Parser
 {
     public:
         Parser(std::shared_ptr<Handler> pHandler) : m_pHandler(pHandler){};
-        virtual void ParseMessage(std::vector<unsigned char> vMessage)=0;
+        virtual void ParseMessage(const std::string& sSenderIp, std::vector<unsigned char> vMessage)=0;
 
     protected:
 
