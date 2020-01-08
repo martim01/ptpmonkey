@@ -15,7 +15,7 @@ class Sender
           m_timer(io_context),
           m_nSequence(0)
         {
-            asio::ip::multicast::outbound_interface option(asio::ip::address_v4::from_string("10.10.11.218"));
+            asio::ip::multicast::outbound_interface option(asio::ip::address_v4::from_string("10.10.11.25"));
             m_socket.set_option(option);
             do_send();
         }

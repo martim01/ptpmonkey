@@ -2,6 +2,8 @@
 #include "ptpmanager.h"
 #include "ptpstructs.h"
 #include "ptpparser.h"
+#include <iostream>
+#include <iomanip>
 
 void PtpManagerHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std::shared_ptr<payload> pPayload)
 {
@@ -22,6 +24,15 @@ void PtpManagerHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std
                 m_manager.Announce(pPtpH, std::dynamic_pointer_cast<ptpAnnounce>(pPtpP));
                 break;
 
+        }
+
+        if((int)pPtpH->nType != 11)
+        {
+            std::cout << (int)pPtpH->nType << "\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime) << std::endl;
+        }
+        else
+        {
+            std::cout << (int)pPtpH->nType << "\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << std::endl;
         }
     }
 }

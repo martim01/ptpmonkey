@@ -19,10 +19,10 @@ void PtpManager::Run()
 
         asio::io_context io_context;
         Receiver r319(io_context, std::unique_ptr<Parser>(new PtpParser(pHandler)));
-        r319.run(asio::ip::make_address("10.10.11.218"),asio::ip::make_address("224.0.1.129"), 319);
+        r319.run(asio::ip::make_address("10.10.11.25"),asio::ip::make_address("224.0.1.129"), 319);
 
         Receiver r320(io_context, std::unique_ptr<Parser>(new PtpParser(pHandler)));
-        r320.run(asio::ip::make_address("10.10.11.218"),asio::ip::make_address("224.0.1.129"), 320);
+        r320.run(asio::ip::make_address("10.10.11.25"),asio::ip::make_address("224.0.1.129"), 320);
 
         Sender sDelay(*this, io_context, asio::ip::make_address("224.0.1.129"), 319);
         io_context.run();

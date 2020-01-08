@@ -1,23 +1,30 @@
-#include "winsock2.h"
-#include "iphlpapi.h"
+
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
 #include <iostream>
-#include "ws2tcpip.h"
+
 #include <sstream>
 #include <iomanip>
 
 
 #ifdef __GNU__
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <net/if.h>
+#include <unistd.h>
+#include <cstring>
+#include <sys/ioctl.h>
+
 unsigned long long int GenerateClockIdentity(const std::string& sIpAddress)
 {
-   	 int fd;
-	
+    int fd;
+
 	struct ifreq ifr;
 	char *iface = "eth0";
 	char *mac;
-	
+
 	fd = socket(AF_INET, SOCK_DGRAM, 0);
 
 	ifr.ifr_addr.sa_family = AF_INET;
@@ -26,13 +33,23 @@ unsigned long long int GenerateClockIdentity(const std::string& sIpAddress)
 	ioctl(fd, SIOCGIFHWADDR, &ifr);
 
 	close(fd);
-	
+
 	mac = (char *)ifr.ifr_hwaddr.sa_data;
-	
-	//display mac address
-	sprintf((char *)uc_Mac,(const char *)"%.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n" , mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-	
-	
+
+	unsigned long long int nAddress(0);
+    nAddress = mac[0];
+    nAddress = nAddress << 56;
+    nAddress += (static_cast<unsigned long long int>(mac[1]) << 48);
+    nAddress += (static_cast<unsigned long long int>(mac[2]) << 40);
+    nAddress += (static_cast<unsigned long long int>(0xFF) << 32);
+    nAddress += (static_cast<unsigned long long int>(0xFE) << 24);
+    nAddress += (static_cast<unsigned long long int>(mac[3]) << 16);
+    nAddress += (static_cast<unsigned long long int>(mac[4]) << 8);
+    nAddress += static_cast<unsigned long long int>(mac[5]);
+    return nAddress;
+
+
+/*
 	struct ifaddrs *ifaddr, *ifa;
            int family, s, n;
            char host[NI_MAXHOST];
@@ -42,8 +59,6 @@ unsigned long long int GenerateClockIdentity(const std::string& sIpAddress)
                exit(EXIT_FAILURE);
            }
 
-           /* Walk through linked list, maintaining head pointer so we
-              can free list later */
 
            for (ifa = ifaddr, n = 0; ifa != NULL; ifa = ifa->ifa_next, n++) {
                if (ifa->ifa_addr == NULL)
@@ -51,8 +66,6 @@ unsigned long long int GenerateClockIdentity(const std::string& sIpAddress)
 
                family = ifa->ifa_addr->sa_family;
 
-               /* Display interface name and family (including symbolic
-                  form of the latter for the common families) */
 
                printf("%-8s %s (%d)\n",
                       ifa->ifa_name,
@@ -61,7 +74,6 @@ unsigned long long int GenerateClockIdentity(const std::string& sIpAddress)
                       (family == AF_INET6) ? "AF_INET6" : "???",
                       family);
 
-               /* For an AF_INET* interface address, display the address */
 
                if (family == AF_INET || family == AF_INET6) {
                    s = getnameinfo(ifa->ifa_addr,
@@ -88,9 +100,14 @@ unsigned long long int GenerateClockIdentity(const std::string& sIpAddress)
 
            freeifaddrs(ifaddr);
            exit(EXIT_SUCCESS);
-	
+           */
+
 }
 #else
+#include "winsock2.h"
+#include "iphlpapi.h"
+#include "ws2tcpip.h"
+
 unsigned long long int GenerateClockIdentity(const std::string& sIpAddress)
 {
     ULONG outBufLen = sizeof(IP_ADAPTER_ADDRESSES);
