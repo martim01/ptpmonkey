@@ -27,7 +27,7 @@ constexpr short multicast_port = 319;
 int main(int argc, char* argv[])
 {
 
-    PtpManager ptp;
+    PtpManager ptp(0);
     ptp.Run();
 
     do

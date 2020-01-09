@@ -9,13 +9,13 @@ class PtpManager;
 class Sender
 {
     public:
-        Sender(PtpManager& manager, asio::io_context& io_context, const asio::ip::address& multicast_address, unsigned short nPort) : m_manager(manager),
+        Sender(PtpManager& manager, asio::io_context& io_context, const asio::ip::address_v4& outbound_interface, const asio::ip::address& multicast_address, unsigned short nPort) : m_manager(manager),
           m_endpoint(multicast_address, nPort),
           m_socket(io_context, m_endpoint.protocol()),
           m_timer(io_context),
           m_nSequence(0)
         {
-            asio::ip::multicast::outbound_interface option(asio::ip::address_v4::from_string("10.10.11.25"));
+            asio::ip::multicast::outbound_interface option(outbound_interface);
             m_socket.set_option(option);
             do_send();
         }

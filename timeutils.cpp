@@ -30,28 +30,13 @@ std::string TimeToIsoString(const time_s_ns& ts)
     return ss.str();
 }
 
-
-time_s_ns Minus(const time_s_ns& firstTime, const time_s_ns& secondTime)
+unsigned long long int TimeToNano(const time_s_ns& ts)
 {
-    std::chrono::nanoseconds totalFirst(std::chrono::duration_cast<std::chrono::nanoseconds>(firstTime.first) + firstTime.second);
-    std::chrono::nanoseconds totalSecond(std::chrono::duration_cast<std::chrono::nanoseconds>(secondTime.first) + secondTime.second);
-    std::chrono::nanoseconds result = totalFirst-totalSecond;
-    return std::make_pair(std::chrono::duration_cast<std::chrono::seconds>(result), std::chrono::nanoseconds(result.count()%1000000000));
+
+    return (std::chrono::duration_cast<std::chrono::nanoseconds>(ts.first)+ts.second).count();
 }
 
-time_s_ns Add(const time_s_ns& firstTime, const time_s_ns& secondTime)
+time_s_ns NanoToTime(unsigned long long int nNano)
 {
-    std::chrono::nanoseconds totalFirst(std::chrono::duration_cast<std::chrono::nanoseconds>(firstTime.first) + firstTime.second);
-    std::chrono::nanoseconds totalSecond(std::chrono::duration_cast<std::chrono::nanoseconds>(secondTime.first) + secondTime.second);
-    std::chrono::nanoseconds result = totalFirst+totalSecond;
-    return std::make_pair(std::chrono::duration_cast<std::chrono::seconds>(result), std::chrono::nanoseconds(result.count()%1000000000));
-}
-
-time_s_ns Divide(const time_s_ns& firstTime, int nDivisor)
-{
-    std::chrono::nanoseconds totalFirst(std::chrono::duration_cast<std::chrono::nanoseconds>(firstTime.first) + firstTime.second);
-
-    unsigned long long int nResult = (totalFirst.count())/nDivisor;
-    std::chrono::nanoseconds result(nResult);
-    return std::make_pair(std::chrono::duration_cast<std::chrono::seconds>(result), std::chrono::nanoseconds(result.count()%1000000000));
+    return make_pair( std::chrono::duration_cast<std::chrono::seconds>(std::chrono::nanoseconds(nNano)), (std::chrono::nanoseconds(nNano%1000000000)));
 }

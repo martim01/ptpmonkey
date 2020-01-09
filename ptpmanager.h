@@ -5,11 +5,12 @@
 #include <map>
 #include <list>
 
+class PtpV2Clock;
 
 class PtpManager
 {
     public:
-        PtpManager();
+        PtpManager(unsigned char nDomain);
 
         void Run();
 
@@ -21,23 +22,13 @@ class PtpManager
 
         time_s_ns GetPtpTime() const;
 
+        std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator GetClocksBegin() const;
+        std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator GetClocksEnd() const;
+        std::shared_ptr<const PtpV2Clock> GetMasterClock() const;
+
     protected:
-        std::map<unsigned short, time_s_ns> m_mDelayRequest;
-        bool m_bSync;
+        unsigned char m_nDomain;
+        std::map<std::string, std::shared_ptr<PtpV2Clock> > m_mClocks;
 
-        time_s_ns m_t1s;
-        time_s_ns m_t1r;
-        time_s_ns m_t2s;
-        time_s_ns m_t2r;
-        time_s_ns m_t3s;
-        time_s_ns m_t3r;
-
-        time_s_ns m_offset;
-        time_s_ns m_delay;
-        unsigned long long int m_nTotal;
-
-        unsigned long long int m_nMax;
-        unsigned long long int m_nMin;
-
-        std::list<unsigned long int> m_lstDelay;
+        std::shared_ptr<PtpV2Clock> m_pMaster;
 };
