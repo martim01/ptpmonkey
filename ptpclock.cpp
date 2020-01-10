@@ -1,4 +1,5 @@
 #include "ptpclock.h"
+#include <iostream>
 
 
 PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce) :
@@ -20,6 +21,25 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
 
 }
 
+PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload) :
+    m_nDomain(pHeader->nDomain),
+    m_nFlags(pHeader->nFlags),
+    m_nUtcOffset(0),
+    m_nGrandmasterPriority1(0),
+    m_nGrandmasterClass(0),
+    m_nGrandmasterAccuracy(0),
+    m_nGrandmasterVariance(0),
+    m_nGrandmasterPriority2(0),
+    m_sClockId(pHeader->source.sSourceId),
+    m_nStepsRemoved(0),
+    m_nTimeSource(0),
+    m_bMaster(false),
+    m_nt1s(0),
+    m_nt1r(0)
+{
+
+}
+
 void PtpV2Clock::AddDelayRequest(unsigned short nSequence, const time_s_ns& timestamp)
 {
     m_mDelayRequest.insert(make_pair(nSequence, timestamp));
@@ -28,8 +48,11 @@ void PtpV2Clock::AddDelayRequest(unsigned short nSequence, const time_s_ns& time
 void PtpV2Clock::Sync(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
 {
     m_bMaster = true;
-    m_nt1s = TimeToNano(pPayload->originTime);
-    m_nt1r = TimeToNano(pHeader->timestamp);
+    if(TimeToNano(pPayload->originTime) != 0)   //1-step or follow up
+    {
+        m_nt1s = TimeToNano(pPayload->originTime);
+        m_nt1r = TimeToNano(pHeader->timestamp);
+    }
 }
 
 void PtpV2Clock::DelayResponse(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload)
@@ -57,69 +80,127 @@ void PtpV2Clock::DelayResponse(std::shared_ptr<ptpV2Header> pHeader, std::shared
 
 void PtpV2Clock::DoStats(unsigned long long int nCurrent, stats& theStats)
 {
-    theStats.nTotalNano += nCurrent;
+    time_s_ns current = NanoToTime(nCurrent);
 
-    theStats.lstValues.push_back(nCurrent);
+    theStats.total = theStats.total+current;
+
+    theStats.lstValues.push_back(current);
     if(theStats.lstValues.size() > 1000)
     {
-        theStats.nTotalNano -= theStats.lstValues.front();
+        theStats.total = theStats.total-theStats.lstValues.front();
         theStats.lstValues.pop_front();
     }
+    theStats.stat[MEAN] = theStats.total/theStats.lstValues.size();
 
-
-    theStats.nStat[MEAN] = (theStats.nTotalNano/theStats.lstValues.size());
-
-    unsigned long long int nMinAv = theStats.nStat[MEAN]*0.7;
-    unsigned long long int nMaxAv = theStats.nStat[MEAN]/0.7;
-    unsigned int nValid(0);
-    theStats.nStat[WEIGHTED] = 0;
+//    unsigned long long int nMinAv = theStats.stat[MEAN]*0.7;
+//    unsigned long long int nMaxAv = theStats.stat[MEAN]/0.7;
+//    unsigned int nValid(0);
+//    theStats.nStat[WEIGHTED] = 0;
     for(auto value : theStats.lstValues)
     {
-        if(theStats.nStat[MIN] == 0 || theStats.nStat[MIN] > value)
+        if(theStats.stat[MIN] == std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0)) || theStats.stat[MIN] > value)
         {
-            theStats.nStat[MIN] = value;
+            theStats.stat[MIN] = value;
         }
-        if(theStats.nStat[MAX] < value)
+        if(theStats.stat[MAX] < value)
         {
-            theStats.nStat[MAX] = value;
+            theStats.stat[MAX] = value;
         }
-        if(value > nMinAv && value < nMaxAv)
-        {
-            theStats.nStat[WEIGHTED] += value;
-            ++nValid;
-        }
+//        if(value > nMinAv && value < nMaxAv)
+//        {
+//            theStats.nStat[WEIGHTED] += value;
+//            ++nValid;
+//        }
     }
-    theStats.nStat[WEIGHTED] /= nValid;
+//    if(nValid != 0)
+//    {
+//        theStats.nStat[WEIGHTED] /= nValid;
+//    }
+    //theStats.stat[WEIGHTED] = theStats.stat[MEAN];
 }
 
 
 time_s_ns PtpV2Clock::GetPtpTime(enumCalc eCalc)
 {
-    unsigned long long int nLocal(TimeToNano(GetCurrentTaiTime()));
-    return NanoToTime((nLocal-m_offset.nStat[eCalc]));
+    return (GetCurrentTaiTime()-m_offset.stat[eCalc]);
 }
 
 time_s_ns PtpV2Clock::GetOffset(enumCalc eCalc)
 {
-    return NanoToTime(m_offset.nStat[eCalc]);
+    return m_offset.stat[eCalc];
 }
 
 time_s_ns PtpV2Clock::GetDelay(enumCalc eCalc)
 {
-    return NanoToTime(m_delay.nStat[eCalc]);
+    return m_delay.stat[eCalc];
 }
 
-void PtpV2Clock::UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce)
+bool PtpV2Clock::UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce)
 {
-    m_nDomain = pHeader->nDomain;
-    m_nFlags = pHeader->nFlags;
-    m_nUtcOffset = pAnnounce->nUtcOffset;
-    m_nGrandmasterPriority1 = pAnnounce->nGrandmasterPriority1;
-    m_nGrandmasterClass = pAnnounce->nGrandmasterClass;
-    m_nGrandmasterAccuracy = pAnnounce->nGrandmasterAccuracy;
-    m_nGrandmasterVariance = pAnnounce->nGrandmasterVariance;
-    m_nGrandmasterPriority2 = pAnnounce->nGrandmasterPriority2;
-    m_sClockId = pAnnounce->sClockId;
-    m_nStepsRemoved = pAnnounce->nStepsRemoved;
-    m_nTimeSource = pAnnounce->nTimeSource;
+    bool bChanged(false);
+    if(m_nDomain != pHeader->nDomain)
+    {
+        m_nDomain = pHeader->nDomain;
+        bChanged = true;
+    }
+    if(m_nFlags != pHeader->nFlags)
+    {
+        m_nFlags = pHeader->nFlags;
+        bChanged = true;
+    }
+
+    if(m_nUtcOffset != pAnnounce->nUtcOffset)
+    {
+        m_nUtcOffset = pAnnounce->nUtcOffset;
+        bChanged = true;
+    }
+
+    if(m_nGrandmasterPriority1 != pAnnounce->nGrandmasterPriority1)
+    {
+        m_nGrandmasterPriority1 = pAnnounce->nGrandmasterPriority1;
+        bChanged = true;
+    }
+
+    if(m_nGrandmasterClass != pAnnounce->nGrandmasterClass)
+    {
+        m_nGrandmasterClass = pAnnounce->nGrandmasterClass;
+        bChanged = true;
+    }
+
+    if(m_nGrandmasterAccuracy != pAnnounce->nGrandmasterAccuracy)
+    {
+        m_nGrandmasterAccuracy = pAnnounce->nGrandmasterAccuracy;
+        bChanged = true;
+    }
+
+    if(m_nGrandmasterVariance != pAnnounce->nGrandmasterVariance)
+    {
+        m_nGrandmasterVariance = pAnnounce->nGrandmasterVariance;
+        bChanged = true;
+    }
+
+    if(m_nGrandmasterPriority2 != pAnnounce->nGrandmasterPriority2)
+    {
+        m_nGrandmasterPriority2 = pAnnounce->nGrandmasterPriority2;
+        bChanged = true;
+    }
+
+    if(m_sClockId != pAnnounce->sClockId)
+    {
+        m_sClockId = pAnnounce->sClockId;
+        bChanged = true;
+    }
+
+    if(m_nStepsRemoved != pAnnounce->nStepsRemoved)
+    {
+        m_nStepsRemoved = pAnnounce->nStepsRemoved;
+        bChanged = true;
+    }
+
+    if(m_nTimeSource != pAnnounce->nTimeSource)
+    {
+        m_nTimeSource = pAnnounce->nTimeSource;
+        bChanged = true;
+    }
+    return bChanged;
 }

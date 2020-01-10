@@ -1,16 +1,16 @@
 #pragma once
 #include "handler.h"
 
-class PtpManager;
+class PtpMonkey;
 
-class PtpManagerHandler : public Handler
+class PtpMonkeyHandler : public Handler
 {
     public:
-        PtpManagerHandler(PtpManager& manager) : m_manager(manager){}
+        PtpMonkeyHandler(PtpMonkey& manager) : m_manager(manager){}
         void HandleParsedMessage(std::shared_ptr<header> pHeader, std::shared_ptr<payload> pPayload) override;
 
     private:
-        PtpManager& m_manager;
+        PtpMonkey& m_manager;
 };
 
 

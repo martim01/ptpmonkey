@@ -3,34 +3,58 @@
 #include <string>
 #include "timeutils.h"
 
+
+/** @struct header
+*   @brief abstract base class for the header of any message
+**/
 struct header
 {
+    /** @brief Output the header values for debug purposes **/
     virtual void OutputValues()=0;
-    std::string sIpAddress;
+    std::string sIpAddress; ///< The ip address the message arrived from
 };
+
+/** @struct payload
+*   @brief abstract base class for the payload of any message
+**/
 struct payload
 {
+    /** @brief Output the payload values for debug purposes **/
     virtual void OutputValues()=0;
 };
 
+/** @struct ptpHeader
+*   @brief  base class for the header of a v1 and v2 ptp message
+**/
 struct ptpHeader : header
 {
     ptpHeader();
 
-    unsigned char nVersion;
-    unsigned char nType;
-    time_s_ns timestamp;
+    unsigned char nVersion; ///< The ptp version
+    unsigned char nType;    ///< The type of message the payload contains
+    time_s_ns timestamp;    ///< The time the message was recevied by the application
 
 };
 
+/** @struct ptpPayload
+*   @brief  base class for the payload of a v1 and v2 ptp message
+**/
 struct ptpPayload : payload
 {
-    time_s_ns originTime;
+    time_s_ns originTime;   ///< The time the message was sent by the ptp clock
 };
 
+/** @struct ptpPayload
+*   @brief  contains the source id and port of a ptp clock
+**/
 struct ptpSource
 {
+    ///< default constructor
     ptpSource(){}
+
+    /** @brief Constructor
+    *   @param vMessage a vector of unsigned char that contain the
+    **/
     ptpSource(const std::vector<unsigned char>& vMessage);
     void CreateMessage(std::vector<unsigned char>& vMessage, size_t nBegin);
 

@@ -1,11 +1,11 @@
-#include "ptpmanagerhandler.h"
-#include "ptpmanager.h"
+#include "ptpmonkeyhandler.h"
+#include "ptpmonkey.h"
 #include "ptpstructs.h"
 #include "ptpparser.h"
 #include <iostream>
 #include <iomanip>
 
-void PtpManagerHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std::shared_ptr<payload> pPayload)
+void PtpMonkeyHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std::shared_ptr<payload> pPayload)
 {
 
     std::shared_ptr<ptpV2Header> pPtpH = std::dynamic_pointer_cast<ptpV2Header>(pHeader);
@@ -22,6 +22,9 @@ void PtpManagerHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std
                 break;
             case PtpParser::ANNOUNCE:
                 m_manager.Announce(pPtpH, std::dynamic_pointer_cast<ptpAnnounce>(pPtpP));
+                break;
+            case PtpParser::DELAY_REQ:
+                m_manager.DelayRequest(pPtpH, pPtpP);
                 break;
 
         }

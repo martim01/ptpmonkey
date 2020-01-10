@@ -29,7 +29,8 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-O3" />
+					<Add option="-D_WIN32_WINNT=0x0601" />
 					<Add directory="$(#asio.INCLUDE)" />
 				</Compiler>
 				<Linker>
@@ -107,12 +108,15 @@
 		<Unit filename="parser.h" />
 		<Unit filename="ptpclock.cpp" />
 		<Unit filename="ptpclock.h" />
+		<Unit filename="ptpeventhander.h" />
+		<Unit filename="ptpeventloghandler.cpp" />
+		<Unit filename="ptpeventloghandler.h" />
 		<Unit filename="ptploghandler.cpp" />
 		<Unit filename="ptploghandler.h" />
-		<Unit filename="ptpmanager.cpp" />
-		<Unit filename="ptpmanager.h" />
-		<Unit filename="ptpmanagerhandler.cpp" />
-		<Unit filename="ptpmanagerhandler.h" />
+		<Unit filename="ptpmonkey.cpp" />
+		<Unit filename="ptpmonkey.h" />
+		<Unit filename="ptpmonkeyhandler.cpp" />
+		<Unit filename="ptpmonkeyhandler.h" />
 		<Unit filename="ptpparser.cpp" />
 		<Unit filename="ptpparser.h" />
 		<Unit filename="ptpstructs.cpp" />

@@ -17,10 +17,12 @@ ptpSource::ptpSource(const std::vector<unsigned char>& vMessage)
         ssId << std::setw(2) << std::setfill('0') << std::hex;
         ssId << (int)vMessage[i];
     }
+    nSourcePort = (vMessage[8] << 8) | vMessage[9];
+
     ssId << ":" << nSourcePort;
     sSourceId = ssId.str();
     nSourceId = (vMessage[0] << 56) | (vMessage[1] << 48) | (vMessage[2] << 40)| (vMessage[3] << 32) | (vMessage[4] << 24) | (vMessage[5] << 16)| (vMessage[6] << 8)| vMessage[7];
-    nSourcePort = (vMessage[8] << 8) | vMessage[9];
+
 }
 
 void ptpSource::CreateMessage(std::vector<unsigned char>& vMessage, size_t nBegin)

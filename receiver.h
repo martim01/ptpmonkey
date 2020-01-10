@@ -6,7 +6,7 @@ class Parser;
 class Receiver
 {
 public:
-    Receiver(asio::io_context& io_context, std::unique_ptr<Parser> pParser) : m_socket(io_context), m_pParser(move(pParser))
+    Receiver(asio::io_context& io_context, std::shared_ptr<Parser> pParser) : m_socket(io_context), m_pParser(pParser)
     {
 
     }
@@ -24,6 +24,7 @@ public:
 
         do_receive();
     }
+
 
 private:
     void do_receive()
@@ -47,6 +48,6 @@ private:
     asio::ip::udp::endpoint m_sender_endpoint;
     std::array<unsigned char, 1024> m_data;
 
-    std::unique_ptr<Parser> m_pParser;
+    std::shared_ptr<Parser> m_pParser;
 };
 

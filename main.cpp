@@ -18,22 +18,25 @@
 #include "ptploghandler.h"
 #include "sender.h"
 #include "mac.h"
-#include "ptpmanager.h"
+#include "ptpmonkey.h"
 #include <thread>
 #include <chrono>
+#include "ptpeventloghandler.h"
+
 constexpr short multicast_port = 319;
 
 
 int main(int argc, char* argv[])
 {
 
-    PtpManager ptp(0);
+    PtpMonkey ptp("10.10.11.218", 0);
+    ptp.AddEventHandler(std::make_shared<PtpEventLogHandler>());
     ptp.Run();
 
     do
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        std::cout << TimeToIsoString(ptp.GetPtpTime()) << std::endl;
+      //  std::cout << ptp.GetMasterClockId() << "\t\t" << TimeToIsoString(ptp.GetPtpTime()) << std::endl;
     }while(true);
 
 

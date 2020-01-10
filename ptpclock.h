@@ -13,17 +13,47 @@ class PtpV2Clock : public PtpClock
 {
     public:
         PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce);
+        PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
+
         void Sync(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
         void DelayResponse(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload);
-        void UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce);
+        bool UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce);
         void AddDelayRequest(unsigned short nSequence, const time_s_ns& timestamp);
 
-        enum enumCalc {MIN, MEAN, MAX, WEIGHTED};
+        enum enumCalc {MIN=0, MEAN=1, MAX=2, WEIGHTED=3};
 
-        time_s_ns GetPtpTime(enumCalc eCalc = WEIGHTED);
+        time_s_ns GetPtpTime(enumCalc eCalc = MEAN);
 
-        time_s_ns GetOffset(enumCalc eCalc = WEIGHTED);
-        time_s_ns GetDelay(enumCalc eCalc = WEIGHTED);
+        time_s_ns GetOffset(enumCalc eCalc = MEAN);
+        time_s_ns GetDelay(enumCalc eCalc = MEAN);
+
+        const std::string& GetClockId() const
+        {   return m_sClockId;  }
+
+
+        unsigned char GetDomain() const
+        {   return m_nDomain;   }
+        unsigned short GetUtcOffset() const
+        {   return m_nUtcOffset;    }
+        unsigned char GetPriority1() const
+        {   return m_nGrandmasterPriority1; }
+        unsigned char GetClass() const
+        {   return m_nGrandmasterClass; }
+        unsigned char GetAccuracy() const
+        {   return m_nGrandmasterAccuracy;  }
+        unsigned short GetVariance() const
+        {   return m_nGrandmasterVariance;  }
+        unsigned char GetPriorty2() const
+        {   return m_nGrandmasterPriority2; }
+        const std::string& GetId() const
+        {   return m_sClockId;  }
+        unsigned short GetStepsRemoved() const
+        {   return m_nStepsRemoved; }
+        unsigned char GetTimeSource() const
+        {   return m_nTimeSource;   }
+        bool IsMaster() const
+        {   return m_bMaster;   }
+
 
 
     protected:
@@ -40,6 +70,7 @@ class PtpV2Clock : public PtpClock
         unsigned char m_nTimeSource;
         bool m_bMaster;
 
+//        unsigned short
 
         std::map<unsigned short, time_s_ns> m_mDelayRequest;
 
@@ -48,11 +79,16 @@ class PtpV2Clock : public PtpClock
 
         struct stats
         {
-            stats() :nTotalNano(0), nStat{0,0,0,0}{}
+            stats() : total(std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0))),
+                                     stat{std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0)),
+                                         std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0)),
+                                         std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0)),
+                                         std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0))}{}
 
-            unsigned long long int nTotalNano;
-            unsigned long long int nStat[4];
-            std::list<unsigned long int> lstValues;
+
+            time_s_ns total;
+            time_s_ns stat[4];
+            std::list<time_s_ns> lstValues;
         };
         void DoStats(unsigned long long int nCurrent, stats& theStats);
 
