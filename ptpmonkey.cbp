@@ -77,13 +77,13 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-O3" />
+					<Add option="-D__GNU__" />
 					<Add directory="$(#asio.INCLUDE)" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="ws2_32" />
-					<Add library="IPHLPAPI" />
+					<Add library="pthread" />
 				</Linker>
 			</Target>
 		</Build>
@@ -91,6 +91,7 @@
 			<Add option="-Wall" />
 			<Add option="-std=c++14" />
 			<Add option="-fexceptions" />
+			<Add option="-DASIO_STANDALONE" />
 		</Compiler>
 		<Unit filename="handler.h" />
 		<Unit filename="loghander.cpp" />

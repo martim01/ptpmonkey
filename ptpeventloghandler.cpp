@@ -59,5 +59,6 @@ void PtpEventLogHandler::ClockRemoved(std::shared_ptr<PtpV2Clock> pClock)
 
 void PtpEventLogHandler::ClockTimeCalculated(std::shared_ptr<PtpV2Clock> pClock)
 {
-
+    std::cout << TimeToString(pClock->GetOffset(PtpV2Clock::CURRENT)) << "\t" << TimeToString(pClock->GetOffset(PtpV2Clock::MIN))
+              << "\t" << TimeToString(pClock->GetOffset(PtpV2Clock::MEAN)) << "\t" << TimeToString(pClock->GetOffset(PtpV2Clock::MAX))  << std::endl;
 }

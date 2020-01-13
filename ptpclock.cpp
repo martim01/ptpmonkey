@@ -80,11 +80,11 @@ void PtpV2Clock::DelayResponse(std::shared_ptr<ptpV2Header> pHeader, std::shared
 
 void PtpV2Clock::DoStats(unsigned long long int nCurrent, stats& theStats)
 {
-    time_s_ns current = NanoToTime(nCurrent);
+    theStats.stat[CURRENT] = NanoToTime(nCurrent);
 
-    theStats.total = theStats.total+current;
+    theStats.total = theStats.total+theStats.stat[CURRENT];
 
-    theStats.lstValues.push_back(current);
+    theStats.lstValues.push_back(theStats.stat[CURRENT]);
     if(theStats.lstValues.size() > 1000)
     {
         theStats.total = theStats.total-theStats.lstValues.front();

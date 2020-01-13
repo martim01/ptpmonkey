@@ -49,9 +49,9 @@ time_s_ns operator+(const time_s_ns& t1, const time_s_ns& t2)
 {
     time_s_ns result;
     std::chrono::nanoseconds tn = t1.second+t2.second;
-
-    result.first = t1.first+t2.first + std::chrono::duration_cast<std::chrono::seconds>(tn);
-    result.second = std::chrono::nanoseconds(tn.count()%1000000000);
+    std::chrono::seconds sec = std::chrono::duration_cast<std::chrono::seconds>(tn);
+    result.first = t1.first+t2.first + sec;
+    result.second = tn - std::chrono::duration_cast<std::chrono::nanoseconds>(sec);
     return result;
 }
 
@@ -79,6 +79,7 @@ time_s_ns operator/(const time_s_ns& t1, unsigned int nDivisor)
 {
     time_s_ns result;
     result.first = std::chrono::seconds(t1.first.count()/nDivisor);
-    result.second = std::chrono::nanoseconds(t1.second.count()/nDivisor);
+    std::chrono::nanoseconds remainder = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(t1.first.count()%nDivisor))+t1.second;
+    result.second = std::chrono::nanoseconds(remainder.count()/nDivisor);
     return result;
 }

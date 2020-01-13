@@ -20,7 +20,7 @@ class PtpV2Clock : public PtpClock
         bool UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce);
         void AddDelayRequest(unsigned short nSequence, const time_s_ns& timestamp);
 
-        enum enumCalc {MIN=0, MEAN=1, MAX=2, WEIGHTED=3};
+        enum enumCalc {MIN=0, MEAN=1, MAX=2, WEIGHTED=3, CURRENT=4};
 
         time_s_ns GetPtpTime(enumCalc eCalc = MEAN);
 
@@ -83,11 +83,13 @@ class PtpV2Clock : public PtpClock
                                      stat{std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0)),
                                          std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0)),
                                          std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0)),
+                                         std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0)),
                                          std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0))}{}
 
 
+
             time_s_ns total;
-            time_s_ns stat[4];
+            time_s_ns stat[5];
             std::list<time_s_ns> lstValues;
         };
         void DoStats(unsigned long long int nCurrent, stats& theStats);
