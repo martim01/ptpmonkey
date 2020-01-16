@@ -21,7 +21,14 @@ ptpSource::ptpSource(const std::vector<unsigned char>& vMessage)
 
     ssId << ":" << nSourcePort;
     sSourceId = ssId.str();
-    nSourceId = (vMessage[0] << 56) | (vMessage[1] << 48) | (vMessage[2] << 40)| (vMessage[3] << 32) | (vMessage[4] << 24) | (vMessage[5] << 16)| (vMessage[6] << 8)| vMessage[7];
+    nSourceId = (static_cast<unsigned long long int>(vMessage[0]) << 56) |
+                (static_cast<unsigned long long int>(vMessage[1]) << 48) |
+                (static_cast<unsigned long long int>(vMessage[2]) << 40) |
+                (static_cast<unsigned long long int>(vMessage[3]) << 32) |
+                (static_cast<unsigned long long int>(vMessage[4]) << 24) |
+                (static_cast<unsigned long long int>(vMessage[5]) << 16) |
+                (static_cast<unsigned long long int>(vMessage[6]) << 8)  |
+                 vMessage[7];
 
 }
 
@@ -55,7 +62,14 @@ ptpV2Header::ptpV2Header(const std::vector<unsigned char>& vMessage) : ptpHeader
     nMessageLength = (vMessage[2] << 8) | vMessage[3];
     nDomain = vMessage[4];
     nFlags = (vMessage[6] << 8) | vMessage[7];
-    nCorrection = (vMessage[8] << 56) | (vMessage[9] << 48) | (vMessage[10] << 40)| (vMessage[11] << 32) | (vMessage[12] << 24) | (vMessage[13] << 16)| (vMessage[14] << 8)| vMessage[15];
+    nCorrection = (static_cast<unsigned long long int>(vMessage[8]) << 56)  |
+                  (static_cast<unsigned long long int>(vMessage[9]) << 48)  |
+                  (static_cast<unsigned long long int>(vMessage[10]) << 40) |
+                  (static_cast<unsigned long long int>(vMessage[11]) << 32) |
+                  (static_cast<unsigned long long int>(vMessage[12]) << 24) |
+                  (static_cast<unsigned long long int>(vMessage[13]) << 16) |
+                  (static_cast<unsigned long long int>(vMessage[14]) << 8)  |
+                  vMessage[15];
 
 
     nSequenceId = (vMessage[30] << 8) | vMessage[31];
@@ -111,8 +125,8 @@ void ptpV2Header::OutputValues()
 
 ptpV2Payload::ptpV2Payload(const std::vector<unsigned char>& vMessage)
 {
-    originTime.first = std::chrono::seconds((vMessage[0]<<40) | (vMessage[1]<<32) | (vMessage[2]<<24) | (vMessage[3]<<16) | (vMessage[4]<<8) | (vMessage[5]));
-    originTime.second = std::chrono::nanoseconds((vMessage[6]<<24) | (vMessage[7]<<16) | (vMessage[8]<<8) | (vMessage[9]));
+    originTime.first = std::chrono::seconds((static_cast<unsigned long long int>(vMessage[0])<<40) | (static_cast<unsigned long long int>(vMessage[1])<<32) | (static_cast<unsigned long long int>(vMessage[2])<<24) | (static_cast<unsigned long long int>(vMessage[3])<<16) | (static_cast<unsigned long long int>(vMessage[4])<<8) | (vMessage[5]));
+    originTime.second = std::chrono::nanoseconds((static_cast<unsigned long long int>(vMessage[6])<<24) | (static_cast<unsigned long long int>(vMessage[7])<<16) | (static_cast<unsigned long long int>(vMessage[8])<<8) | (vMessage[9]));
 }
 
 std::vector<unsigned char> ptpV2Payload::CreateMessage()

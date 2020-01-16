@@ -92,13 +92,9 @@
 			<Add option="-std=c++14" />
 			<Add option="-fexceptions" />
 			<Add option="-DASIO_STANDALONE" />
+			<Add directory="include" />
 		</Compiler>
-		<Unit filename="handler.h" />
-		<Unit filename="loghander.cpp" />
-		<Unit filename="loghander.h" />
-		<Unit filename="mac.cpp" />
-		<Unit filename="mac.h" />
-		<Unit filename="main.cpp">
+		<Unit filename="examples/main.cpp">
 			<Option target="Debug" />
 			<Option target="Release" />
 			<Option target="Linux Debug" />
@@ -106,32 +102,37 @@
 			<Option target="Windows Release" />
 			<Option target="Linux Release" />
 		</Unit>
-		<Unit filename="parser.h" />
-		<Unit filename="ptpclock.cpp" />
-		<Unit filename="ptpclock.h" />
-		<Unit filename="ptpeventhander.h" />
-		<Unit filename="ptpeventloghandler.cpp" />
-		<Unit filename="ptpeventloghandler.h" />
-		<Unit filename="ptploghandler.cpp" />
-		<Unit filename="ptploghandler.h" />
-		<Unit filename="ptpmonkey.cpp" />
-		<Unit filename="ptpmonkey.h" />
-		<Unit filename="ptpmonkeyhandler.cpp" />
-		<Unit filename="ptpmonkeyhandler.h" />
-		<Unit filename="ptpmonkeyimplementation.cpp" />
-		<Unit filename="ptpmonkeyimplementation.h" />
-		<Unit filename="ptpparser.cpp" />
-		<Unit filename="ptpparser.h" />
-		<Unit filename="ptpstructs.cpp" />
-		<Unit filename="ptpstructs.h" />
-		<Unit filename="receiver.h" />
-		<Unit filename="sender.cpp" />
-		<Unit filename="sender.h" />
-		<Unit filename="tests.cpp">
+		<Unit filename="include/handler.h" />
+		<Unit filename="include/loghander.h" />
+		<Unit filename="include/mac.h" />
+		<Unit filename="include/parser.h" />
+		<Unit filename="include/ptpclock.h" />
+		<Unit filename="include/ptpeventhander.h" />
+		<Unit filename="include/ptpeventloghandler.h" />
+		<Unit filename="include/ptploghandler.h" />
+		<Unit filename="include/ptpmonkey.h" />
+		<Unit filename="include/ptpmonkeyhandler.h" />
+		<Unit filename="include/ptpmonkeyimplementation.h" />
+		<Unit filename="include/ptpparser.h" />
+		<Unit filename="include/ptpstructs.h" />
+		<Unit filename="include/receiver.h" />
+		<Unit filename="include/sender.h" />
+		<Unit filename="include/timeutils.h" />
+		<Unit filename="source/loghander.cpp" />
+		<Unit filename="source/mac.cpp" />
+		<Unit filename="source/ptpclock.cpp" />
+		<Unit filename="source/ptpeventloghandler.cpp" />
+		<Unit filename="source/ptploghandler.cpp" />
+		<Unit filename="source/ptpmonkey.cpp" />
+		<Unit filename="source/ptpmonkeyhandler.cpp" />
+		<Unit filename="source/ptpmonkeyimplementation.cpp" />
+		<Unit filename="source/ptpparser.cpp" />
+		<Unit filename="source/ptpstructs.cpp" />
+		<Unit filename="source/sender.cpp" />
+		<Unit filename="source/timeutils.cpp" />
+		<Unit filename="tests/tests.cpp">
 			<Option target="tests" />
 		</Unit>
-		<Unit filename="timeutils.cpp" />
-		<Unit filename="timeutils.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
