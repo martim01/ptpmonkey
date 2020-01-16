@@ -16,7 +16,8 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
     m_nTimeSource(pAnnounce->nTimeSource),
     m_bMaster(false),
     m_nt1s(0),
-    m_nt1r(0)
+    m_nt1r(0),
+    m_lastMessageTime(pHeader->timestamp)
 {
 
 }
@@ -35,7 +36,8 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
     m_nTimeSource(0),
     m_bMaster(false),
     m_nt1s(0),
-    m_nt1r(0)
+    m_nt1r(0),
+    m_lastMessageTime(pHeader->timestamp)
 {
 
 }
@@ -47,16 +49,21 @@ void PtpV2Clock::AddDelayRequest(unsigned short nSequence, const time_s_ns& time
 
 void PtpV2Clock::Sync(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
 {
+    m_lastMessageTime = pHeader->timestamp;
+
     m_bMaster = true;
     if(TimeToNano(pPayload->originTime) != 0)   //1-step or follow up
     {
         m_nt1s = TimeToNano(pPayload->originTime);
         m_nt1r = TimeToNano(pHeader->timestamp);
     }
+
 }
 
 void PtpV2Clock::DelayResponse(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload)
 {
+    m_lastMessageTime = pHeader->timestamp;
+
     if(!m_bMaster)
         return;
 
@@ -137,6 +144,8 @@ time_s_ns PtpV2Clock::GetDelay(enumCalc eCalc)
 
 bool PtpV2Clock::UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce)
 {
+    m_lastMessageTime = pHeader->timestamp;
+
     bool bChanged(false);
     if(m_nDomain != pHeader->nDomain)
     {

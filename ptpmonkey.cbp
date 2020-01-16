@@ -118,6 +118,8 @@
 		<Unit filename="ptpmonkey.h" />
 		<Unit filename="ptpmonkeyhandler.cpp" />
 		<Unit filename="ptpmonkeyhandler.h" />
+		<Unit filename="ptpmonkeyimplementation.cpp" />
+		<Unit filename="ptpmonkeyimplementation.h" />
 		<Unit filename="ptpparser.cpp" />
 		<Unit filename="ptpparser.h" />
 		<Unit filename="ptpstructs.cpp" />

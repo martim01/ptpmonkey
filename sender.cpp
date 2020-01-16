@@ -2,7 +2,7 @@
 #include "ptpstructs.h"
 #include "timeutils.h"
 #include "mac.h"
-#include "ptpmonkey.h"
+#include "ptpmonkeyimplementation.h"
 
 void Sender::do_send()
 {

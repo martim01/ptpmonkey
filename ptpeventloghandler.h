@@ -1,6 +1,8 @@
 #pragma once
 #include "ptpeventhander.h"
 
+/** @class A simple class that handles PTP events and outputs details to cout
+**/
 class PtpEventLogHandler : public PtpEventHandler
 {
     public:

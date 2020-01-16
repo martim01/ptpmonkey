@@ -54,7 +54,10 @@ class PtpV2Clock : public PtpClock
         bool IsMaster() const
         {   return m_bMaster;   }
 
-
+        time_s_ns GetLastMessageTime() const
+        {
+            return m_lastMessageTime;
+        }
 
     protected:
         unsigned char m_nDomain;
@@ -96,5 +99,5 @@ class PtpV2Clock : public PtpClock
 
         stats m_delay;
         stats m_offset;
-
+        time_s_ns m_lastMessageTime;
 };

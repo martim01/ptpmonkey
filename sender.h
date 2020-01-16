@@ -5,11 +5,11 @@
 
 constexpr int max_message_count = 10;
 
-class PtpMonkey;
+class PtpMonkeyImplementation;
 class Sender
 {
     public:
-        Sender(PtpMonkey& manager, asio::io_context& io_context, const asio::ip::address_v4& outbound_interface, const asio::ip::address& multicast_address, unsigned short nPort) : m_manager(manager),
+        Sender(PtpMonkeyImplementation& manager, asio::io_context& io_context, const asio::ip::address_v4& outbound_interface, const asio::ip::address& multicast_address, unsigned short nPort) : m_manager(manager),
           m_endpoint(multicast_address, nPort),
           m_socket(io_context, m_endpoint.protocol()),
           m_timer(io_context),
@@ -38,7 +38,7 @@ class Sender
         }
 
 
-        PtpMonkey& m_manager;
+        PtpMonkeyImplementation& m_manager;
 
         asio::ip::udp::endpoint m_endpoint;
         asio::ip::udp::socket m_socket;
