@@ -9,13 +9,19 @@ class PtpMonkeyImplementation;
 class Sender
 {
     public:
-        Sender(PtpMonkeyImplementation& manager, asio::io_context& io_context, const asio::ip::address_v4& outbound_interface, const asio::ip::address& multicast_address, unsigned short nPort) : m_manager(manager),
+
+        Sender(PtpMonkeyImplementation& manager, asio::io_context& io_context, const std::string& sOutboundIpAddress, const asio::ip::address& multicast_address, unsigned short nPort) : m_manager(manager),
+          m_sOutboundIpAddress(sOutboundIpAddress),
           m_endpoint(multicast_address, nPort),
           m_socket(io_context, m_endpoint.protocol()),
           m_timer(io_context),
           m_nSequence(0)
         {
-            asio::ip::multicast::outbound_interface option(outbound_interface);
+
+        }
+        void Run()
+        {
+            asio::ip::multicast::outbound_interface option(asio::ip::address_v4::from_string(m_sOutboundIpAddress));
             m_socket.set_option(option);
             do_send();
         }
@@ -39,7 +45,7 @@ class Sender
 
 
         PtpMonkeyImplementation& m_manager;
-
+        std::string m_sOutboundIpAddress;
         asio::ip::udp::endpoint m_endpoint;
         asio::ip::udp::socket m_socket;
         asio::steady_timer m_timer;

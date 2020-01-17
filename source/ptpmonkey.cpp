@@ -59,3 +59,19 @@ time_s_ns PtpMonkey::GetPtpDelay() const
 {
     return m_pImpl->GetPtpDelay();
 }
+
+
+void PtpMonkey::Stop()
+{
+    m_pImpl->Stop();
+}
+
+void PtpMonkey::Restart()
+{
+    m_pImpl->Restart();
+}
+
+bool PtpMonkey::IsStopped()
+{
+    return m_pImpl->IsStopped();
+}

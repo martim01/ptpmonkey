@@ -35,6 +35,15 @@ class PtpMonkey
         **/
         void Run();
 
+        ///< @brief Stop PtpMonkey. This will stop the thread and remove all the clocks
+        void Stop();
+
+        ///< @brief Restart PtpMonkey. This will restart the PtpMonkey thread if it has been stopped.
+        void Restart();
+
+        ///< @brief Returns tru is the PtpMonkey thread has been run and is no longer running
+        bool IsStopped();
+
         /** @brief Get the time of the master clock for this domain. If there is no master clock returns the system clock time
         *   @return <i>time_s_ns</i> the time in seconds and nanoseconds
         **/

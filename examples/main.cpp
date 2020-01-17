@@ -32,12 +32,22 @@ int main(int argc, char* argv[])
     PtpMonkey ptp("10.10.11.203", 0);
     ptp.AddEventHandler(std::make_shared<PtpEventLogHandler>());
     ptp.Run();
-
     do
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        //std::cout << ptp.GetMasterClockId() << "\t\t" << TimeToString(ptp.GetPtpOffset()) << std::endl;
+        getchar();
+        std::cout << "PAUSE" << std::endl;
+        ptp.Stop();
+        getchar();
+        std::cout << "RUN" << std::endl;
+        ptp.Restart();
+
     }while(true);
+
+//    do
+//    {
+//        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+//        //std::cout << ptp.GetMasterClockId() << "\t\t" << TimeToString(ptp.GetPtpOffset()) << std::endl;
+//    }while(true);
 
 
     return 0;

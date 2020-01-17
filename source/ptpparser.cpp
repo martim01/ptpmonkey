@@ -8,6 +8,7 @@
 
 void PtpParser::ParseMessage(const std::string& sSenderIp, std::vector<unsigned char> vMessage)
 {
+
     unsigned char nVersion = vMessage[1] & 0xF;
     switch(nVersion)
     {

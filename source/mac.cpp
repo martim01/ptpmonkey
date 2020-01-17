@@ -16,19 +16,19 @@
 #include <unistd.h>
 #include <cstring>
 #include <sys/ioctl.h>
+#include <ifaddrs.h>
 
-unsigned long long int GenerateClockIdentity(const std::string& sIpAddress)
+unsigned long long int GenerateClockIdentityFromInterface(const std::string& sInterface)
 {
     int fd;
 
 	struct ifreq ifr;
-	char *iface = "eth0";
 	char *mac;
 
 	fd = socket(AF_INET, SOCK_DGRAM, 0);
 
 	ifr.ifr_addr.sa_family = AF_INET;
-	strncpy((char *)ifr.ifr_name , (const char *)iface , IFNAMSIZ-1);
+	strncpy((char *)ifr.ifr_name , sInterface.c_str() , IFNAMSIZ-1);
 
 	ioctl(fd, SIOCGIFHWADDR, &ifr);
 
@@ -48,59 +48,32 @@ unsigned long long int GenerateClockIdentity(const std::string& sIpAddress)
     nAddress += static_cast<unsigned long long int>(mac[5]);
     return nAddress;
 
+}
 
-/*
-	struct ifaddrs *ifaddr, *ifa;
-           int family, s, n;
-           char host[NI_MAXHOST];
-
-           if (getifaddrs(&ifaddr) == -1) {
-               perror("getifaddrs");
-               exit(EXIT_FAILURE);
-           }
+unsigned long long int GenerateClockIdentity(const std::string& sIpAddress)
+{
+    unsigned long long int nId(0);
+    struct ifaddrs *addrs, *iap;
+    struct sockaddr_in *sa;
+    char buf[32];
 
 
-           for (ifa = ifaddr, n = 0; ifa != NULL; ifa = ifa->ifa_next, n++) {
-               if (ifa->ifa_addr == NULL)
-                   continue;
-
-               family = ifa->ifa_addr->sa_family;
-
-
-               printf("%-8s %s (%d)\n",
-                      ifa->ifa_name,
-                      (family == AF_PACKET) ? "AF_PACKET" :
-                      (family == AF_INET) ? "AF_INET" :
-                      (family == AF_INET6) ? "AF_INET6" : "???",
-                      family);
-
-
-               if (family == AF_INET || family == AF_INET6) {
-                   s = getnameinfo(ifa->ifa_addr,
-                           (family == AF_INET) ? sizeof(struct sockaddr_in) :
-                                                 sizeof(struct sockaddr_in6),
-                           host, NI_MAXHOST,
-                           NULL, 0, NI_NUMERICHOST);
-                   if (s != 0) {
-                       printf("getnameinfo() failed: %s\n", gai_strerror(s));
-                       exit(EXIT_FAILURE);
-                   }
-
-                   printf("\t\taddress: <%s>\n", host);
-
-               } else if (family == AF_PACKET && ifa->ifa_data != NULL) {
-                   struct rtnl_link_stats *stats = ifa->ifa_data;
-
-                   printf("\t\ttx_packets = %10u; rx_packets = %10u\n"
-                          "\t\ttx_bytes   = %10u; rx_bytes   = %10u\n",
-                          stats->tx_packets, stats->rx_packets,
-                          stats->tx_bytes, stats->rx_bytes);
-               }
-           }
-
-           freeifaddrs(ifaddr);
-           exit(EXIT_SUCCESS);
-           */
+    getifaddrs(&addrs);
+    for(iap = addrs; iap != NULL; iap = iap->ifa_next)
+    {
+        if(iap->ifa_addr && (iap->ifa_flags & IFF_UP) && iap->ifa_addr->sa_family == AF_INET)
+        {
+            sa = (sockaddr_in*)(iap->ifa_addr);
+            inet_ntop(iap->ifa_addr->sa_family, (void*)&(sa->sin_addr), buf, sizeof(buf));
+            if(sIpAddress == std::string(buf))
+            {
+                nId =  GenerateClockIdentityFromInterface(iap->ifa_name);;
+                break;
+            }
+        }
+    }
+    freeifaddrs(addrs);
+    return nId;
 
 }
 #else

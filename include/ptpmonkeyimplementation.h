@@ -5,6 +5,7 @@
 #include <map>
 #include <list>
 #include <string>
+#include "asio.hpp"
 
 class PtpV2Clock;
 class PtpEventHandler;
@@ -92,8 +93,13 @@ class PtpMonkeyImplementation
         *   @note Should not be called by the user
         **/
         void AddDelayRequest(unsigned short nSequence, const time_s_ns& timestamp);
-    protected:
 
+        void Stop();
+        void Restart();
+        bool IsStopped();
+
+    protected:
+        asio::io_context m_context;
 
         std::map<std::string, std::shared_ptr<PtpV2Clock> >::iterator GetOrCreateClock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
 

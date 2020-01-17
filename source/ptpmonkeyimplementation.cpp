@@ -28,29 +28,32 @@ void PtpMonkeyImplementation::Run()
 {
     std::thread t([this]()
     {
+        std::stringstream ssMulticast;
+        ssMulticast << "224.0.1." << (static_cast<unsigned int>(m_nDomain)+129);
+
+        std::shared_ptr<Handler> pHandler = std::make_shared<PtpMonkeyHandler>(*this);
+        std::shared_ptr<Parser> pParser = std::make_shared<PtpParser>(pHandler);
+
+        Receiver r319(m_context, pParser);
+        Receiver r320(m_context, pParser);
+        Sender sDelay(*this, m_context, m_sLocalIpAddress, asio::ip::make_address(ssMulticast.str()), 319);
+
         try
         {
-            std::stringstream ssMulticast;
-            ssMulticast << "224.0.1." << (static_cast<unsigned int>(m_nDomain)+129);
 
-            std::shared_ptr<Handler> pHandler = std::make_shared<PtpMonkeyHandler>(*this);
 
-            std::shared_ptr<Parser> pParser = std::make_shared<PtpParser>(pHandler);
-           // pParser->AddHandler(std::make_shared<PtpLogHandler>());
-
-            asio::io_context io_context;
-            Receiver r319(io_context, pParser);
             r319.run(asio::ip::make_address("0.0.0.0"),asio::ip::make_address(ssMulticast.str()), 319);
 
-            Receiver r320(io_context, pParser);
+
             r320.run(asio::ip::make_address("0.0.0.0"),asio::ip::make_address(ssMulticast.str()), 320);
 
-            Sender sDelay(*this, io_context, asio::ip::address_v4::from_string(m_sLocalIpAddress), asio::ip::make_address(ssMulticast.str()), 319);
-            io_context.run();
+            sDelay.Run();
+
+            m_context.run();
         }
-        catch (std::exception& e)
+        catch (const std::exception& e)
         {
-            std::cerr << "Exception: " << e.what() << "\n";
+            std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Exception: " << e.what() << "\n";
         }
     });
     t.detach();
@@ -244,4 +247,25 @@ void PtpMonkeyImplementation::CheckForDeadClocks()
             ++itClock;
         }
     }
+}
+
+void PtpMonkeyImplementation::Stop()
+{
+    m_context.stop();
+    m_pMaster = nullptr;
+    m_mClocks.clear();
+}
+
+void PtpMonkeyImplementation::Restart()
+{
+    if(m_context.stopped())
+    {
+        m_context.restart();
+        Run();
+    }
+}
+
+bool PtpMonkeyImplementation::IsStopped()
+{
+    return m_context.stopped();
 }

@@ -34,7 +34,7 @@ std::vector<unsigned char> Sender::CreateRequest()
     theHeader.nDomain = 0;  //@todo need to set the domain
     theHeader.nFlags = 0;
     theHeader.nCorrection = 0;
-    theHeader.source.nSourceId = GenerateClockIdentity("");
+    theHeader.source.nSourceId = GenerateClockIdentity(m_sOutboundIpAddress);
     theHeader.source.nSourcePort = 1;
     theHeader.nSequenceId = m_nSequence;
     theHeader.nControl = 1;
