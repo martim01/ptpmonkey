@@ -16,6 +16,7 @@ class PtpV2Clock : public PtpClock
         PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
 
         void Sync(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
+        void FollowUp(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
         void DelayResponse(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload);
         bool UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce);
         void AddDelayRequest(unsigned short nSequence, const time_s_ns& timestamp);
@@ -53,7 +54,8 @@ class PtpV2Clock : public PtpClock
         {   return m_nTimeSource;   }
         bool IsMaster() const
         {   return m_bMaster;   }
-
+        unsigned short GetFlags() const
+        {   return m_nFlags; }
         time_s_ns GetLastMessageTime() const
         {
             return m_lastMessageTime;
@@ -72,13 +74,16 @@ class PtpV2Clock : public PtpClock
         unsigned short m_nStepsRemoved;
         unsigned char m_nTimeSource;
         bool m_bMaster;
-
+        unsigned short m_nFollowUpSequence;
 //        unsigned short
 
         std::map<unsigned short, time_s_ns> m_mDelayRequest;
 
         unsigned long long int  m_nt1s;
         unsigned long long int  m_nt1r;
+
+        bool m_bT1Valid;
+
 
         struct stats
         {

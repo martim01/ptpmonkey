@@ -11,16 +11,16 @@ void PtpLogHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std::sh
     {
         switch(pPtpH->nType)
         {
-        case PtpParser::SYNC:
+        case ptpV2Header::SYNC:
             std::cout << "Sync\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime) << std::endl;
             break;
-        case PtpParser::FOLLOW_UP:
+        case ptpV2Header::FOLLOW_UP:
            std::cout << "FollowUp\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime) << std::endl;
-        case PtpParser::DELAY_REQ:
+        case ptpV2Header::DELAY_REQ:
                std::cout << "DelayReq\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime) << std::endl;
-        case PtpParser::DELAY_RESP:
+        case ptpV2Header::DELAY_RESP:
             std::cout << "DelayRep\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime) << std::endl;
-        case PtpParser::ANNOUNCE:
+        case ptpV2Header::ANNOUNCE:
             std::cout << (int)pPtpH->nType << "\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << std::endl;
             break;
         }

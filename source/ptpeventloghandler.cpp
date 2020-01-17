@@ -8,15 +8,16 @@ void PtpEventLogHandler::ClockAdded(std::shared_ptr<PtpV2Clock> pClock)
 {
     std::cout << "---------NEW CLOCK---------" << std::endl;
     std::cout << "Id:\t\t" << pClock->GetId()  << std::endl;
-    std::cout << "Domain:\t\t" << (int)pClock->GetDomain() << std::endl;
+    std::cout << "Domain:\t\t" << std::dec << (int)pClock->GetDomain() << std::endl;
     std::cout << "Offset:\t\t" << (int)pClock->GetUtcOffset()  << std::endl;
     std::cout << "Priority1:\t" << (int)pClock->GetPriority1()  << std::endl;
     std::cout << "Class:\t\t" << (int)pClock->GetClass()  << std::endl;
-    std::cout << "Accuracy:\t" << (int)pClock->GetAccuracy()  << std::endl;
-    std::cout << "Variance:\t" << (int)pClock->GetVariance()  << std::endl;
+    std::cout << "Accuracy:\t" << std::hex << "0x" << (int)pClock->GetAccuracy()  << std::endl;
+    std::cout << "Variance:\t" << std::dec << (int)pClock->GetVariance()  << std::endl;
     std::cout << "Priority2:\t" << (int)pClock->GetPriorty2()  << std::endl;
     std::cout << "Steps:\t\t" << (int)pClock->GetStepsRemoved()  << std::endl;
-    std::cout << "Source:\t\t" << (int)pClock->GetTimeSource()  << std::endl;
+    std::cout << "Source:\t\t" << std::hex << "0x" << (int)pClock->GetTimeSource()  << std::endl;
+    std::cout << "Flags:\t\t" << std::hex << "0x" << (int)pClock->GetFlags()  << std::endl;
     std::cout << (pClock->IsMaster() ? "Master" : "Slave") << std::endl;
     std::cout << "---------------------------" << std::endl;
 }
@@ -25,15 +26,16 @@ void PtpEventLogHandler::ClockUpdated(std::shared_ptr<PtpV2Clock> pClock)
 {
     std::cout << "-----UPDATED CLOCK---------" << std::endl;
     std::cout << "Id:\t\t" << pClock->GetId()  << std::endl;
-    std::cout << "Domain:\t\t" << (int)pClock->GetDomain() << std::endl;
+    std::cout << "Domain:\t\t" << std::dec << (int)pClock->GetDomain() << std::endl;
     std::cout << "Offset:\t\t" << (int)pClock->GetUtcOffset()  << std::endl;
     std::cout << "Priority1:\t" << (int)pClock->GetPriority1()  << std::endl;
     std::cout << "Class:\t\t" << (int)pClock->GetClass()  << std::endl;
-    std::cout << "Accuracy:\t" << (int)pClock->GetAccuracy()  << std::endl;
-    std::cout << "Variance:\t" << (int)pClock->GetVariance()  << std::endl;
+    std::cout << "Accuracy:\t" << std::hex << "0x" << (int)pClock->GetAccuracy()  << std::endl;
+    std::cout << "Variance:\t" << std::dec << (int)pClock->GetVariance()  << std::endl;
     std::cout << "Priority2:\t" << (int)pClock->GetPriorty2()  << std::endl;
     std::cout << "Steps:\t\t" << (int)pClock->GetStepsRemoved()  << std::endl;
-    std::cout << "Source:\t\t" << (int)pClock->GetTimeSource()  << std::endl;
+    std::cout << "Source:\t\t" << std::hex << "0x" << (int)pClock->GetTimeSource()  << std::endl;
+    std::cout << "Flags:\t\t" << std::hex << "0x" << (int)pClock->GetFlags()  << std::endl;
     std::cout << (pClock->IsMaster() ? "Master" : "Slave") << std::endl;
     std::cout << "---------------------------" << std::endl;
 }

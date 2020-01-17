@@ -17,6 +17,7 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
     m_bMaster(false),
     m_nt1s(0),
     m_nt1r(0),
+    m_bT1Valid(false),
     m_lastMessageTime(pHeader->timestamp)
 {
 
@@ -37,6 +38,7 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
     m_bMaster(false),
     m_nt1s(0),
     m_nt1r(0),
+    m_bT1Valid(false),
     m_lastMessageTime(pHeader->timestamp)
 {
 
@@ -52,19 +54,41 @@ void PtpV2Clock::Sync(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV
     m_lastMessageTime = pHeader->timestamp;
 
     m_bMaster = true;
-    if(TimeToNano(pPayload->originTime) != 0)   //1-step or follow up
+    if((pHeader->nFlags & ptpV2Header::TWO_STEP) != 0)   //2-step
+    {
+        m_nt1r = TimeToNano(pHeader->timestamp);
+        m_nFollowUpSequence = pHeader->nSequenceId;
+        m_bT1Valid = false;
+    }
+    else
     {
         m_nt1s = TimeToNano(pPayload->originTime);
         m_nt1r = TimeToNano(pHeader->timestamp);
+        m_nFollowUpSequence = 0;
+        m_bT1Valid = true;
     }
 
+
 }
+
+void PtpV2Clock::FollowUp(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
+{
+    m_lastMessageTime = pHeader->timestamp;
+
+    m_bMaster = true;
+    m_nt1s = TimeToNano(pPayload->originTime);
+
+    //check the follow up sequence is correct
+    m_bT1Valid = (pHeader->nSequenceId == m_nFollowUpSequence);
+
+}
+
 
 void PtpV2Clock::DelayResponse(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload)
 {
     m_lastMessageTime = pHeader->timestamp;
 
-    if(!m_bMaster)
+    if(!m_bMaster || !m_bT1Valid)
         return;
 
     auto request = m_mDelayRequest.find(pHeader->nSequenceId);

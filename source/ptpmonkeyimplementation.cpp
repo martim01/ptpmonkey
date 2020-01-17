@@ -109,6 +109,30 @@ void PtpMonkeyImplementation::Sync(std::shared_ptr<ptpV2Header> pHeader, std::sh
 
 }
 
+void PtpMonkeyImplementation::FollowUp(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
+{
+    //find the clock....
+    auto itClock = GetOrCreateClock(pHeader, pPayload);
+    if(itClock != m_mClocks.end())
+    {
+        itClock->second->FollowUp(pHeader, pPayload);
+        if(m_pMaster != itClock->second)
+        {
+            for(auto pHandler : m_lstEventHandler)
+            {
+                pHandler->ClockBecomeMaster(itClock->second);
+                if(m_pMaster)
+                {
+                    pHandler->ClockBecomeSlave(m_pMaster);
+                }
+            }
+
+            m_pMaster = itClock->second;
+        }
+    }
+
+}
+
 void PtpMonkeyImplementation::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
 {
     auto itClock = GetOrCreateClock(pHeader, pPayload);

@@ -14,16 +14,19 @@ void PtpMonkeyHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std:
     {
         switch(pPtpH->nType)
         {
-            case PtpParser::SYNC:
+            case ptpV2Header::SYNC:
                 m_manager.Sync(pPtpH, pPtpP);
                 break;
-            case PtpParser::DELAY_RESP:
+            case ptpV2Header::FOLLOW_UP:
+                m_manager.FollowUp(pPtpH, pPtpP);
+                break;
+            case ptpV2Header::DELAY_RESP:
                 m_manager.DelayResponse(pPtpH, std::dynamic_pointer_cast<ptpDelayResponse>(pPtpP));
                 break;
-            case PtpParser::ANNOUNCE:
+            case ptpV2Header::ANNOUNCE:
                 m_manager.Announce(pPtpH, std::dynamic_pointer_cast<ptpAnnounce>(pPtpP));
                 break;
-            case PtpParser::DELAY_REQ:
+            case ptpV2Header::DELAY_REQ:
                 m_manager.DelayRequest(pPtpH, pPtpP);
                 break;
 

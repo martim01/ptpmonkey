@@ -37,19 +37,19 @@ void PtpParser::ParseV2(const std::string& sSenderIp, std::vector<unsigned char>
 
     switch(pHeader->nType)
     {
-        case SYNC:
+        case ptpV2Header::SYNC:
             pPayload = std::make_shared<ptpV2Payload>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
             break;
-        case DELAY_RESP:
+        case ptpV2Header::DELAY_RESP:
             pPayload = std::make_shared<ptpDelayResponse>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
             break;
-        case DELAY_REQ:
+        case ptpV2Header::DELAY_REQ:
             pPayload = std::make_shared<ptpV2Payload>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
             break;
-        case FOLLOW_UP:
+        case ptpV2Header::FOLLOW_UP:
             pPayload = std::make_shared<ptpV2Payload>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
             break;
-        case ANNOUNCE:
+        case ptpV2Header::ANNOUNCE:
             pPayload = std::make_shared<ptpAnnounce>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
             break;
     }

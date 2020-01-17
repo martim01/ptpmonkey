@@ -73,6 +73,7 @@ class PtpMonkeyImplementation
         *   @note Should not be called by the user
         **/
         void Sync(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
+        void FollowUp(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
 
         /** @brief Called by PtpMonkeyHandler when a delay request message is received.
         *   @note Should not be called by the user
