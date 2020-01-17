@@ -84,6 +84,24 @@
 				<Linker>
 					<Add option="-s" />
 					<Add library="pthread" />
+					<Add library="ptpmonkey" />
+					<Add directory="bin" />
+				</Linker>
+			</Target>
+			<Target title="Linux Shared Lib Release">
+				<Option platforms="Unix;" />
+				<Option output="bin/ptpmonkey" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/SharedRelease/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-D__GNU__" />
+					<Add directory="$(#asio.INCLUDE)" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="pthread" />
 				</Linker>
 			</Target>
 		</Build>
@@ -94,42 +112,203 @@
 			<Add option="-DASIO_STANDALONE" />
 			<Add directory="include" />
 		</Compiler>
-		<Unit filename="examples/main.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-			<Option target="Linux Debug" />
+		<Unit filename="examples/main.cpp" />
+		<Unit filename="include/handler.h">
 			<Option target="Windows Debug" />
 			<Option target="Windows Release" />
-			<Option target="Linux Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
 		</Unit>
-		<Unit filename="include/handler.h" />
-		<Unit filename="include/loghander.h" />
-		<Unit filename="include/mac.h" />
-		<Unit filename="include/parser.h" />
-		<Unit filename="include/ptpclock.h" />
-		<Unit filename="include/ptpeventhander.h" />
-		<Unit filename="include/ptpeventloghandler.h" />
-		<Unit filename="include/ptploghandler.h" />
-		<Unit filename="include/ptpmonkey.h" />
-		<Unit filename="include/ptpmonkeyhandler.h" />
-		<Unit filename="include/ptpmonkeyimplementation.h" />
-		<Unit filename="include/ptpparser.h" />
-		<Unit filename="include/ptpstructs.h" />
-		<Unit filename="include/receiver.h" />
-		<Unit filename="include/sender.h" />
-		<Unit filename="include/timeutils.h" />
-		<Unit filename="source/loghander.cpp" />
-		<Unit filename="source/mac.cpp" />
-		<Unit filename="source/ptpclock.cpp" />
-		<Unit filename="source/ptpeventloghandler.cpp" />
-		<Unit filename="source/ptploghandler.cpp" />
-		<Unit filename="source/ptpmonkey.cpp" />
-		<Unit filename="source/ptpmonkeyhandler.cpp" />
-		<Unit filename="source/ptpmonkeyimplementation.cpp" />
-		<Unit filename="source/ptpparser.cpp" />
-		<Unit filename="source/ptpstructs.cpp" />
-		<Unit filename="source/sender.cpp" />
-		<Unit filename="source/timeutils.cpp" />
+		<Unit filename="include/loghander.h">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="include/mac.h">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="include/parser.h">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="include/ptpclock.h">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="include/ptpeventhander.h">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="include/ptpeventloghandler.h">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="include/ptploghandler.h">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="include/ptpmonkey.h">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="include/ptpmonkeyhandler.h">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="include/ptpmonkeyimplementation.h">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="include/ptpparser.h">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="include/ptpstructs.h">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="include/receiver.h">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="include/sender.h">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="include/timeutils.h">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="source/loghander.cpp">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="source/mac.cpp">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="source/ptpclock.cpp">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="source/ptpeventloghandler.cpp">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="source/ptploghandler.cpp">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="source/ptpmonkey.cpp">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="source/ptpmonkeyhandler.cpp">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="source/ptpmonkeyimplementation.cpp">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="source/ptpparser.cpp">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="source/ptpstructs.cpp">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="source/sender.cpp">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
+		<Unit filename="source/timeutils.cpp">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Shared Lib Release" />
+		</Unit>
 		<Unit filename="tests/tests.cpp">
 			<Option target="tests" />
 		</Unit>
