@@ -46,7 +46,7 @@ bool PtpMonkeyImplementation::Run()
         std::thread t([this]()
         {
             m_context.run();
-        }});
+        });
         t.detach();
     }
     catch (const std::exception& e)
