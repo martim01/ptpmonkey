@@ -33,7 +33,7 @@ class PtpMonkey
 
         /** @brief Run PtpMonkey. This will create a separate thread to run all the sockets in
         **/
-        void Run();
+        bool Run();
 
         ///< @brief Stop PtpMonkey. This will stop the thread and remove all the clocks
         void Stop();

@@ -29,7 +29,7 @@ constexpr short multicast_port = 319;
 int main(int argc, char* argv[])
 {
 
-    PtpMonkey ptp("10.10.11.203", 0);
+    PtpMonkey ptp("192.168.0.203", 0);
     ptp.AddEventHandler(std::make_shared<PtpEventLogHandler>());
     ptp.Run();
     do

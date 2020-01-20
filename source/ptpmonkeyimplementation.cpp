@@ -24,39 +24,38 @@ void PtpMonkeyImplementation::AddEventHandler(std::shared_ptr<PtpEventHandler> p
     m_lstEventHandler.push_back(pHandler);
 }
 
-void PtpMonkeyImplementation::Run()
+bool PtpMonkeyImplementation::Run()
 {
-    std::thread t([this]()
+    std::stringstream ssMulticast;
+    ssMulticast << "224.0.1." << (static_cast<unsigned int>(m_nDomain)+129);
+
+    std::shared_ptr<Handler> pHandler = std::make_shared<PtpMonkeyHandler>(*this);
+    std::shared_ptr<Parser> pParser = std::make_shared<PtpParser>(pHandler);
+
+    Receiver r319(m_context, pParser);
+    Receiver r320(m_context, pParser);
+    Sender sDelay(*this, m_context, m_sLocalIpAddress, asio::ip::make_address(ssMulticast.str()), 319);
+
+    try
     {
-        std::stringstream ssMulticast;
-        ssMulticast << "224.0.1." << (static_cast<unsigned int>(m_nDomain)+129);
 
-        std::shared_ptr<Handler> pHandler = std::make_shared<PtpMonkeyHandler>(*this);
-        std::shared_ptr<Parser> pParser = std::make_shared<PtpParser>(pHandler);
+        r319.run(asio::ip::make_address("0.0.0.0"),asio::ip::make_address(ssMulticast.str()), 319);
+        r320.run(asio::ip::make_address("0.0.0.0"),asio::ip::make_address(ssMulticast.str()), 320);
+        sDelay.Run();
 
-        Receiver r319(m_context, pParser);
-        Receiver r320(m_context, pParser);
-        Sender sDelay(*this, m_context, m_sLocalIpAddress, asio::ip::make_address(ssMulticast.str()), 319);
-
-        try
+        std::thread t([this]()
         {
-
-
-            r319.run(asio::ip::make_address("0.0.0.0"),asio::ip::make_address(ssMulticast.str()), 319);
-
-
-            r320.run(asio::ip::make_address("0.0.0.0"),asio::ip::make_address(ssMulticast.str()), 320);
-
-            sDelay.Run();
-
             m_context.run();
-        }
-        catch (const std::exception& e)
-        {
-            std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Exception: " << e.what() << "\n";
-        }
-    });
-    t.detach();
+        }});
+        t.detach();
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Exception: " << e.what() << "\n";
+        return false;
+    }
+
+    return true;
 }
 
 

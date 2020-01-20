@@ -123,10 +123,6 @@ void PtpV2Clock::DoStats(unsigned long long int nCurrent, stats& theStats)
     }
     theStats.stat[MEAN] = theStats.total/theStats.lstValues.size();
 
-//    unsigned long long int nMinAv = theStats.stat[MEAN]*0.7;
-//    unsigned long long int nMaxAv = theStats.stat[MEAN]/0.7;
-//    unsigned int nValid(0);
-//    theStats.nStat[WEIGHTED] = 0;
     for(auto value : theStats.lstValues)
     {
         if(theStats.stat[MIN] == std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0)) || theStats.stat[MIN] > value)
@@ -137,17 +133,7 @@ void PtpV2Clock::DoStats(unsigned long long int nCurrent, stats& theStats)
         {
             theStats.stat[MAX] = value;
         }
-//        if(value > nMinAv && value < nMaxAv)
-//        {
-//            theStats.nStat[WEIGHTED] += value;
-//            ++nValid;
-//        }
     }
-//    if(nValid != 0)
-//    {
-//        theStats.nStat[WEIGHTED] /= nValid;
-//    }
-    //theStats.stat[WEIGHTED] = theStats.stat[MEAN];
 }
 
 

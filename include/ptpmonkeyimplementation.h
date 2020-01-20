@@ -30,7 +30,7 @@ class PtpMonkeyImplementation
 
         /** @brief Run PtpMonkey. This will create a separate thread to run all the sockets in
         **/
-        void Run();
+        bool Run();
 
         /** @brief Get the time of the master clock for this domain. If there is no master clock returns the system clock time
         *   @return <i>time_s_ns</i> the time in seconds and nanoseconds
@@ -113,6 +113,8 @@ class PtpMonkeyImplementation
         std::shared_ptr<PtpV2Clock> m_pMaster;
 
         std::list<std::shared_ptr<PtpEventHandler>> m_lstEventHandler;
+
+        bool m_bRunning;
 };
 
 

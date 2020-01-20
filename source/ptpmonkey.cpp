@@ -17,9 +17,9 @@ void PtpMonkey::AddEventHandler(std::shared_ptr<PtpEventHandler> pHandler)
 
 }
 
-void PtpMonkey::Run()
+bool PtpMonkey::Run()
 {
-    m_pImpl->Run();
+    return m_pImpl->Run();
 }
 
 
