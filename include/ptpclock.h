@@ -60,6 +60,8 @@ class PtpV2Clock : public PtpClock
         {
             return m_lastMessageTime;
         }
+        const std::string GetIpAddress() const
+        {   return m_sIpAddress;    }
 
     protected:
         unsigned char m_nDomain;
@@ -77,6 +79,7 @@ class PtpV2Clock : public PtpClock
         unsigned short m_nFollowUpSequence;
 //        unsigned short
 
+        std::string m_sIpAddress;
         std::map<unsigned short, time_s_ns> m_mDelayRequest;
 
         unsigned long long int  m_nt1s;
