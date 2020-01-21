@@ -12,9 +12,10 @@
 #include "ptpclock.h"
 #include "ptpeventloghandler.h"
 
-PtpMonkeyImplementation::PtpMonkeyImplementation(const std::string& sLocalIpAddress, unsigned char nDomain)  :
+PtpMonkeyImplementation::PtpMonkeyImplementation(const std::string& sLocalIpAddress, unsigned char nDomain, unsigned char nDelayRequestPerSec)  :
     m_sLocalIpAddress(sLocalIpAddress),
     m_nDomain(nDomain),
+    m_nDelayRequestPerSec(nDelayRequestPerSec),
     m_pMaster(nullptr)
 {
 }
@@ -26,10 +27,6 @@ void PtpMonkeyImplementation::AddEventHandler(std::shared_ptr<PtpEventHandler> p
 
 bool PtpMonkeyImplementation::Run()
 {
-
-
-
-
     std::thread t([this]()
     {
         try
@@ -42,7 +39,7 @@ bool PtpMonkeyImplementation::Run()
 
             Receiver r319(m_context, pParser);
             Receiver r320(m_context, pParser);
-            Sender sDelay(*this, m_context, m_sLocalIpAddress, asio::ip::make_address(ssMulticast.str()), 319);
+            Sender sDelay(*this, m_context, m_sLocalIpAddress, asio::ip::make_address(ssMulticast.str()), 319, m_nDelayRequestPerSec);
             r319.run(asio::ip::make_address("0.0.0.0"),asio::ip::make_address(ssMulticast.str()), 319);
             r320.run(asio::ip::make_address("0.0.0.0"),asio::ip::make_address(ssMulticast.str()), 320);
             sDelay.Run();
@@ -105,7 +102,7 @@ void PtpMonkeyImplementation::Sync(std::shared_ptr<ptpV2Header> pHeader, std::sh
                     pHandler->ClockBecomeSlave(m_pMaster);
                 }
             }
-
+            std::lock_guard<std::mutex> lg(m_mutex);
             m_pMaster = itClock->second;
         }
     }
@@ -129,7 +126,7 @@ void PtpMonkeyImplementation::FollowUp(std::shared_ptr<ptpV2Header> pHeader, std
                     pHandler->ClockBecomeSlave(m_pMaster);
                 }
             }
-
+            std::lock_guard<std::mutex> lg(m_mutex);
             m_pMaster = itClock->second;
         }
     }
@@ -163,6 +160,7 @@ void PtpMonkeyImplementation::DelayResponse(std::shared_ptr<ptpV2Header> pHeader
                     pHandler->ClockBecomeSlave(m_pMaster);
                 }
             }
+            std::lock_guard<std::mutex> lg(m_mutex);
             m_pMaster = itClock->second;
         }
     }
@@ -217,11 +215,15 @@ std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator PtpMonkeyImp
 
 std::shared_ptr<const PtpV2Clock> PtpMonkeyImplementation::GetMasterClock() const
 {
+    std::lock_guard<std::mutex> lg(m_mutex);
+
     return m_pMaster;
 }
 
 std::string PtpMonkeyImplementation::GetMasterClockId() const
 {
+    std::lock_guard<std::mutex> lg(m_mutex);
+
     if(m_pMaster)
     {
         return m_pMaster->GetClockId();
@@ -232,6 +234,7 @@ std::string PtpMonkeyImplementation::GetMasterClockId() const
 
 time_s_ns PtpMonkeyImplementation::GetPtpOffset() const
 {
+    std::lock_guard<std::mutex> lg(m_mutex);
     if(m_pMaster)
     {
         return m_pMaster->GetOffset();
@@ -244,6 +247,7 @@ time_s_ns PtpMonkeyImplementation::GetPtpOffset() const
 
 time_s_ns PtpMonkeyImplementation::GetPtpDelay() const
 {
+    std::lock_guard<std::mutex> lg(m_mutex);
     if(m_pMaster)
     {
         return m_pMaster->GetDelay();
@@ -256,6 +260,7 @@ time_s_ns PtpMonkeyImplementation::GetPtpDelay() const
 
 void PtpMonkeyImplementation::CheckForDeadClocks()
 {
+
     auto now = GetCurrentTaiTime();
     for(auto itClock  = m_mClocks.begin(); itClock != m_mClocks.end();)
     {

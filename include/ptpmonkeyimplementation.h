@@ -6,6 +6,7 @@
 #include <list>
 #include <string>
 #include "asio.hpp"
+#include <mutex>
 
 class PtpV2Clock;
 class PtpEventHandler;
@@ -19,7 +20,7 @@ class PtpMonkeyImplementation
         *   @param sLocalIpAddress the ip address of the network interface you want to use to receive/send PTP messages
         *   @param nDomain the PTP domain to join
         **/
-        PtpMonkeyImplementation(const std::string& sLocalIpAddress, unsigned char nDomain);
+        PtpMonkeyImplementation(const std::string& sLocalIpAddress, unsigned char nDomain, unsigned char nDelayRequestPerSec=2);
 
         ~PtpMonkeyImplementation(){}
 
@@ -108,6 +109,8 @@ class PtpMonkeyImplementation
 
         std::string m_sLocalIpAddress;
         unsigned char m_nDomain;
+        unsigned char m_nDelayRequestPerSec;
+
         std::map<std::string, std::shared_ptr<PtpV2Clock> > m_mClocks;
 
         std::shared_ptr<PtpV2Clock> m_pMaster;
@@ -115,6 +118,8 @@ class PtpMonkeyImplementation
         std::list<std::shared_ptr<PtpEventHandler>> m_lstEventHandler;
 
         bool m_bRunning;
+        mutable std::mutex m_mutex;
+
 };
 
 

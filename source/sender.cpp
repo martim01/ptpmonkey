@@ -3,22 +3,31 @@
 #include "timeutils.h"
 #include "mac.h"
 #include "ptpmonkeyimplementation.h"
+#include <cmath>
 
 void Sender::do_send()
 {
-    m_socket.async_send_to(asio::buffer(CreateRequest()), m_endpoint,
-    [this](std::error_code ec, std::size_t /*length*/)
-    {
 
-        if (!ec)
+    if(m_manager.GetMasterClock() != nullptr)
+    {
+        m_socket.async_send_to(asio::buffer(CreateRequest()), m_endpoint,
+        [this](std::error_code ec, std::size_t /*length*/)
         {
-            do_timeout();
-        }
-        else
-        {
-            std::cout << ec << std::endl;
-        }
-    });
+
+            if (!ec)
+            {
+                do_timeout();
+            }
+            else
+            {
+                std::cout << ec << std::endl;
+            }
+        });
+    }
+    else
+    {
+        do_timeout();
+    }
 }
 
 std::vector<unsigned char> Sender::CreateRequest()
@@ -38,7 +47,7 @@ std::vector<unsigned char> Sender::CreateRequest()
     theHeader.source.nSourcePort = 1;
     theHeader.nSequenceId = m_nSequence;
     theHeader.nControl = 1;
-    theHeader.nInterval = 127;
+    theHeader.nInterval = -std::log2(m_nDelayRequestPerSec);
 
     thePayload.originTime = GetCurrentTaiTime();
 

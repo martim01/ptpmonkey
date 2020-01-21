@@ -10,12 +10,13 @@ class Sender
 {
     public:
 
-        Sender(PtpMonkeyImplementation& manager, asio::io_context& io_context, const std::string& sOutboundIpAddress, const asio::ip::address& multicast_address, unsigned short nPort) : m_manager(manager),
+        Sender(PtpMonkeyImplementation& manager, asio::io_context& io_context, const std::string& sOutboundIpAddress, const asio::ip::address& multicast_address, unsigned short nPort, unsigned char nDelayRequestPerSec) : m_manager(manager),
           m_sOutboundIpAddress(sOutboundIpAddress),
           m_endpoint(multicast_address, nPort),
           m_socket(io_context, m_endpoint.protocol()),
           m_timer(io_context),
-          m_nSequence(0)
+          m_nSequence(0),
+          m_nDelayRequestPerSec(std::max((unsigned char)1, nDelayRequestPerSec))
         {
 
         }
@@ -32,7 +33,7 @@ class Sender
 
         void do_timeout()
         {
-            m_timer.expires_after(std::chrono::milliseconds(250));
+            m_timer.expires_after(std::chrono::milliseconds(1000/m_nDelayRequestPerSec));
             m_timer.async_wait(
             [this](std::error_code ec)
             {
@@ -51,5 +52,6 @@ class Sender
         asio::steady_timer m_timer;
 
         unsigned short m_nSequence;
+        unsigned char m_nDelayRequestPerSec;
 };
 
