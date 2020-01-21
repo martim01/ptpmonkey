@@ -24,3 +24,22 @@ This will check that the Asio library is downloaded to ``` {ptpmonkey directory}
 It will then install it to ```/usr/local/lib/ ```
 
 It is also possible to build the library using the provided Code::Blocks project.
+
+### Using the library
+The class ``` PtpMonkey ``` is the interface to the library. It is defined in ``` ptpmonkey.h ```
+
+Construct a ``` PtpMonkey ``` object by passing the IP Address of the network interface you wish to use and the number of the PTP domain to monitor.
+
+Derive one or more classes from ``` PtpEventHandler ``` to handle the events that ``` PtpMonkey ``` generates and pass it to your PtpMonkey object.
+
+Now call ``` PtpMonkey.Run() ``` to start the monitoring/syncing in a separate thread.
+
+```c++
+#include "ptpmonkey.h"
+#include "ptpeventloghandler.h"
+...
+
+PtpMonkey ptp("192.168.0.1" 0);
+ptp.AddEventHandler(std::make_shared<PtpEventLogHandler>());
+ptp.Run();
+```
