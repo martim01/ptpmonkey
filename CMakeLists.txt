@@ -67,7 +67,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	target_link_libraries(ptpmonkey pthread)
 endif()
 
-set_target_properties(ptpmonkey PROPERTIES LIBRARY_OUTPUT_DIRECTORY "../../lib/")
+set_target_properties(ptpmonkey PROPERTIES LIBRARY_OUTPUT_DIRECTORY "../lib/")
 
 #linux specific
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
