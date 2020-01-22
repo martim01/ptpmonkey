@@ -3,6 +3,7 @@
 #include <memory>
 #include <map>
 #include <list>
+#include "namedtype.h"
 
 class PtpMonkeyImplementation;
 class PtpEventHandler;
@@ -13,16 +14,29 @@ struct PtpMonkeyImplDeleter
     void operator()(PtpMonkeyImplementation* p);
 };
 
+
+
+
 /** @class Main class for interfacing with the PTP code
 **/
 class PtpMonkey
 {
     public:
+
+
         /** @brief Constructor
-        *   @param sLocalIpAddress the ip address of the network interface you want to use to receive/send PTP messages
+        *   @param ipAddress the ip address of the network interface you want to use to receive/send PTP messages
         *   @param nDomain the PTP domain to join
+        *   @param nDelayRequestPerSec the number of delayy request messages to send to the master clock each second
         **/
-        PtpMonkey(const std::string& sLocalIpAddress, unsigned char nDomain);
+        PtpMonkey(const IpAddress& ipAddress, unsigned char nDomain, Rate enumDelayRequest=Rate::PER_SEC_4);
+
+        /** @brief Constructor
+        *   @param IpInterface the name of the network interface to use to send/receivee PTP messages
+        *   @param nDomain the PTP domain to join
+        *   @param nDelayRequestPerSec the number of delayy request messages to send to the master clock each second
+        **/
+        PtpMonkey(const IpInterface& IpInterface, unsigned char nDomain, Rate enumDelayRequest=Rate::PER_SEC_4);
 
         ~PtpMonkey(){}
 

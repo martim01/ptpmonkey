@@ -7,6 +7,9 @@
 #include <string>
 #include "asio.hpp"
 #include <mutex>
+#include "namedtype.h"
+
+
 
 class PtpV2Clock;
 class PtpEventHandler;
@@ -16,11 +19,8 @@ class PtpEventHandler;
 class PtpMonkeyImplementation
 {
     public:
-        /** @brief Constructor
-        *   @param sLocalIpAddress the ip address of the network interface you want to use to receive/send PTP messages
-        *   @param nDomain the PTP domain to join
-        **/
-        PtpMonkeyImplementation(const std::string& sLocalIpAddress, unsigned char nDomain, unsigned char nDelayRequestPerSec=2);
+        PtpMonkeyImplementation(const IpAddress& ipAddress, unsigned char nDomain, Rate enumDelayRequest);
+        PtpMonkeyImplementation(const IpInterface& IpInterface, unsigned char nDomain, Rate enumDelayRequest);
 
         ~PtpMonkeyImplementation(){}
 
@@ -107,9 +107,9 @@ class PtpMonkeyImplementation
 
         void CheckForDeadClocks();
 
-        std::string m_sLocalIpAddress;
+        IpAddress m_local;
         unsigned char m_nDomain;
-        unsigned char m_nDelayRequestPerSec;
+        Rate m_delayRequest;
 
         std::map<std::string, std::shared_ptr<PtpV2Clock> > m_mClocks;
 

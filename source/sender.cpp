@@ -43,11 +43,11 @@ std::vector<unsigned char> Sender::CreateRequest()
     theHeader.nDomain = 0;  //@todo need to set the domain
     theHeader.nFlags = 0;
     theHeader.nCorrection = 0;
-    theHeader.source.nSourceId = GenerateClockIdentity(m_sOutboundIpAddress);
+    theHeader.source.nSourceId = GenerateClockIdentity(m_outboundIpAddress);
     theHeader.source.nSourcePort = 1;
     theHeader.nSequenceId = m_nSequence;
     theHeader.nControl = 1;
-    theHeader.nInterval = -std::log2(m_nDelayRequestPerSec);
+    theHeader.nInterval = static_cast<unsigned char>(m_delayRequest);
 
     thePayload.originTime = GetCurrentTaiTime();
 

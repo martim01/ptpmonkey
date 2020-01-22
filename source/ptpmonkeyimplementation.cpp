@@ -11,13 +11,24 @@
 #include <thread>
 #include "ptpclock.h"
 #include "ptpeventloghandler.h"
+#include "mac.h"
 
-PtpMonkeyImplementation::PtpMonkeyImplementation(const std::string& sLocalIpAddress, unsigned char nDomain, unsigned char nDelayRequestPerSec)  :
-    m_sLocalIpAddress(sLocalIpAddress),
+
+PtpMonkeyImplementation::PtpMonkeyImplementation(const IpAddress& ipAddress, unsigned char nDomain, Rate enumDelayRequest)  :
+    m_local(ipAddress),
     m_nDomain(nDomain),
-    m_nDelayRequestPerSec(nDelayRequestPerSec),
+    m_delayRequest(enumDelayRequest),
     m_pMaster(nullptr)
 {
+}
+
+PtpMonkeyImplementation::PtpMonkeyImplementation(const IpInterface& ipInterface, unsigned char nDomain, Rate enumDelayRequest)  :
+    m_local(GetIpAddressOfInterface(ipInterface)),
+    m_nDomain(nDomain),
+    m_delayRequest(enumDelayRequest),
+    m_pMaster(nullptr)
+{
+
 }
 
 void PtpMonkeyImplementation::AddEventHandler(std::shared_ptr<PtpEventHandler> pHandler)
@@ -39,7 +50,7 @@ bool PtpMonkeyImplementation::Run()
 
             Receiver r319(m_context, pParser);
             Receiver r320(m_context, pParser);
-            Sender sDelay(*this, m_context, m_sLocalIpAddress, asio::ip::make_address(ssMulticast.str()), 319, m_nDelayRequestPerSec);
+            Sender sDelay(*this, m_context, m_local, asio::ip::make_address(ssMulticast.str()), 319, m_delayRequest);
             r319.run(asio::ip::make_address("0.0.0.0"),asio::ip::make_address(ssMulticast.str()), 319);
             r320.run(asio::ip::make_address("0.0.0.0"),asio::ip::make_address(ssMulticast.str()), 320);
             sDelay.Run();

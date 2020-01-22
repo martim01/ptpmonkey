@@ -17,8 +17,9 @@
 #include <cstring>
 #include <sys/ioctl.h>
 #include <ifaddrs.h>
+#include "namedtype.h"
 
-unsigned long long int GenerateClockIdentityFromInterface(const std::string& sInterface)
+unsigned long long int GenerateClockIdentityFromInterface(const IpInterface& ipInterface)
 {
     int fd;
 
@@ -28,7 +29,7 @@ unsigned long long int GenerateClockIdentityFromInterface(const std::string& sIn
 	fd = socket(AF_INET, SOCK_DGRAM, 0);
 
 	ifr.ifr_addr.sa_family = AF_INET;
-	strncpy((char *)ifr.ifr_name , sInterface.c_str() , IFNAMSIZ-1);
+	strncpy((char *)ifr.ifr_name , ipInterface.Get().c_str() , IFNAMSIZ-1);
 
 	ioctl(fd, SIOCGIFHWADDR, &ifr);
 
@@ -50,12 +51,15 @@ unsigned long long int GenerateClockIdentityFromInterface(const std::string& sIn
 
 }
 
-unsigned long long int GenerateClockIdentity(const std::string& sIpAddress)
+
+
+IpInterface GetInterfaceOfIpAddress(const IpAddress& ipAddress)
 {
-    unsigned long long int nId(0);
     struct ifaddrs *addrs, *iap;
     struct sockaddr_in *sa;
     char buf[32];
+
+    IpInterface ipInterface("");
 
 
     getifaddrs(&addrs);
@@ -65,23 +69,52 @@ unsigned long long int GenerateClockIdentity(const std::string& sIpAddress)
         {
             sa = (sockaddr_in*)(iap->ifa_addr);
             inet_ntop(iap->ifa_addr->sa_family, (void*)&(sa->sin_addr), buf, sizeof(buf));
-            if(sIpAddress == std::string(buf))
+            if(ipAddress.Get() == std::string(buf))
             {
-                nId =  GenerateClockIdentityFromInterface(iap->ifa_name);;
+                ipInterface = IpInterface(iap->ifa_name);
                 break;
             }
         }
     }
     freeifaddrs(addrs);
-    return nId;
-
+    return ipInterface;
 }
+
+IpAddress GetIpAddressOfInterface(const IpInterface& ipInterface)
+{
+
+    struct ifaddrs *addrs, *iap;
+
+    IpAddress ipAddress("");
+
+
+    getifaddrs(&addrs);
+    for(iap = addrs; iap != NULL; iap = iap->ifa_next)
+    {
+        if(iap->ifa_addr && (iap->ifa_flags & IFF_UP) && iap->ifa_addr->sa_family == AF_INET)
+        {
+            if(std::string(iap->ifa_name) == ipInterface.Get())
+            {
+                ipAddress = IpAddress(inet_ntoa( ((sockaddr_in*)iap->ifa_addr)->sin_addr));
+                break;
+            }
+        }
+    }
+    freeifaddrs(addrs);
+    return ipAddress;
+}
+
+unsigned long long int GenerateClockIdentity(const IpAddress& ipAddress)
+{
+    return GenerateClockIdentityFromInterface(GetInterfaceOfIpAddress(ipAddress));
+}
+
 #else
 #include "winsock2.h"
 #include "iphlpapi.h"
 #include "ws2tcpip.h"
 
-unsigned long long int GenerateClockIdentity(const std::string& sIpAddress)
+unsigned long long int GenerateClockIdentity(const IpAddress& sIpAddress)
 {
     ULONG outBufLen = sizeof(IP_ADAPTER_ADDRESSES);
     GetAdaptersAddresses(0, 0, NULL, NULL, &outBufLen);

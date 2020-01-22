@@ -134,6 +134,7 @@
 			<Option target="Linux Debug" />
 			<Option target="Linux Shared Lib Release" />
 		</Unit>
+		<Unit filename="include/namedtype.h" />
 		<Unit filename="include/parser.h">
 			<Option target="Windows Debug" />
 			<Option target="Windows Release" />
