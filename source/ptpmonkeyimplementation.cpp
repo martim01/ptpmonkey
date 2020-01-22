@@ -135,7 +135,8 @@ void PtpMonkeyImplementation::FollowUp(std::shared_ptr<ptpV2Header> pHeader, std
 
 void PtpMonkeyImplementation::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
 {
-    auto itClock = GetOrCreateClock(pHeader, pPayload);
+    GetOrCreateClock(pHeader, pPayload);
+
 }
 
 void PtpMonkeyImplementation::DelayResponse(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload)
