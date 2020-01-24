@@ -63,6 +63,9 @@ class PtpV2Clock : public PtpClock
         const std::string GetIpAddress() const
         {   return m_sIpAddress;    }
 
+        unsigned char GetInterval(ptpV2Header::enumType eType) const;
+        unsigned long long int GetCount(ptpV2Header::enumType eType) const;
+
     protected:
         unsigned char m_nDomain;
         unsigned short m_nFlags;    //?
@@ -77,7 +80,10 @@ class PtpV2Clock : public PtpClock
         unsigned char m_nTimeSource;
         bool m_bMaster;
         unsigned short m_nFollowUpSequence;
-//        unsigned short
+
+
+
+
 
         std::string m_sIpAddress;
         std::map<unsigned short, time_s_ns> m_mDelayRequest;
@@ -108,4 +114,12 @@ class PtpV2Clock : public PtpClock
         stats m_delay;
         stats m_offset;
         time_s_ns m_lastMessageTime;
+
+        std::map<unsigned char, unsigned char> m_mInterval;
+
+        struct counter
+        {
+            unsigned long long value = 0;
+        };
+        std::map<unsigned char, counter> m_mCount;
 };
