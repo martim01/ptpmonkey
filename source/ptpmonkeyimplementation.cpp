@@ -313,3 +313,14 @@ bool PtpMonkeyImplementation::IsStopped()
 {
     return m_context.stopped();
 }
+
+
+std::shared_ptr<const PtpV2Clock> PtpMonkeyImplementation::GetClock(const std::string& sClockId) const
+{
+    auto itClock = m_mClocks.find(sClockId);
+    if(itClock != m_mClocks.end())
+    {
+        return itClock->second;
+    }
+    return nullptr;
+}

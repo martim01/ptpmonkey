@@ -81,3 +81,8 @@ bool PtpMonkey::IsStopped()
 {
     return m_pImpl->IsStopped();
 }
+
+std::shared_ptr<const PtpV2Clock> PtpMonkey::GetClock(const std::string& sClockId) const
+{
+    return m_pImpl->GetClock(sClockId);
+}

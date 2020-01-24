@@ -93,6 +93,11 @@ class PtpMonkey
         **/
         std::shared_ptr<const PtpV2Clock> GetMasterClock() const;
 
+        /** @brief Gets a const pointer to the clock with the given id. May return nullptr if there is no clock.
+        *   @return <i>std::shared_ptr<const PtpV2Clock></i>
+        **/
+        std::shared_ptr<const PtpV2Clock> GetClock(const std::string& sClockId) const;
+
     protected:
         PtpMonkey(){}
         std::unique_ptr<PtpMonkeyImplementation, PtpMonkeyImplDeleter> m_pImpl;

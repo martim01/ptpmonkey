@@ -100,6 +100,8 @@ class PtpMonkeyImplementation
         void Restart();
         bool IsStopped();
 
+        std::shared_ptr<const PtpV2Clock> GetClock(const std::string& sClockId) const;
+
     protected:
         asio::io_context m_context;
 
