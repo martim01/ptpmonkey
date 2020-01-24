@@ -44,7 +44,7 @@ class PtpV2Clock : public PtpClock
         {   return m_nGrandmasterAccuracy;  }
         unsigned short GetVariance() const
         {   return m_nGrandmasterVariance;  }
-        unsigned char GetPriorty2() const
+        unsigned char GetPriority2() const
         {   return m_nGrandmasterPriority2; }
         const std::string& GetId() const
         {   return m_sClockId;  }

@@ -15,7 +15,7 @@ void PtpEventLogHandler::ClockAdded(std::shared_ptr<PtpV2Clock> pClock)
     std::cout << "Class:\t\t" << (int)pClock->GetClass()  << std::endl;
     std::cout << "Accuracy:\t" << std::hex << "0x" << (int)pClock->GetAccuracy()  << std::endl;
     std::cout << "Variance:\t" << std::dec << (int)pClock->GetVariance()  << std::endl;
-    std::cout << "Priority2:\t" << (int)pClock->GetPriorty2()  << std::endl;
+    std::cout << "Priority2:\t" << (int)pClock->GetPriority2()  << std::endl;
     std::cout << "Steps:\t\t" << (int)pClock->GetStepsRemoved()  << std::endl;
     std::cout << "Source:\t\t" << std::hex << "0x" << (int)pClock->GetTimeSource()  << std::endl;
     std::cout << "Flags:\t\t" << std::hex << "0x" << (int)pClock->GetFlags()  << std::endl;
@@ -34,7 +34,7 @@ void PtpEventLogHandler::ClockUpdated(std::shared_ptr<PtpV2Clock> pClock)
     std::cout << "Class:\t\t" << (int)pClock->GetClass()  << std::endl;
     std::cout << "Accuracy:\t" << std::hex << "0x" << (int)pClock->GetAccuracy()  << std::endl;
     std::cout << "Variance:\t" << std::dec << (int)pClock->GetVariance()  << std::endl;
-    std::cout << "Priority2:\t" << (int)pClock->GetPriorty2()  << std::endl;
+    std::cout << "Priority2:\t" << (int)pClock->GetPriority2()  << std::endl;
     std::cout << "Steps:\t\t" << (int)pClock->GetStepsRemoved()  << std::endl;
     std::cout << "Source:\t\t" << std::hex << "0x" << (int)pClock->GetTimeSource()  << std::endl;
     std::cout << "Flags:\t\t" << std::hex << "0x" << (int)pClock->GetFlags()  << std::endl;
