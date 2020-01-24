@@ -100,6 +100,7 @@ void PtpV2Clock::DelayResponse(std::shared_ptr<ptpV2Header> pHeader, std::shared
     m_lastMessageTime = pHeader->timestamp;
     m_mInterval[ptpV2Header::DELAY_RESP] = pHeader->nInterval;
     m_mCount[ptpV2Header::DELAY_RESP].value++;
+    std::cout << "delayresp: " << m_mCount[ptpV2Header::DELAY_RESP].value << std::endl;
 
     if(!m_bMaster || !m_bT1Valid)
         return;
@@ -150,17 +151,17 @@ void PtpV2Clock::DoStats(unsigned long long int nCurrent, stats& theStats)
 }
 
 
-time_s_ns PtpV2Clock::GetPtpTime(enumCalc eCalc)
+time_s_ns PtpV2Clock::GetPtpTime(enumCalc eCalc)  const
 {
     return (GetCurrentTaiTime()-m_offset.stat[eCalc]);
 }
 
-time_s_ns PtpV2Clock::GetOffset(enumCalc eCalc)
+time_s_ns PtpV2Clock::GetOffset(enumCalc eCalc) const
 {
     return m_offset.stat[eCalc];
 }
 
-time_s_ns PtpV2Clock::GetDelay(enumCalc eCalc)
+time_s_ns PtpV2Clock::GetDelay(enumCalc eCalc) const
 {
     return m_delay.stat[eCalc];
 }

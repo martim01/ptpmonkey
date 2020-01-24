@@ -23,10 +23,10 @@ class PtpV2Clock : public PtpClock
 
         enum enumCalc {MIN=0, MEAN=1, MAX=2, WEIGHTED=3, CURRENT=4};
 
-        time_s_ns GetPtpTime(enumCalc eCalc = MEAN);
+        time_s_ns GetPtpTime(enumCalc eCalc = MEAN) const;
 
-        time_s_ns GetOffset(enumCalc eCalc = MEAN);
-        time_s_ns GetDelay(enumCalc eCalc = MEAN);
+        time_s_ns GetOffset(enumCalc eCalc = MEAN) const;
+        time_s_ns GetDelay(enumCalc eCalc = MEAN) const;
 
         const std::string& GetClockId() const
         {   return m_sClockId;  }
