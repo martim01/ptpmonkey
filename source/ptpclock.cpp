@@ -23,6 +23,7 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
 {
     m_mInterval[ptpV2Header::ANNOUNCE] = pHeader->nInterval;
     m_mCount[ptpV2Header::ANNOUNCE].value++;
+
 }
 
 PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload) :
@@ -51,8 +52,7 @@ void PtpV2Clock::AddDelayRequest(unsigned short nSequence, const time_s_ns& time
 {
     m_mDelayRequest.insert(make_pair(nSequence, timestamp));
 
-    //m_mInterval[ptpV2Header::DELAY_REQ] = pHeader->nInterval;
-    m_mCount[ptpV2Header::DELAY_REQ].value++;
+
 }
 
 void PtpV2Clock::Sync(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
@@ -94,13 +94,19 @@ void PtpV2Clock::FollowUp(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<
 
 }
 
+void PtpV2Clock::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
+{
+    m_lastMessageTime = pHeader->timestamp;
+    m_mInterval[ptpV2Header::DELAY_REQ] = pHeader->nInterval;
+    m_mCount[ptpV2Header::DELAY_REQ].value++;
+}
 
 void PtpV2Clock::DelayResponse(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload)
 {
     m_lastMessageTime = pHeader->timestamp;
     m_mInterval[ptpV2Header::DELAY_RESP] = pHeader->nInterval;
     m_mCount[ptpV2Header::DELAY_RESP].value++;
-    std::cout << "delayresp: " << m_mCount[ptpV2Header::DELAY_RESP].value << std::endl;
+
 
     if(!m_bMaster || !m_bT1Valid)
         return;

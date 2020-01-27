@@ -146,7 +146,12 @@ void PtpMonkeyImplementation::FollowUp(std::shared_ptr<ptpV2Header> pHeader, std
 
 void PtpMonkeyImplementation::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
 {
-    GetOrCreateClock(pHeader, pPayload);
+    auto itClock = GetOrCreateClock(pHeader, pPayload);
+
+    if(itClock != m_mClocks.end())
+    {
+        itClock->second->DelayRequest(pHeader, pPayload);
+    }
 
 }
 
@@ -175,6 +180,12 @@ void PtpMonkeyImplementation::DelayResponse(std::shared_ptr<ptpV2Header> pHeader
             std::lock_guard<std::mutex> lg(m_mutex);
             m_pMaster = itClock->second;
         }
+    }
+
+    itClock = m_mClocks.find(pPayload->source.sSourceId);
+    if(itClock != m_mClocks.end())
+    {
+        itClock->second->DelayResponse(pHeader, pPayload);
     }
 }
 
