@@ -143,17 +143,15 @@ void PtpV2Clock::DoStats(unsigned long long int nCurrent, stats& theStats)
     }
     theStats.stat[MEAN] = theStats.total/theStats.lstValues.size();
 
-    for(auto value : theStats.lstValues)
+    if(theStats.stat[MIN] == std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0)) || theStats.stat[MIN] > theStats.stat[CURRENT])
     {
-        if(theStats.stat[MIN] == std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0)) || theStats.stat[MIN] > value)
-        {
-            theStats.stat[MIN] = value;
-        }
-        if(theStats.stat[MAX] < value)
-        {
-            theStats.stat[MAX] = value;
-        }
+        theStats.stat[MIN] = theStats.stat[CURRENT];
     }
+    if(theStats.stat[MAX] < theStats.stat[CURRENT])
+    {
+        theStats.stat[MAX] = theStats.stat[CURRENT];
+    }
+
 }
 
 
