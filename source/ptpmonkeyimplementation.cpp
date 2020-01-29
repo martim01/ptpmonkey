@@ -103,21 +103,27 @@ void PtpMonkeyImplementation::Sync(std::shared_ptr<ptpV2Header> pHeader, std::sh
     if(itClock != m_mClocks.end())
     {
         itClock->second->Sync(pHeader, pPayload);
+
         if(m_pMaster != itClock->second)
         {
-            for(auto pHandler : m_lstEventHandler)
-            {
-                pHandler->ClockBecomeMaster(itClock->second);
-                if(m_pMaster)
-                {
-                    pHandler->ClockBecomeSlave(m_pMaster);
-                }
-            }
-            std::lock_guard<std::mutex> lg(m_mutex);
-            m_pMaster = itClock->second;
+            ChangeMaster(itClock->second);
         }
     }
 
+}
+
+void PtpMonkeyImplementation::ChangeMaster(std::shared_ptr<PtpV2Clock> pNewMaster)
+{
+    for(auto pHandler : m_lstEventHandler)
+    {
+        pHandler->ClockBecomeMaster(pNewMaster);
+        if(m_pMaster)
+        {
+            pHandler->ClockBecomeSlave(m_pMaster);
+        }
+    }
+    std::lock_guard<std::mutex> lg(m_mutex);
+    m_pMaster = itClock->second;
 }
 
 void PtpMonkeyImplementation::FollowUp(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
@@ -129,16 +135,7 @@ void PtpMonkeyImplementation::FollowUp(std::shared_ptr<ptpV2Header> pHeader, std
         itClock->second->FollowUp(pHeader, pPayload);
         if(m_pMaster != itClock->second)
         {
-            for(auto pHandler : m_lstEventHandler)
-            {
-                pHandler->ClockBecomeMaster(itClock->second);
-                if(m_pMaster)
-                {
-                    pHandler->ClockBecomeSlave(m_pMaster);
-                }
-            }
-            std::lock_guard<std::mutex> lg(m_mutex);
-            m_pMaster = itClock->second;
+            ChangeMaster(itClock->second);
         }
     }
 
@@ -169,19 +166,11 @@ void PtpMonkeyImplementation::DelayResponse(std::shared_ptr<ptpV2Header> pHeader
 
         if(m_pMaster != itClock->second)
         {
-            for(auto pHandler : m_lstEventHandler)
-            {
-                pHandler->ClockBecomeMaster(itClock->second);
-                if(m_pMaster)
-                {
-                    pHandler->ClockBecomeSlave(m_pMaster);
-                }
-            }
-            std::lock_guard<std::mutex> lg(m_mutex);
-            m_pMaster = itClock->second;
+            ChangeMaster(itClock->second);
         }
     }
 
+    //upddate the details of the clock the delay response is for
     itClock = m_mClocks.find(pPayload->source.sSourceId);
     if(itClock != m_mClocks.end())
     {
@@ -204,7 +193,7 @@ void PtpMonkeyImplementation::Announce(std::shared_ptr<ptpV2Header> pHeader, std
     }
     else
     {
-        m_mClocks.insert(std::make_pair(pHeader->source.sSourceId, std::make_shared<PtpV2Clock>(pHeader, pPayload)));
+        itClock = m_mClocks.insert(std::make_pair(pHeader->source.sSourceId, std::make_shared<PtpV2Clock>(pHeader, pPayload))).first;
         for(auto pHandler : m_lstEventHandler)
         {
             pHandler->ClockAdded(itClock->second);

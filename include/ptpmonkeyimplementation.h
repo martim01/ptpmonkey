@@ -107,6 +107,7 @@ class PtpMonkeyImplementation
 
         std::map<std::string, std::shared_ptr<PtpV2Clock> >::iterator GetOrCreateClock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
 
+        void ChangeMaster(std::shared_ptr<PtpV2Clock> pNewMaster);
         void CheckForDeadClocks();
 
         IpAddress m_local;
