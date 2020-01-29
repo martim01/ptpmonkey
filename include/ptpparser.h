@@ -4,18 +4,22 @@
 #include <memory>
 #include "ptpstructs.h"
 
-class PtpParser : public Parser
+namespace ptpmonkey
 {
-    public:
-        PtpParser(std::shared_ptr<Handler> pHandler) : Parser(pHandler){};
-        void ParseMessage(const time_s_ns& socketTime,const std::string& sSenderIp, std::vector<unsigned char> vMessage) override;
+
+    class PtpParser : public Parser
+    {
+        public:
+            PtpParser(std::shared_ptr<Handler> pHandler) : Parser(pHandler){};
+            void ParseMessage(const time_s_ns& socketTime,const std::string& sSenderIp, std::vector<unsigned char> vMessage) override;
 
 
 
 
-    protected:
-        void ParseV1(const time_s_ns& socketTime,const std::string& sSenderIp, std::vector<unsigned char> vMessage);
-        void ParseV2(const time_s_ns& socketTime,const std::string& sSenderIp, std::vector<unsigned char> vMessage);
+        protected:
+            void ParseV1(const time_s_ns& socketTime,const std::string& sSenderIp, std::vector<unsigned char> vMessage);
+            void ParseV2(const time_s_ns& socketTime,const std::string& sSenderIp, std::vector<unsigned char> vMessage);
 
 
+    };
 };

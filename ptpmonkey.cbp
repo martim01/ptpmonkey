@@ -113,7 +113,13 @@
 			<Add option="-DASIO_STANDALONE" />
 			<Add directory="include" />
 		</Compiler>
-		<Unit filename="examples/main.cpp" />
+		<Unit filename="examples/main.cpp">
+			<Option target="Windows Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows tests" />
+			<Option target="Linux Debug" />
+			<Option target="Linux Release" />
+		</Unit>
 		<Unit filename="include/handler.h">
 			<Option target="Windows Debug" />
 			<Option target="Windows Release" />

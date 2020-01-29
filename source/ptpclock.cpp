@@ -1,6 +1,6 @@
 #include "ptpclock.h"
 #include <iostream>
-
+using namespace ptpmonkey;
 
 PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce) :
     m_nDomain(pHeader->nDomain),

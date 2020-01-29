@@ -4,24 +4,27 @@
 #include <list>
 #include "timeutils.h"
 
-class Handler;
-
-class Parser
+namespace ptpmonkey
 {
-    public:
-        Parser(std::shared_ptr<Handler> pHandler)
-        {
-            m_lstHandler.push_back(pHandler);
-        }
+    class Handler;
 
-        void AddHandler(std::shared_ptr<Handler> pHandler)
-        {
-            m_lstHandler.push_back(pHandler);
-        }
+    class Parser
+    {
+        public:
+            Parser(std::shared_ptr<Handler> pHandler)
+            {
+                m_lstHandler.push_back(pHandler);
+            }
 
-        virtual void ParseMessage(const time_s_ns& socketTime,const std::string& sSenderIp, std::vector<unsigned char> vMessage)=0;
+            void AddHandler(std::shared_ptr<Handler> pHandler)
+            {
+                m_lstHandler.push_back(pHandler);
+            }
 
-    protected:
+            virtual void ParseMessage(const time_s_ns& socketTime,const std::string& sSenderIp, std::vector<unsigned char> vMessage)=0;
 
-        std::list<std::shared_ptr<Handler>> m_lstHandler;
+        protected:
+
+            std::list<std::shared_ptr<Handler>> m_lstHandler;
+    };
 };

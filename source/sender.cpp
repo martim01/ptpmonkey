@@ -4,6 +4,7 @@
 #include "mac.h"
 #include "ptpmonkeyimplementation.h"
 #include <cmath>
+using namespace ptpmonkey;
 
 void Sender::do_send()
 {

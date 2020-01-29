@@ -3,6 +3,8 @@
 #include <iostream>
 #include "timeutils.h"
 #include "ptpparser.h"
+
+using namespace ptpmonkey;
 void PtpLogHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std::shared_ptr<payload> pPayload)
 {
     std::shared_ptr<ptpV2Header> pPtpH = std::dynamic_pointer_cast<ptpV2Header>(pHeader);

@@ -1,6 +1,9 @@
 #include "ptpmonkey.h"
+
 #include "ptpmonkeyimplementation.h"
 
+
+using namespace ptpmonkey;
 void PtpMonkeyImplDeleter::operator()(PtpMonkeyImplementation* p)
 {
     delete p;

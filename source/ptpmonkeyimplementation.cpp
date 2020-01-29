@@ -13,6 +13,7 @@
 #include "ptpeventloghandler.h"
 #include "mac.h"
 
+using namespace ptpmonkey;
 
 PtpMonkeyImplementation::PtpMonkeyImplementation(const IpAddress& ipAddress, unsigned char nDomain, Rate enumDelayRequest)  :
     m_local(ipAddress),

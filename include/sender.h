@@ -6,6 +6,9 @@
 #include "timeutils.h"
 #include <cmath>
 
+namespace ptpmonkey
+{
+
 constexpr int max_message_count = 10;
 
 class PtpMonkeyImplementation;
@@ -59,3 +62,4 @@ class Sender
         Rate m_delayRequest;
 };
 
+};

@@ -9,7 +9,8 @@
 #include <mutex>
 #include "namedtype.h"
 
-
+namespace ptpmonkey
+{
 
 class PtpV2Clock;
 class PtpEventHandler;
@@ -126,3 +127,4 @@ class PtpMonkeyImplementation
 };
 
 
+};

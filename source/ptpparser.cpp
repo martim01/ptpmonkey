@@ -5,6 +5,7 @@
 #include "ptpstructs.h"
 #include "handler.h"
 
+using namespace ptpmonkey;
 
 void PtpParser::ParseMessage(const time_s_ns& socketTime, const std::string& sSenderIp, std::vector<unsigned char> vMessage)
 {

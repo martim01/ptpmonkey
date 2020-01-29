@@ -3,6 +3,8 @@
 #include <iomanip>
 #include <iostream>
 
+using namespace ptpmonkey;
+
 ptpSource::ptpSource(const std::vector<unsigned char>& vMessage)
 {
 
