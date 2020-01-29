@@ -6,31 +6,31 @@
 #include "handler.h"
 
 
-void PtpParser::ParseMessage(const timeval& tvSocket, const std::string& sSenderIp, std::vector<unsigned char> vMessage)
+void PtpParser::ParseMessage(const time_s_ns& socketTime, const std::string& sSenderIp, std::vector<unsigned char> vMessage)
 {
 
     unsigned char nVersion = vMessage[1] & 0xF;
     switch(nVersion)
     {
     case 1:
-        ParseV1(tvSocket, sSenderIp, vMessage);
+        ParseV1(socketTime, sSenderIp, vMessage);
         break;
     case 2:
-        ParseV2(tvSocket, sSenderIp, vMessage);
+        ParseV2(socketTime, sSenderIp, vMessage);
     }
 }
 
-void PtpParser::ParseV1(const timeval& tvSocket, const std::string& sSenderIp, std::vector<unsigned char> vMessage)
+void PtpParser::ParseV1(const time_s_ns& socketTime, const std::string& sSenderIp, std::vector<unsigned char> vMessage)
 {
 
 }
 
 
 
-void PtpParser::ParseV2(const timeval& tvSocket, const std::string& sSenderIp, std::vector<unsigned char> vMessage)
+void PtpParser::ParseV2(const time_s_ns& socketTime, const std::string& sSenderIp, std::vector<unsigned char> vMessage)
 {
     //first byte is meesage type:
-    std::shared_ptr<ptpHeader> pHeader = std::make_shared<ptpV2Header>(tvSocket, vMessage);
+    std::shared_ptr<ptpHeader> pHeader = std::make_shared<ptpV2Header>(socketTime, vMessage);
     std::shared_ptr<ptpV2Payload> pPayload(nullptr);
 
     pHeader->sIpAddress = sSenderIp;

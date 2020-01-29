@@ -8,14 +8,14 @@ class PtpParser : public Parser
 {
     public:
         PtpParser(std::shared_ptr<Handler> pHandler) : Parser(pHandler){};
-        void ParseMessage(const timeval& tvSocket,const std::string& sSenderIp, std::vector<unsigned char> vMessage) override;
+        void ParseMessage(const time_s_ns& socketTime,const std::string& sSenderIp, std::vector<unsigned char> vMessage) override;
 
 
 
 
     protected:
-        void ParseV1(const timeval& tvSocket,const std::string& sSenderIp, std::vector<unsigned char> vMessage);
-        void ParseV2(const timeval& tvSocket,const std::string& sSenderIp, std::vector<unsigned char> vMessage);
+        void ParseV1(const time_s_ns& socketTime,const std::string& sSenderIp, std::vector<unsigned char> vMessage);
+        void ParseV2(const time_s_ns& socketTime,const std::string& sSenderIp, std::vector<unsigned char> vMessage);
 
 
 };

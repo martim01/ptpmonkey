@@ -31,7 +31,7 @@ struct payload
 **/
 struct ptpHeader : header
 {
-    ptpHeader(const timeval& tvSocket);
+    ptpHeader(const time_s_ns& socketTime);
     ptpHeader(){};
 
 
@@ -71,7 +71,7 @@ struct ptpSource
 struct ptpV2Header : public ptpHeader
 {
     ptpV2Header(){}
-    ptpV2Header(const timeval& tvSocket, const std::vector<unsigned char>& vMessage);
+    ptpV2Header(const time_s_ns& socketTime, const std::vector<unsigned char>& vMessage);
     void OutputValues() final;
 
     std::vector<unsigned char> CreateMessage();

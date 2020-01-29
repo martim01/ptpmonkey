@@ -48,13 +48,13 @@ void ptpSource::CreateMessage(std::vector<unsigned char>& vMessage, size_t nBegi
 }
 
 
-ptpHeader::ptpHeader(const timeval& tvSocket) :
-    timestamp(std::make_pair(std::chrono::seconds(tvSocket.tv_sec), std::chrono::nanoseconds(tvSocket.tv_usec*1000)))
+ptpHeader::ptpHeader(const time_s_ns& socketTime) :
+    timestamp(socketTime)
 {
 
 }
 
-ptpV2Header::ptpV2Header(const timeval& tvSocket, const std::vector<unsigned char>& vMessage) : ptpHeader(tvSocket),
+ptpV2Header::ptpV2Header(const time_s_ns& socketTime, const std::vector<unsigned char>& vMessage) : ptpHeader(socketTime),
     source(std::vector<unsigned char>(vMessage.begin()+20, vMessage.end()))
 {
     nVersion = 2;

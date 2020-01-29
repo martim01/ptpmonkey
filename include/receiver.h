@@ -41,16 +41,18 @@ private:
             if (!ec)
             {
 
-                timeval tv_ioctl;
+
+                time_s_ns now(TimeNow());
                 #ifdef __GNU__
+                timeval tv_ioctl;
                 int socket = m_socket.native_handle();
-                int error = ioctl(socket, SIOCGSTAMP, &tv_ioctl);
-                #elifdef _WIN32_WINNT
-                time_s_ns now = TimeNow();
-                tv_ioctl.tv_sec = now.first;
-                tv_ioctl.tv_usec = now.second/1000;
+                if(ioctl(socket, SIOCGSTAMP, &tv_ioctl) == 0)
+                {
+                    now.first = std::chrono::seconds(tv_ioctl.tv_sec);
+                    now.second = std::chrono::nanoseconds(tv_ioctl.tv_usec*1000);
+                }
                 #endif // __GNU__
-                m_pParser->ParseMessage(tv_ioctl, m_sender_endpoint.address().to_string(), std::vector<unsigned char>(m_data.begin(), m_data.begin()+length));
+                m_pParser->ParseMessage(now, m_sender_endpoint.address().to_string(), std::vector<unsigned char>(m_data.begin(), m_data.begin()+length));
                 do_receive();
             }
             else
