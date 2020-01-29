@@ -17,11 +17,17 @@ public:
         asio::ip::udp::endpoint listen_endpoint(listen_address, nPort);
         m_socket.open(listen_endpoint.protocol());
         m_socket.set_option(asio::ip::udp::socket::reuse_address(true));
+
         m_socket.bind(listen_endpoint);
 
         // Join the multicast group.
         m_socket.set_option(asio::ip::multicast::join_group(multicast_address));
 
+        #ifdef __GNU__
+        int socket = m_socket.native_handle();
+        int opt = 1;
+        setsockopt( socket, SOL_SOCKET, SO_TIMESTAMP, &opt, sizeof(opt));
+        #endif // __GNU__
         do_receive();
     }
 
@@ -34,7 +40,17 @@ private:
         {
             if (!ec)
             {
-                m_pParser->ParseMessage(m_sender_endpoint.address().to_string(), std::vector<unsigned char>(m_data.begin(), m_data.begin()+length));
+
+                timeval tv_ioctl;
+                #ifdef __GNU__
+                int socket = m_socket.native_handle();
+                int error = ioctl(socket, SIOCGSTAMP, &tv_ioctl);
+                #elifdef _WIN32_WINNT
+                time_s_ns now = TimeNow();
+                tv_ioctl.tv_sec = now.first;
+                tv_ioctl.tv_usec = now.second/1000;
+                #endif // __GNU__
+                m_pParser->ParseMessage(tv_ioctl, m_sender_endpoint.address().to_string(), std::vector<unsigned char>(m_data.begin(), m_data.begin()+length));
                 do_receive();
             }
             else

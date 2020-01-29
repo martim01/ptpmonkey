@@ -2,6 +2,10 @@
 #include <vector>
 #include <memory>
 #include <list>
+
+#ifdef _WIN32_WINNT
+#include "winsock2.h"
+#endif // _WIN32_WINNT
 class Handler;
 
 class Parser
@@ -17,7 +21,7 @@ class Parser
             m_lstHandler.push_back(pHandler);
         }
 
-        virtual void ParseMessage(const std::string& sSenderIp, std::vector<unsigned char> vMessage)=0;
+        virtual void ParseMessage(const timeval& tvSocket,const std::string& sSenderIp, std::vector<unsigned char> vMessage)=0;
 
     protected:
 

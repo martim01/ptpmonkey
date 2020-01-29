@@ -2,7 +2,10 @@
 #include <vector>
 #include <string>
 #include "timeutils.h"
-
+#ifdef __GNU__
+#else
+#include "winsock2.h"
+#endif // __GNU__
 
 /** @struct header
 *   @brief abstract base class for the header of any message
@@ -28,7 +31,9 @@ struct payload
 **/
 struct ptpHeader : header
 {
-    ptpHeader();
+    ptpHeader(const timeval& tvSocket);
+    ptpHeader(){};
+
 
     unsigned char nVersion; ///< The ptp version
     unsigned char nType;    ///< The type of message the payload contains
@@ -66,7 +71,7 @@ struct ptpSource
 struct ptpV2Header : public ptpHeader
 {
     ptpV2Header(){}
-    ptpV2Header(const std::vector<unsigned char>& vMessage);
+    ptpV2Header(const timeval& tvSocket, const std::vector<unsigned char>& vMessage);
     void OutputValues() final;
 
     std::vector<unsigned char> CreateMessage();

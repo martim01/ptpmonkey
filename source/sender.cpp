@@ -37,7 +37,7 @@ std::vector<unsigned char> Sender::CreateRequest()
 
     theHeader.nVersion = 2;
     theHeader.nType = 1;
-    theHeader.timestamp = GetCurrentTaiTime();
+    theHeader.timestamp = TimeNow();
 
     theHeader.nMessageLength = 44;
     theHeader.nDomain = 0;  //@todo need to set the domain
@@ -49,7 +49,7 @@ std::vector<unsigned char> Sender::CreateRequest()
     theHeader.nControl = 1;
     theHeader.nInterval = static_cast<unsigned char>(m_delayRequest);
 
-    thePayload.originTime = GetCurrentTaiTime();
+    thePayload.originTime = TimeNow();
 
     std::vector<unsigned char> vMessage(theHeader.CreateMessage());
     std::vector<unsigned char> vPayload(thePayload.CreateMessage());

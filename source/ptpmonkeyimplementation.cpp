@@ -123,7 +123,7 @@ void PtpMonkeyImplementation::ChangeMaster(std::shared_ptr<PtpV2Clock> pNewMaste
         }
     }
     std::lock_guard<std::mutex> lg(m_mutex);
-    m_pMaster = itClock->second;
+    m_pMaster = pNewMaster;
 }
 
 void PtpMonkeyImplementation::FollowUp(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
@@ -273,7 +273,7 @@ time_s_ns PtpMonkeyImplementation::GetPtpDelay() const
 void PtpMonkeyImplementation::CheckForDeadClocks()
 {
 
-    auto now = GetCurrentTaiTime();
+    auto now = TimeNow();
     for(auto itClock  = m_mClocks.begin(); itClock != m_mClocks.end();)
     {
         if((TimeToNano(now) - TimeToNano(itClock->second->GetLastMessageTime())) > 5*1e9)

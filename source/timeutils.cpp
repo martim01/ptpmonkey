@@ -4,10 +4,10 @@
 #include <iostream>
 #include <ctime>
 
-time_s_ns GetCurrentTaiTime()
+time_s_ns TimeNow()
 {
     std::chrono::time_point<std::chrono::high_resolution_clock> tp(std::chrono::high_resolution_clock::now());
-    tp += LEAP_SECONDS;
+   // tp += LEAP_SECONDS;
 
     std::chrono::seconds first = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch());
     std::chrono::nanoseconds second = std::chrono::nanoseconds(std::chrono::duration_cast<std::chrono::nanoseconds>(tp.time_since_epoch()).count()%1000000000);

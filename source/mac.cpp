@@ -6,7 +6,7 @@
 
 #include <sstream>
 #include <iomanip>
-
+#include "namedtype.h"
 
 #ifdef __GNU__
 #include <sys/socket.h>
@@ -17,7 +17,7 @@
 #include <cstring>
 #include <sys/ioctl.h>
 #include <ifaddrs.h>
-#include "namedtype.h"
+
 
 unsigned long long int GenerateClockIdentityFromInterface(const IpInterface& ipInterface)
 {
@@ -161,5 +161,15 @@ unsigned long long int GenerateClockIdentity(const IpAddress& sIpAddress)
         }
     }
     return 0;
+}
+
+IpAddress GetIpAddressOfInterface(const IpInterface& ipInterface)
+{
+
+}
+
+IpInterface GetInterfaceOfIpAddress(const IpAddress& sIpAddress)
+{
+
 }
 #endif

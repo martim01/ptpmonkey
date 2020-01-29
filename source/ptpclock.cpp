@@ -157,7 +157,7 @@ void PtpV2Clock::DoStats(unsigned long long int nCurrent, stats& theStats)
 
 time_s_ns PtpV2Clock::GetPtpTime(enumCalc eCalc)  const
 {
-    return (GetCurrentTaiTime()-m_offset.stat[eCalc]);
+    return (TimeNow()-m_offset.stat[eCalc]);
 }
 
 time_s_ns PtpV2Clock::GetOffset(enumCalc eCalc) const
