@@ -23,11 +23,11 @@ public:
         // Join the multicast group.
         m_socket.set_option(asio::ip::multicast::join_group(multicast_address));
 
-        #ifdef __GNU__
-        int socket = m_socket.native_handle();
-        int opt = 1;
-        setsockopt( socket, SOL_SOCKET, SO_TIMESTAMP, &opt, sizeof(opt));
-        #endif // __GNU__
+        //#ifdef __GNU__
+        //int socket = m_socket.native_handle();
+        //int opt = SOF_TIMESTAMPING_RX_SOFTWARE | SOF_TIMESTAMPING_RX_HARDWARE;
+        //setsockopt( socket, SOL_SOCKET, SO_TIMESTAMPNS, &opt, sizeof(opt));
+        //#endif // __GNU__
         do_receive();
     }
 
