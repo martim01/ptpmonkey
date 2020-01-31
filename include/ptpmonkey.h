@@ -101,6 +101,16 @@ namespace ptpmonkey
             **/
             std::shared_ptr<const PtpV2Clock> GetClock(const std::string& sClockId) const;
 
+            /** @brief Gets the clock id of the local clock.
+            *   @return <i>string<i>
+            **/
+            std::string GetLocalClockId() const;
+
+            /** @brief Gets a const pointer to the local clock. May return nullptr if there is no current local clock.
+            *   @return <i>std::shared_ptr<const PtpV2Clock></i>
+            **/
+            std::shared_ptr<const PtpV2Clock> GetLocalClock() const;
+
         protected:
             PtpMonkey(){}
             std::unique_ptr<PtpMonkeyImplementation, PtpMonkeyImplDeleter> m_pImpl;

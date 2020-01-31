@@ -48,7 +48,7 @@ std::vector<unsigned char> Sender::CreateRequest()
     theHeader.source.nSourcePort = 1;
     theHeader.nSequenceId = m_nSequence;
     theHeader.nControl = 1;
-    theHeader.nInterval = static_cast<unsigned char>(m_delayRequest);
+    theHeader.nInterval = static_cast<unsigned char>(m_manager.GetDelayRate());
 
     thePayload.originTime = TimeNow();
 
@@ -62,4 +62,18 @@ std::vector<unsigned char> Sender::CreateRequest()
 
     m_nSequence++;
     return vMessage;
+}
+
+
+void Sender::do_timeout()
+{
+    m_timer.expires_after(std::chrono::milliseconds(static_cast<unsigned long>(1000.0*std::pow(2, static_cast<float>(m_manager.GetDelayRate())))));
+    m_timer.async_wait(
+    [this](std::error_code ec)
+    {
+        if (!ec)
+        {
+            do_send();
+        }
+    });
 }

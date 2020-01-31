@@ -17,13 +17,12 @@ class Sender
     public:
 
         Sender(PtpMonkeyImplementation& manager, asio::io_context& io_context, const IpAddress& outboundIpAddress, const asio::ip::address& multicast_address,
-        unsigned short nPort, Rate delayRequest) : m_manager(manager),
+        unsigned short nPort) : m_manager(manager),
           m_outboundIpAddress(outboundIpAddress),
           m_endpoint(multicast_address, nPort),
           m_socket(io_context, m_endpoint.protocol()),
           m_timer(io_context),
-          m_nSequence(0),
-          m_delayRequest(delayRequest)
+          m_nSequence(0)
         {
 
         }
@@ -38,18 +37,7 @@ class Sender
     private:
         void do_send();
 
-        void do_timeout()
-        {
-            m_timer.expires_after(std::chrono::milliseconds(static_cast<unsigned long>(1000.0*std::pow(2, static_cast<float>(m_delayRequest)))));
-            m_timer.async_wait(
-            [this](std::error_code ec)
-            {
-                if (!ec)
-                {
-                    do_send();
-                }
-            });
-        }
+        void do_timeout();
 
 
         PtpMonkeyImplementation& m_manager;
@@ -59,7 +47,6 @@ class Sender
         asio::steady_timer m_timer;
 
         unsigned short m_nSequence;
-        Rate m_delayRequest;
 };
 
 };

@@ -58,6 +58,18 @@ std::string PtpMonkey::GetMasterClockId() const
     return m_pImpl->GetMasterClockId();
 }
 
+std::shared_ptr<const PtpV2Clock> PtpMonkey::GetLocalClock() const
+{
+    return m_pImpl->GetLocalClock();
+}
+
+std::string PtpMonkey::GetLocalClockId() const
+{
+    return m_pImpl->GetLocalClockId();
+}
+
+
+
 
 time_s_ns PtpMonkey::GetPtpOffset() const
 {
@@ -89,3 +101,4 @@ std::shared_ptr<const PtpV2Clock> PtpMonkey::GetClock(const std::string& sClockI
 {
     return m_pImpl->GetClock(sClockId);
 }
+

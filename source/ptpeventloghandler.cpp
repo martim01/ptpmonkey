@@ -65,6 +65,9 @@ void PtpEventLogHandler::ClockRemoved(std::shared_ptr<PtpV2Clock> pClock)
 
 void PtpEventLogHandler::ClockTimeCalculated(std::shared_ptr<PtpV2Clock> pClock)
 {
-    std::cout << TimeToString(pClock->GetOffset(PtpV2Clock::CURRENT)) << "\t" << TimeToString(pClock->GetOffset(PtpV2Clock::MIN))
-              << "\t" << TimeToString(pClock->GetOffset(PtpV2Clock::MEAN)) << "\t" << TimeToString(pClock->GetOffset(PtpV2Clock::MAX))  << std::endl;
+    std::cout << TimeToIsoString(pClock->GetPtpTime()) << std::endl;
+    std::cout << "Requests: " << pClock->GetCount(ptpV2Header::DELAY_REQ) << " interval: " << std::hex << (int)pClock->GetInterval(ptpV2Header::DELAY_REQ) << std::dec << std::endl;
+    std::cout << "Responses: " << pClock->GetCount(ptpV2Header::DELAY_RESP) << " interval: " << std::hex << (int)pClock->GetInterval(ptpV2Header::DELAY_RESP) << std::dec << std::endl;
+    std::cout << "Offset:" << TimeToString((pClock->GetOffset(PtpV2Clock::MAX)-pClock->GetOffset(PtpV2Clock::MIN))) << std::endl;
+
 }

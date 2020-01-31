@@ -55,6 +55,8 @@ class PtpMonkeyImplementation
         std::string GetMasterClockId() const;
 
 
+
+
         /** @brief Gets a const_iterator to the beginning of the map of clocks that exist in this domain
         *   @return <i>std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator</i>
         **/
@@ -69,6 +71,16 @@ class PtpMonkeyImplementation
         *   @return <i>std::shared_ptr<const PtpV2Clock></i>
         **/
         std::shared_ptr<const PtpV2Clock> GetMasterClock() const;
+
+        /** @brief Gets the clock id of the local clock.
+        *   @return <i>string<i>
+        **/
+        std::string GetLocalClockId() const;
+
+        /** @brief Gets a const pointer to the local clock. May return nullptr if there is no current local clock.
+        *   @return <i>std::shared_ptr<const PtpV2Clock></i>
+        **/
+        std::shared_ptr<const PtpV2Clock> GetLocalClock() const;
 
 
         /** @brief Called by PtpMonkeyHandler when a sync message is received.
@@ -103,6 +115,9 @@ class PtpMonkeyImplementation
 
         std::shared_ptr<const PtpV2Clock> GetClock(const std::string& sClockId) const;
 
+        Rate GetDelayRate() const
+        {   return m_delayRequest;  }
+
     protected:
         asio::io_context m_context;
 
@@ -122,6 +137,9 @@ class PtpMonkeyImplementation
         std::list<std::shared_ptr<PtpEventHandler>> m_lstEventHandler;
 
         bool m_bRunning;
+
+        unsigned long long int m_nLocalClockId;
+        std::shared_ptr<PtpV2Clock> m_pLocal;
         mutable std::mutex m_mutex;
 
 };
