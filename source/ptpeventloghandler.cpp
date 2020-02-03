@@ -18,7 +18,7 @@ void PtpEventLogHandler::ClockAdded(std::shared_ptr<PtpV2Clock> pClock)
     std::cout << "Priority2:\t" << (int)pClock->GetPriority2()  << std::endl;
     std::cout << "Steps:\t\t" << (int)pClock->GetStepsRemoved()  << std::endl;
     std::cout << "Source:\t\t" << std::hex << "0x" << (int)pClock->GetTimeSource()  << std::endl;
-    std::cout << "Flags:\t\t" << std::hex << "0x" << (int)pClock->GetFlags()  << std::endl;
+    std::cout << "Flags:\t\t" << std::hex << "0x" << (int)pClock->GetFlags(ptpV2Header::ANNOUNCE)  << std::endl;
     std::cout << (pClock->IsMaster() ? "Master" : "Slave") << std::endl;
     std::cout << "---------------------------" << std::endl;
 }
@@ -37,7 +37,7 @@ void PtpEventLogHandler::ClockUpdated(std::shared_ptr<PtpV2Clock> pClock)
     std::cout << "Priority2:\t" << (int)pClock->GetPriority2()  << std::endl;
     std::cout << "Steps:\t\t" << (int)pClock->GetStepsRemoved()  << std::endl;
     std::cout << "Source:\t\t" << std::hex << "0x" << (int)pClock->GetTimeSource()  << std::endl;
-    std::cout << "Flags:\t\t" << std::hex << "0x" << (int)pClock->GetFlags()  << std::endl;
+    std::cout << "Flags:\t\t" << std::hex << "0x" << (int)pClock->GetFlags(ptpV2Header::ANNOUNCE)  << std::endl;
     std::cout << (pClock->IsMaster() ? "Master" : "Slave") << std::endl;
     std::cout << "---------------------------" << std::endl;
 }

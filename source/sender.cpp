@@ -24,11 +24,11 @@ Sender::Sender(PtpMonkeyImplementation& manager, asio::io_context& io_context, c
 
 void Sender::Run()
 {
-
+    #ifdef __GNU__
     int socket = m_socket.native_handle();
     int opt = 1;
     int nError = setsockopt(socket, SOL_SOCKET, SO_TIMESTAMPING, (void*)&opt, sizeof(opt));
-
+    #endif // __GNU__
 
     asio::ip::multicast::outbound_interface option(asio::ip::address_v4::from_string(m_outboundIpAddress.Get()));
     m_socket.set_option(option);

@@ -4,7 +4,6 @@ using namespace ptpmonkey;
 
 PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce) :
     m_nDomain(pHeader->nDomain),
-    m_mFlags[ptpV2Header::ANNOUNCE](pHeader->nFlags),
     m_nUtcOffset(pAnnounce->nUtcOffset),
     m_nGrandmasterPriority1(pAnnounce->nGrandmasterPriority1),
     m_nGrandmasterClass(pAnnounce->nGrandmasterClass),
@@ -21,6 +20,7 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
     m_bT1Valid(false),
     m_lastMessageTime(pHeader->timestamp)
 {
+    m_mFlags[ptpV2Header::ANNOUNCE] = pHeader->nFlags;
     m_mInterval[ptpV2Header::ANNOUNCE] = pHeader->nInterval;
     m_mCount[ptpV2Header::ANNOUNCE].value++;
 
@@ -28,7 +28,6 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
 
 PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload) :
     m_nDomain(pHeader->nDomain),
-    m_mFlags[pHeader->nType](pHeader->nFlags),
     m_nUtcOffset(0),
     m_nGrandmasterPriority1(0),
     m_nGrandmasterClass(0),
@@ -45,7 +44,7 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
     m_bT1Valid(false),
     m_lastMessageTime(pHeader->timestamp)
 {
-
+    m_mFlags[pHeader->nType] = pHeader->nFlags;
 }
 
 void PtpV2Clock::AddDelayRequest(unsigned short nSequence, const time_s_ns& timestamp)
@@ -287,6 +286,17 @@ unsigned long long int PtpV2Clock::GetCount(ptpV2Header::enumType eType) const
     if(itCount != m_mCount.end())
     {
         return itCount->second.value;
+    }
+    return 0;
+}
+
+
+unsigned short PtpV2Clock::GetFlags(ptpV2Header::enumType eType) const
+{
+    auto itReturn = m_mFlags.find(eType);
+    if(itReturn != m_mFlags.end())
+    {
+        return itReturn->second;
     }
     return 0;
 }
