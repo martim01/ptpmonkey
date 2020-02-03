@@ -61,8 +61,8 @@ namespace ptpmonkey
             {   return m_nTimeSource;   }
             bool IsMaster() const
             {   return m_bMaster;   }
-            unsigned short GetFlags() const
-            {   return m_nFlags; }
+            unsigned short GetFlags(ptpV2Header::enumType eType) const;
+
             time_s_ns GetLastMessageTime() const
             {
                 return m_lastMessageTime;
@@ -75,7 +75,6 @@ namespace ptpmonkey
 
         protected:
             unsigned char m_nDomain;
-            unsigned short m_nFlags;    //?
             unsigned short m_nUtcOffset;
             unsigned char m_nGrandmasterPriority1;
             unsigned char m_nGrandmasterClass;
@@ -129,5 +128,6 @@ namespace ptpmonkey
                 unsigned long long value = 0;
             };
             std::map<unsigned char, counter> m_mCount;
+            std::map<unsigned char, unsigned short> m_mFlags;
     };
 };
