@@ -4,7 +4,7 @@ using namespace ptpmonkey;
 
 PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce) :
     m_nDomain(pHeader->nDomain),
-    m_nFlags(pHeader->nFlags),
+    m_mFlags[ptpV2Header::ANNOUNCE](pHeader->nFlags),
     m_nUtcOffset(pAnnounce->nUtcOffset),
     m_nGrandmasterPriority1(pAnnounce->nGrandmasterPriority1),
     m_nGrandmasterClass(pAnnounce->nGrandmasterClass),
@@ -28,7 +28,7 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
 
 PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload) :
     m_nDomain(pHeader->nDomain),
-    m_nFlags(pHeader->nFlags),
+    m_mFlags[pHeader->nType](pHeader->nFlags),
     m_nUtcOffset(0),
     m_nGrandmasterPriority1(0),
     m_nGrandmasterClass(0),
@@ -62,6 +62,7 @@ void PtpV2Clock::SyncFrom(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<
     m_mInterval[ptpV2Header::SYNC] = pHeader->nInterval;
     m_mCount[ptpV2Header::SYNC].value++;
 
+    m_mFlags[pHeader->nType] = pHeader->nFlags;
     m_bMaster = true;
 
 }
@@ -90,6 +91,7 @@ void PtpV2Clock::FollowUpFrom(std::shared_ptr<ptpV2Header> pHeader, std::shared_
     m_lastMessageTime = pHeader->timestamp;
     m_mInterval[ptpV2Header::FOLLOW_UP] = pHeader->nInterval;
     m_mCount[ptpV2Header::FOLLOW_UP].value++;
+    m_mFlags[pHeader->nType] = pHeader->nFlags;
 
     m_bMaster = true;
 
@@ -112,6 +114,7 @@ void PtpV2Clock::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_
     m_lastMessageTime = pHeader->timestamp;
     m_mInterval[ptpV2Header::DELAY_REQ] = pHeader->nInterval;
     m_mCount[ptpV2Header::DELAY_REQ].value++;
+    m_mFlags[pHeader->nType] = pHeader->nFlags;
 }
 
 void PtpV2Clock::DelayResponseFrom(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload)
@@ -119,7 +122,7 @@ void PtpV2Clock::DelayResponseFrom(std::shared_ptr<ptpV2Header> pHeader, std::sh
     m_lastMessageTime = pHeader->timestamp;
     m_mInterval[ptpV2Header::DELAY_RESP] = pHeader->nInterval;
     m_mCount[ptpV2Header::DELAY_RESP].value++;
-
+    m_mFlags[pHeader->nType] = pHeader->nFlags;
     m_bMaster = true;
 
 }
@@ -128,7 +131,7 @@ void PtpV2Clock::DelayResponseTo(std::shared_ptr<ptpV2Header> pHeader, std::shar
 {
     m_mInterval[ptpV2Header::DELAY_RESP] = pHeader->nInterval;
     m_mCount[ptpV2Header::DELAY_RESP].value++;
-
+    m_mFlags[pHeader->nType] = pHeader->nFlags;
 
 
     if(!m_bT1Valid || m_mCount[ptpV2Header::DELAY_RESP].value < 5)
@@ -205,9 +208,10 @@ bool PtpV2Clock::UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::share
         m_nDomain = pHeader->nDomain;
         bChanged = true;
     }
-    if(m_nFlags != pHeader->nFlags)
+
+    if(m_mFlags[ptpV2Header::ANNOUNCE] != pHeader->nFlags)
     {
-        m_nFlags = pHeader->nFlags;
+        m_mFlags[ptpV2Header::ANNOUNCE] = pHeader->nFlags;
         bChanged = true;
     }
 
