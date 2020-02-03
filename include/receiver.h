@@ -43,12 +43,12 @@ namespace ptpmonkey
                     time_s_ns now(TimeNow());
 
                     #ifdef __GNU__
-                    timeval tv_ioctl;
+                    timespec ts_ioctl;
                     int socket = m_socket.native_handle();
-                    if(ioctl(socket, SIOCGSTAMP, &tv_ioctl) == 0)
+                    if(ioctl(socket, SIOCGSTAMPNS, &ts_ioctl) == 0)
                     {
-                        now.first = std::chrono::seconds(tv_ioctl.tv_sec);
-                        now.second = std::chrono::nanoseconds(tv_ioctl.tv_usec*1000);
+                        now.first = std::chrono::seconds(ts_ioctl.tv_sec);
+                        now.second = std::chrono::nanoseconds(ts_ioctl.tv_nsec);
                     }
                     #endif // __GNU__
                     m_pParser->ParseMessage(now, m_sender_endpoint.address().to_string(), std::vector<unsigned char>(m_data.begin(), m_data.begin()+length));

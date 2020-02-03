@@ -8,12 +8,22 @@ namespace ptpmonkey
     **/
     class PtpEventLogHandler : public PtpEventHandler
     {
+
         public:
+            PtpEventLogHandler(bool bVerbose = false) : m_bVerbose(bVerbose){}
             void ClockAdded(std::shared_ptr<PtpV2Clock> pClock) override;
             void ClockUpdated(std::shared_ptr<PtpV2Clock> pClock) override;
             void ClockRemoved(std::shared_ptr<PtpV2Clock> pClock) override;
             void ClockTimeCalculated(std::shared_ptr<PtpV2Clock> pClock) override;
             void ClockBecomeMaster(std::shared_ptr<PtpV2Clock> pClock) override;
             void ClockBecomeSlave(std::shared_ptr<PtpV2Clock> pClock) override;
+
+            void AnnounceSent(std::shared_ptr<PtpV2Clock> pClock) override;
+            void SyncSent(std::shared_ptr<PtpV2Clock> pClock) override;
+            void FollowUpSent(std::shared_ptr<PtpV2Clock> pClock) override;
+            void DelayRequestSent(std::shared_ptr<PtpV2Clock> pClock) override;
+            void DelayResponseSent(std::shared_ptr<PtpV2Clock> pClock) override;
+        private:
+            bool m_bVerbose;
     };
 }

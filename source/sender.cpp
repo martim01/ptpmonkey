@@ -4,7 +4,37 @@
 #include "mac.h"
 #include "ptpmonkeyimplementation.h"
 #include <cmath>
+
+#ifdef __GNU__
+#include <linux/socket.h>
+#endif // __GNU__
+
 using namespace ptpmonkey;
+
+Sender::Sender(PtpMonkeyImplementation& manager, asio::io_context& io_context, const IpAddress& outboundIpAddress, const asio::ip::address& multicast_address,
+        unsigned short nPort) : m_manager(manager),
+          m_outboundIpAddress(outboundIpAddress),
+          m_endpoint(multicast_address, nPort),
+          m_socket(io_context, m_endpoint.protocol()),
+          m_timer(io_context),
+          m_nSequence(0)
+{
+
+}
+
+void Sender::Run()
+{
+
+    int socket = m_socket.native_handle();
+    int opt = 1;
+    int nError = setsockopt(socket, SOL_SOCKET, SO_TIMESTAMPING, (void*)&opt, sizeof(opt));
+
+
+    asio::ip::multicast::outbound_interface option(asio::ip::address_v4::from_string(m_outboundIpAddress.Get()));
+    m_socket.set_option(option);
+
+    do_send();
+}
 
 void Sender::do_send()
 {

@@ -121,11 +121,17 @@ void PtpMonkeyImplementation::Sync(std::shared_ptr<ptpV2Header> pHeader, std::sh
     if(itClock != m_mClocks.end())
     {
         itClock->second->SyncFrom(pHeader, pPayload);
+        for(auto pHandler : m_lstEventHandler)
+        {
+            pHandler->SyncSent(itClock->second);
+        }
 
         if(m_pMaster != itClock->second)
         {
             ChangeMaster(itClock->second);
         }
+
+
     }
 
     //send the sync to our local clock
@@ -156,6 +162,11 @@ void PtpMonkeyImplementation::FollowUp(std::shared_ptr<ptpV2Header> pHeader, std
     if(itClock != m_mClocks.end())
     {
         itClock->second->FollowUpFrom(pHeader, pPayload);
+        for(auto pHandler : m_lstEventHandler)
+        {
+            pHandler->FollowUpSent(itClock->second);
+        }
+
         if(m_pMaster != itClock->second)
         {
             ChangeMaster(itClock->second);
@@ -175,6 +186,10 @@ void PtpMonkeyImplementation::DelayRequest(std::shared_ptr<ptpV2Header> pHeader,
     if(itClock != m_mClocks.end())
     {
         itClock->second->DelayRequest(pHeader, pPayload);
+        for(auto pHandler : m_lstEventHandler)
+        {
+            pHandler->DelayRequestSent(itClock->second);
+        }
     }
 
 }
@@ -186,7 +201,10 @@ void PtpMonkeyImplementation::DelayResponse(std::shared_ptr<ptpV2Header> pHeader
     if(itClock != m_mClocks.end())
     {
         itClock->second->DelayResponseFrom(pHeader, pPayload);
-
+        for(auto pHandler : m_lstEventHandler)
+        {
+            pHandler->DelayResponseSent(itClock->second);
+        }
         if(m_pMaster != itClock->second)
         {
             ChangeMaster(itClock->second);
@@ -216,6 +234,11 @@ void PtpMonkeyImplementation::Announce(std::shared_ptr<ptpV2Header> pHeader, std
     auto itClock = m_mClocks.find(pHeader->source.sSourceId);
     if(itClock != m_mClocks.end())
     {
+        for(auto pHandler : m_lstEventHandler)
+        {
+            pHandler->AnnounceSent(itClock->second);
+        }
+
         if(itClock->second->UpdateAnnounce(pHeader, pPayload))
         {
             for(auto pHandler : m_lstEventHandler)
@@ -230,6 +253,7 @@ void PtpMonkeyImplementation::Announce(std::shared_ptr<ptpV2Header> pHeader, std
         for(auto pHandler : m_lstEventHandler)
         {
             pHandler->ClockAdded(itClock->second);
+            pHandler->AnnounceSent(itClock->second);
         }
     }
 }

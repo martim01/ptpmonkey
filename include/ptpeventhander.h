@@ -40,5 +40,13 @@ namespace ptpmonkey
             *   @param pClock a shared_ptr to the clock that was GrandMaster and no longer is
             **/
             virtual void ClockBecomeSlave(std::shared_ptr<PtpV2Clock> pClock)=0;
+
+
+            virtual void AnnounceSent(std::shared_ptr<PtpV2Clock> pClock)=0;
+            virtual void SyncSent(std::shared_ptr<PtpV2Clock> pClock)=0;
+            virtual void FollowUpSent(std::shared_ptr<PtpV2Clock> pClock)=0;
+            virtual void DelayRequestSent(std::shared_ptr<PtpV2Clock> pClock)=0;
+            virtual void DelayResponseSent(std::shared_ptr<PtpV2Clock> pClock)=0;
+
     };
 }

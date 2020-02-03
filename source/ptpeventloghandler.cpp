@@ -68,6 +68,47 @@ void PtpEventLogHandler::ClockTimeCalculated(std::shared_ptr<PtpV2Clock> pClock)
     std::cout << TimeToIsoString(pClock->GetPtpTime()) << std::endl;
     std::cout << "Requests: " << pClock->GetCount(ptpV2Header::DELAY_REQ) << " interval: " << std::hex << (int)pClock->GetInterval(ptpV2Header::DELAY_REQ) << std::dec << std::endl;
     std::cout << "Responses: " << pClock->GetCount(ptpV2Header::DELAY_RESP) << " interval: " << std::hex << (int)pClock->GetInterval(ptpV2Header::DELAY_RESP) << std::dec << std::endl;
-    std::cout << "Offset:" << TimeToString((pClock->GetOffset(PtpV2Clock::MAX)-pClock->GetOffset(PtpV2Clock::MIN))) << std::endl;
+    std::cout << "Offset:" << TimeToString(pClock->GetOffset(PtpV2Clock::MEAN)) << std::endl;
+    std::cout << "OffsetRange :" << TimeToString((pClock->GetOffset(PtpV2Clock::MAX)-pClock->GetOffset(PtpV2Clock::MIN))) << std::endl;
 
+}
+
+void PtpEventLogHandler::AnnounceSent(std::shared_ptr<PtpV2Clock> pClock)
+{
+    if(m_bVerbose)
+    {
+        std::cout << "Announce :\t\t" << pClock->GetId()  << std::endl;
+    }
+}
+
+void PtpEventLogHandler::SyncSent(std::shared_ptr<PtpV2Clock> pClock)
+{
+    if(m_bVerbose)
+    {
+        std::cout << "Sync :\t\t" << pClock->GetId()  << std::endl;
+    }
+}
+
+void PtpEventLogHandler::FollowUpSent(std::shared_ptr<PtpV2Clock> pClock)
+{
+    if(m_bVerbose)
+    {
+        std::cout << "FollowUp :\t\t" << pClock->GetId()  << std::endl;
+    }
+}
+
+void PtpEventLogHandler::DelayRequestSent(std::shared_ptr<PtpV2Clock> pClock)
+{
+    if(m_bVerbose)
+    {
+        std::cout << "DelayRequest :\t\t" << pClock->GetId()  << std::endl;
+    }
+}
+
+void PtpEventLogHandler::DelayResponseSent(std::shared_ptr<PtpV2Clock> pClock)
+{
+    if(m_bVerbose)
+    {
+        std::cout << "DelayResponse :\t\t" << pClock->GetId()  << std::endl;
+    }
 }
