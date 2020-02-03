@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 {
 
     ptpmonkey::PtpMonkey ptp(IpInterface("eth0"), 0, ptpmonkey::Rate::PER_SEC_2);
-    ptp.AddEventHandler(std::make_shared<ptpmonkey::PtpEventLogHandler>());
+    ptp.AddEventHandler(std::make_shared<ptpmonkey::PtpEventLogHandler>(false));
     ptp.Run();
     do
     {

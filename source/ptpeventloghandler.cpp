@@ -65,19 +65,22 @@ void PtpEventLogHandler::ClockRemoved(std::shared_ptr<PtpV2Clock> pClock)
 
 void PtpEventLogHandler::ClockTimeCalculated(std::shared_ptr<PtpV2Clock> pClock)
 {
+    std::cout << "Time Calculated :\t\t" << pClock->GetId() << std::endl;
     std::cout << TimeToIsoString(pClock->GetPtpTime()) << std::endl;
     std::cout << "Requests: " << pClock->GetCount(ptpV2Header::DELAY_REQ) << " interval: " << std::hex << (int)pClock->GetInterval(ptpV2Header::DELAY_REQ) << std::dec << std::endl;
     std::cout << "Responses: " << pClock->GetCount(ptpV2Header::DELAY_RESP) << " interval: " << std::hex << (int)pClock->GetInterval(ptpV2Header::DELAY_RESP) << std::dec << std::endl;
+    std::cout << "Delay:" << TimeToString(pClock->GetDelay(PtpV2Clock::MEAN)) << std::endl;
+    std::cout << "DelayRange :" << TimeToString(pClock->GetDelay(PtpV2Clock::MIN)) << "-" << TimeToString(pClock->GetDelay(PtpV2Clock::MAX)) << "=" << TimeToString((pClock->GetDelay(PtpV2Clock::MAX)-pClock->GetDelay(PtpV2Clock::MIN))) << std::endl;
     std::cout << "Offset:" << TimeToString(pClock->GetOffset(PtpV2Clock::MEAN)) << std::endl;
-    std::cout << "OffsetRange :" << TimeToString((pClock->GetOffset(PtpV2Clock::MAX)-pClock->GetOffset(PtpV2Clock::MIN))) << std::endl;
-
+    std::cout << "OffsetRange :" << TimeToString(pClock->GetOffset(PtpV2Clock::MIN)) << "-" << TimeToString(pClock->GetOffset(PtpV2Clock::MAX)) << "=" << TimeToString((pClock->GetOffset(PtpV2Clock::MAX)-pClock->GetOffset(PtpV2Clock::MIN))) << std::endl;
+    std::cout << "---------------------------" << std::endl;
 }
 
 void PtpEventLogHandler::AnnounceSent(std::shared_ptr<PtpV2Clock> pClock)
 {
     if(m_bVerbose)
     {
-        std::cout << "Announce :\t\t" << pClock->GetId()  << std::endl;
+        std::cout << "Announce :\t\t" << pClock->GetId() << std::endl;
     }
 }
 

@@ -10,7 +10,7 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
     m_nGrandmasterAccuracy(pAnnounce->nGrandmasterAccuracy),
     m_nGrandmasterVariance(pAnnounce->nGrandmasterVariance),
     m_nGrandmasterPriority2(pAnnounce->nGrandmasterPriority2),
-    m_sClockId(pAnnounce->sClockId),
+    m_sClockId(pHeader->source.sSourceId),
     m_nStepsRemoved(pAnnounce->nStepsRemoved),
     m_nTimeSource(pAnnounce->nTimeSource),
     m_bMaster(false),
@@ -105,6 +105,7 @@ void PtpV2Clock::FollowUpTo(std::shared_ptr<ptpV2Header> pHeader, std::shared_pt
     //check the follow up sequence is correct
     m_bT1Valid = (pHeader->nSequenceId == m_nFollowUpSequence);
 
+
 }
 
 
@@ -114,6 +115,8 @@ void PtpV2Clock::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_
     m_mInterval[ptpV2Header::DELAY_REQ] = pHeader->nInterval;
     m_mCount[ptpV2Header::DELAY_REQ].value++;
     m_mFlags[pHeader->nType] = pHeader->nFlags;
+
+     m_mDelayRequest.insert(make_pair(pHeader->nSequenceId, pHeader->timestamp));
 }
 
 void PtpV2Clock::DelayResponseFrom(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload)
@@ -133,23 +136,27 @@ void PtpV2Clock::DelayResponseTo(std::shared_ptr<ptpV2Header> pHeader, std::shar
     m_mFlags[pHeader->nType] = pHeader->nFlags;
 
 
-    if(!m_bT1Valid || m_mCount[ptpV2Header::DELAY_RESP].value < 5)
-        return;
+
 
     auto request = m_mDelayRequest.find(pHeader->nSequenceId);
     if(request != m_mDelayRequest.end())
     {
-        unsigned long long int nt2s = TimeToNano(request->second);
-        unsigned long long int nt2r = TimeToNano(pPayload->originTime);
-        unsigned long long int nt3s = TimeToNano(pPayload->originTime);
-        unsigned long long int nt3r = TimeToNano(pHeader->timestamp);
+        if(m_bT1Valid)
+        {
+            unsigned long long int nt2s = TimeToNano(request->second);
+            unsigned long long int nt2r = TimeToNano(pPayload->originTime);
+            unsigned long long int nt3s = TimeToNano(pPayload->originTime);
+            unsigned long long int nt3r = TimeToNano(pHeader->timestamp);
 
-        unsigned long long int nOffsetNano = (m_nt1r-m_nt1s-nt2r+nt2s)/2;
-        unsigned long long int nDelayNano = (m_nt1r-m_nt1s)-nOffsetNano;
+            unsigned long long int nOffsetNano = (m_nt1r-m_nt1s-nt2r+nt2s)/2;
+            unsigned long long int nDelayNano = (m_nt1r-m_nt1s)-nOffsetNano;
+            unsigned long long int nCheck = (m_nt1r-m_nt1s+nt2r-nt2s)/2;
 
-        DoStats(nOffsetNano, m_offset);
-        DoStats(nDelayNano, m_delay);
 
+
+             DoStats(nOffsetNano, m_offset);
+            DoStats(nDelayNano, m_delay);
+        }
         m_mDelayRequest.erase(request);
     }
 }
@@ -250,9 +257,9 @@ bool PtpV2Clock::UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::share
         bChanged = true;
     }
 
-    if(m_sClockId != pAnnounce->sClockId)
+    if(m_sClockId != pHeader->source.sSourceId)
     {
-        m_sClockId = pAnnounce->sClockId;
+        m_sClockId = pHeader->source.sSourceId;
         bChanged = true;
     }
 

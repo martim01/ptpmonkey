@@ -25,9 +25,9 @@ Sender::Sender(PtpMonkeyImplementation& manager, asio::io_context& io_context, c
 void Sender::Run()
 {
     #ifdef __GNU__
-    int socket = m_socket.native_handle();
-    int opt = 1;
-    int nError = setsockopt(socket, SOL_SOCKET, SO_TIMESTAMPING, (void*)&opt, sizeof(opt));
+    //int socket = m_socket.native_handle();
+    //int opt = 1;
+    //int nError = setsockopt(socket, SOL_SOCKET, SO_TIMESTAMPING, (void*)&opt, sizeof(opt));
     #endif // __GNU__
 
     asio::ip::multicast::outbound_interface option(asio::ip::address_v4::from_string(m_outboundIpAddress.Get()));
@@ -88,7 +88,7 @@ std::vector<unsigned char> Sender::CreateRequest()
     std::copy(vPayload.begin(), vPayload.end(), std::back_inserter(vMessage));
 
 
-    m_manager.AddDelayRequest(m_nSequence, theHeader.timestamp);
+  //  m_manager.AddDelayRequest(m_nSequence, TimeNow());
 
     m_nSequence++;
     return vMessage;
