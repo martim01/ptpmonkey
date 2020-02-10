@@ -20,8 +20,8 @@ class PtpEventHandler;
 class PtpMonkeyImplementation
 {
     public:
-        PtpMonkeyImplementation(const IpAddress& ipAddress, unsigned char nDomain, Rate enumDelayRequest);
-        PtpMonkeyImplementation(const IpInterface& IpInterface, unsigned char nDomain, Rate enumDelayRequest);
+        PtpMonkeyImplementation(const IpAddress& ipAddress, unsigned char nDomain, unsigned short nSampleSize,Rate enumDelayRequest);
+        PtpMonkeyImplementation(const IpInterface& IpInterface, unsigned char nDomain, unsigned short nSampleSize,Rate enumDelayRequest);
 
         ~PtpMonkeyImplementation(){}
 
@@ -128,6 +128,7 @@ class PtpMonkeyImplementation
 
         IpAddress m_local;
         unsigned char m_nDomain;
+        unsigned short m_nSampleSize;
         Rate m_delayRequest;
 
         std::map<std::string, std::shared_ptr<PtpV2Clock> > m_mClocks;

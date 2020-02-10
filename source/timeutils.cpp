@@ -4,6 +4,8 @@
 #include <iostream>
 #include <ctime>
 
+
+
 time_s_ns TimeNow()
 {
     std::chrono::time_point<std::chrono::high_resolution_clock> tp(std::chrono::high_resolution_clock::now());
@@ -82,4 +84,9 @@ time_s_ns operator/(const time_s_ns& t1, unsigned int nDivisor)
     std::chrono::nanoseconds remainder = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(t1.first.count()%nDivisor))+t1.second;
     result.second = std::chrono::nanoseconds(remainder.count()/nDivisor);
     return result;
+}
+
+bool operator==(const time_s_ns& t1, const time_s_ns& t2)
+{
+    return (t1.first == t2.first && t1.second == t2.second);
 }

@@ -10,13 +10,13 @@ void PtpMonkeyImplDeleter::operator()(PtpMonkeyImplementation* p)
 }
 
 
-PtpMonkey::PtpMonkey(const IpAddress& ipAddress, unsigned char nDomain, Rate enumDelayRequest) :
- m_pImpl(new PtpMonkeyImplementation(ipAddress, nDomain, enumDelayRequest))
+PtpMonkey::PtpMonkey(const IpAddress& ipAddress, unsigned char nDomain, unsigned short nSampleSize,Rate enumDelayRequest) :
+ m_pImpl(new PtpMonkeyImplementation(ipAddress, nDomain, nSampleSize, enumDelayRequest))
 {
 }
 
-PtpMonkey::PtpMonkey(const IpInterface& ipInterface, unsigned char nDomain, Rate enumDelayRequest) :
- m_pImpl(new PtpMonkeyImplementation(ipInterface, nDomain, enumDelayRequest))
+PtpMonkey::PtpMonkey(const IpInterface& ipInterface, unsigned char nDomain, unsigned short nSampleSize,Rate enumDelayRequest) :
+ m_pImpl(new PtpMonkeyImplementation(ipInterface, nDomain, nSampleSize, enumDelayRequest))
 {
 }
 

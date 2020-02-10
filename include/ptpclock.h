@@ -30,7 +30,7 @@ namespace ptpmonkey
 
             enum enumCalc {MIN=0, MEAN=1, MAX=2, WEIGHTED=3, CURRENT=4};
 
-            time_s_ns GetPtpTime(enumCalc eCalc = MEAN) const;
+            time_s_ns GetPtpTime() const;
 
             time_s_ns GetOffset(enumCalc eCalc = MEAN) const;
             time_s_ns GetDelay(enumCalc eCalc = MEAN) const;
@@ -73,6 +73,11 @@ namespace ptpmonkey
             unsigned char GetInterval(ptpV2Header::enumType eType) const;
             unsigned long long int GetCount(ptpV2Header::enumType eType) const;
 
+            void SetSampleSize(unsigned short nSampleSize)
+            {
+                m_nSampleSize = nSampleSize;
+            }
+
         protected:
             unsigned char m_nDomain;
             unsigned short m_nUtcOffset;
@@ -86,7 +91,7 @@ namespace ptpmonkey
             unsigned char m_nTimeSource;
             bool m_bMaster;
             unsigned short m_nFollowUpSequence;
-
+            unsigned short m_nSampleSize;
 
 
 
@@ -96,6 +101,9 @@ namespace ptpmonkey
 
             unsigned long long int  m_nt1s;
             unsigned long long int  m_nt1r;
+
+            time_s_ns m_calculatedAt;
+            time_s_ns m_calculatedPtp;
 
             bool m_bT1Valid;
 
@@ -120,6 +128,8 @@ namespace ptpmonkey
             stats m_delay;
             stats m_offset;
             time_s_ns m_lastMessageTime;
+            time_s_ns m_theOffset;
+            bool m_bTimeSet;
 
             std::map<unsigned char, unsigned char> m_mInterval;
 

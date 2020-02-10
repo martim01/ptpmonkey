@@ -28,8 +28,8 @@ constexpr short multicast_port = 319;
 
 int main(int argc, char* argv[])
 {
-
-    ptpmonkey::PtpMonkey ptp(IpInterface("eth0"), 0, ptpmonkey::Rate::PER_SEC_2);
+    std::cout << "Start" << std::endl;
+    ptpmonkey::PtpMonkey ptp(IpInterface("eth0"), 0, 10, ptpmonkey::Rate::PER_SEC_2);
     ptp.AddEventHandler(std::make_shared<ptpmonkey::PtpEventLogHandler>(false));
     ptp.Run();
     do

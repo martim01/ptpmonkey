@@ -17,9 +17,10 @@
 
 using namespace ptpmonkey;
 
-PtpMonkeyImplementation::PtpMonkeyImplementation(const IpAddress& ipAddress, unsigned char nDomain, Rate enumDelayRequest)  :
+PtpMonkeyImplementation::PtpMonkeyImplementation(const IpAddress& ipAddress, unsigned char nDomain,unsigned short nSampleSize, Rate enumDelayRequest)  :
     m_local(ipAddress),
     m_nDomain(nDomain),
+    m_nSampleSize(nSampleSize),
     m_delayRequest(enumDelayRequest),
     m_pMaster(nullptr),
     m_nLocalClockId(GenerateClockIdentity(m_local)),
@@ -27,9 +28,10 @@ PtpMonkeyImplementation::PtpMonkeyImplementation(const IpAddress& ipAddress, uns
 {
 }
 
-PtpMonkeyImplementation::PtpMonkeyImplementation(const IpInterface& ipInterface, unsigned char nDomain, Rate enumDelayRequest)  :
+PtpMonkeyImplementation::PtpMonkeyImplementation(const IpInterface& ipInterface, unsigned char nDomain,unsigned short nSampleSize, Rate enumDelayRequest)  :
     m_local(GetIpAddressOfInterface(ipInterface)),
     m_nDomain(nDomain),
+    m_nSampleSize(nSampleSize),
     m_delayRequest(enumDelayRequest),
     m_pMaster(nullptr),
     m_nLocalClockId(GenerateClockIdentity(m_local)),
@@ -104,6 +106,7 @@ std::map<std::string, std::shared_ptr<PtpV2Clock> >::iterator PtpMonkeyImplement
         if(pHeader->source.nSourceId == m_nLocalClockId)
         {
             m_pLocal = itClock->second;
+            m_pLocal->SetSampleSize(m_nSampleSize);
         }
 
         for(auto pHandler : m_lstEventHandler)
