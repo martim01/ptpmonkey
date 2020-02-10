@@ -37,6 +37,11 @@ time_s_ns PtpMonkey::GetPtpTime() const
     return m_pImpl->GetPtpTime();
 }
 
+bool PtpMonkey::IsSyncedToMaster() const
+{
+    return m_pImpl->IsSyncedToMaster();
+}
+
 
 std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator PtpMonkey::GetClocksBegin() const
 {

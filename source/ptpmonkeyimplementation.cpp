@@ -270,8 +270,14 @@ time_s_ns PtpMonkeyImplementation::GetPtpTime() const
     }
     else
     {
-        return std::make_pair(std::chrono::seconds(0),std::chrono::nanoseconds(0));
+        return TIMEZERO;
     }
+}
+
+bool PtpMonkeyImplementation::IsSyncedToMaster() const
+{
+    return (m_pLocal && m_pLocal->IsSynced());
+
 }
 
 
@@ -313,7 +319,7 @@ time_s_ns PtpMonkeyImplementation::GetPtpOffset() const
     }
     else
     {
-        return std::make_pair(std::chrono::seconds(0),std::chrono::nanoseconds(0));
+        return TIMEZERO;
     }
 }
 
@@ -326,7 +332,7 @@ time_s_ns PtpMonkeyImplementation::GetPtpDelay() const
     }
     else
     {
-        return std::make_pair(std::chrono::seconds(0),std::chrono::nanoseconds(0));
+        return TIMEZERO;
     }
 }
 

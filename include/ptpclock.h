@@ -28,12 +28,12 @@ namespace ptpmonkey
             bool UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce);
             void AddDelayRequest(unsigned short nSequence, const time_s_ns& timestamp);
 
-            enum enumCalc {MIN=0, MEAN=1, MAX=2, WEIGHTED=3, CURRENT=4};
+            enum enumCalc {MIN=0, MEAN=1, MAX=2, WEIGHTED=3, CURRENT=4, SET=5};
 
             time_s_ns GetPtpTime() const;
 
-            time_s_ns GetOffset(enumCalc eCalc = MEAN) const;
-            time_s_ns GetDelay(enumCalc eCalc = MEAN) const;
+            time_s_ns GetOffset(enumCalc eCalc = SET) const;
+            time_s_ns GetDelay(enumCalc eCalc = SET) const;
 
             const std::string& GetClockId() const
             {   return m_sClockId;  }
@@ -77,7 +77,7 @@ namespace ptpmonkey
             {
                 m_nSampleSize = nSampleSize;
             }
-
+            bool IsSynced() const;
         protected:
             unsigned char m_nDomain;
             unsigned short m_nUtcOffset;
@@ -110,17 +110,15 @@ namespace ptpmonkey
 
             struct stats
             {
-                stats() : total(std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0))),
-                                         stat{std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0)),
-                                             std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0)),
-                                             std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0)),
-                                             std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0)),
-                                             std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0))}{}
+                stats() : total(TIMEZERO),
+                          stat{TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO},
+                          bSet(false){}
 
 
 
                 time_s_ns total;
-                time_s_ns stat[5];
+                time_s_ns stat[6];
+                bool bSet;
                 std::list<time_s_ns> lstValues;
             };
             void DoStats(unsigned long long int nCurrent, stats& theStats);
@@ -128,7 +126,7 @@ namespace ptpmonkey
             stats m_delay;
             stats m_offset;
             time_s_ns m_lastMessageTime;
-            time_s_ns m_theOffset;
+
             bool m_bTimeSet;
 
             std::map<unsigned char, unsigned char> m_mInterval;

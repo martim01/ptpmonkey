@@ -67,6 +67,8 @@ namespace ptpmonkey
             **/
             time_s_ns GetPtpTime() const;
 
+            bool IsSyncedToMaster() const;
+
             /** @brief Gets the average offset between the system clock and the master clock for this domain. If there is no master clock returns <0,0>
             *   @return <i>time_s_ns</i> the time in seconds and nanoseconds
             **/

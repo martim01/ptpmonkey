@@ -39,12 +39,14 @@ class PtpMonkeyImplementation
         **/
         time_s_ns GetPtpTime() const;
 
-        /** @brief Gets the average offset between the system clock and the master clock for this domain. If there is no master clock returns <0,0>
+        bool IsSyncedToMaster() const;
+
+        /** @brief Gets the set offset between the system clock and the master clock for this domain. If there is no master clock returns <0,0>
         *   @return <i>time_s_ns</i> the time in seconds and nanoseconds
         **/
         time_s_ns GetPtpOffset() const;
 
-        /** @brief Gets the average network between the system clock and the master clock for this domain. If there is no master clock returns <0,0>
+        /** @brief Gets the set network between the system clock and the master clock for this domain. If there is no master clock returns <0,0>
         *   @return <i>time_s_ns</i> the time in seconds and nanoseconds
         **/
         time_s_ns GetPtpDelay() const;

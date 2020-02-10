@@ -19,8 +19,7 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
     m_nt1s(0),
     m_nt1r(0),
     m_bT1Valid(false),
-    m_lastMessageTime(pHeader->timestamp),
-    m_theOffset(TIMEZERO)
+    m_lastMessageTime(pHeader->timestamp)
 {
     m_mFlags[ptpV2Header::ANNOUNCE] = pHeader->nFlags;
     m_mInterval[ptpV2Header::ANNOUNCE] = pHeader->nInterval;
@@ -163,17 +162,7 @@ void PtpV2Clock::DelayResponseTo(std::shared_ptr<ptpV2Header> pHeader, std::shar
              DoStats(nOffsetNano, m_offset);
              DoStats(nDelayNano, m_delay);
 
-             if(m_offset.lstValues.size() == m_nSampleSize)   //got enough to create an offset
-             {
-                 if(m_bTimeSet == false)
-                 {
-                     m_theOffset = m_offset.stat[MEAN];
-                 }
-                 else
-                 {
-                     //@todo calculate whether we should change the offset or not
-                 }
-             }
+
 
         }
         m_mDelayRequest.erase(request);
@@ -209,14 +198,25 @@ void PtpV2Clock::DoStats(unsigned long long int nCurrent, stats& theStats)
             theStats.stat[MAX] = value;
         }
     }
+
+    if(theStats.lstValues.size() == m_nSampleSize)   //got enough to create an offset
+    {
+        if(theStats.bSet == false)
+        {
+            theStats.stat[SET] = theStats.stat[MEAN];
+            theStats.bSet = true;
+        }
+        else
+        {
+             //@todo calculate whether we should change the offset or not
+        }
+    }
 }
 
 
 time_s_ns PtpV2Clock::GetPtpTime()  const
 {
-    return TimeNow()-m_theOffset;
-    //return (TimeNow()-m_calculatedAt)+m_calculatedPtp;
-
+    return TimeNow()-m_offset.stat[SET];
 }
 
 time_s_ns PtpV2Clock::GetOffset(enumCalc eCalc) const
@@ -333,4 +333,9 @@ unsigned short PtpV2Clock::GetFlags(ptpV2Header::enumType eType) const
         return itReturn->second;
     }
     return 0;
+}
+
+bool PtpV2Clock::IsSynced() const
+{
+    return m_offset.bSet;
 }
