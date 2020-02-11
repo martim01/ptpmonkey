@@ -35,13 +35,24 @@ std::string TimeToIsoString(const time_s_ns& ts)
     return ss.str();
 }
 
-unsigned long long int TimeToNano(const time_s_ns& ts)
+long long int TimeToNano(const time_s_ns& ts)
 {
 
     return (std::chrono::duration_cast<std::chrono::nanoseconds>(ts.first)+ts.second).count();
 }
 
-time_s_ns NanoToTime(unsigned long long int nNano)
+double TimeToDouble(const time_s_ns& ts)
+{
+    return (static_cast<double>(ts.first.count())+(static_cast<double>(ts.second.count())/1e9));
+}
+time_s_ns DoubleToTime(double dNano)
+{
+    long long int nNano = static_cast<long long int>((dNano-static_cast<long long int>(dNano))*1e9);
+    return make_pair(std::chrono::seconds(static_cast<long long int>(dNano)),
+                    std::chrono::nanoseconds(nNano));
+}
+
+time_s_ns NanoToTime(long long int nNano)
 {
     return make_pair( std::chrono::duration_cast<std::chrono::seconds>(std::chrono::nanoseconds(nNano)), (std::chrono::nanoseconds(nNano%1000000000)));
 }

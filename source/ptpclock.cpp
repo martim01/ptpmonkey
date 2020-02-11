@@ -131,15 +131,13 @@ void PtpV2Clock::DelayResponseFrom(std::shared_ptr<ptpV2Header> pHeader, std::sh
 
 }
 
-void PtpV2Clock::DelayResponseTo(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload)
+bool PtpV2Clock::DelayResponseTo(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload)
 {
     m_mInterval[ptpV2Header::DELAY_RESP] = pHeader->nInterval;
     m_mCount[ptpV2Header::DELAY_RESP].value++;
     m_mFlags[pHeader->nType] = pHeader->nFlags;
 
-
-
-
+    bool bSyncChange(false);
     auto request = m_mDelayRequest.find(pHeader->nSequenceId);
     if(request != m_mDelayRequest.end())
     {
@@ -159,17 +157,15 @@ void PtpV2Clock::DelayResponseTo(std::shared_ptr<ptpV2Header> pHeader, std::shar
             m_calculatedAt = pHeader->timestamp;
             m_calculatedPtp = NanoToTime(nDelayNano)+pPayload->originTime;
 
-             DoStats(nOffsetNano, m_offset);
+             bSyncChange = DoStats(nOffsetNano, m_offset);
              DoStats(nDelayNano, m_delay);
-
-
-
         }
         m_mDelayRequest.erase(request);
     }
+    return bSyncChange;
 }
 
-void PtpV2Clock::DoStats(unsigned long long int nCurrent, stats& theStats)
+bool PtpV2Clock::DoStats(unsigned long long int nCurrent, stats& theStats)
 {
     theStats.stat[CURRENT] = NanoToTime(nCurrent);
 
@@ -184,35 +180,65 @@ void PtpV2Clock::DoStats(unsigned long long int nCurrent, stats& theStats)
     }
     theStats.stat[MEAN] = theStats.total/theStats.lstValues.size();
 
-    theStats.stat[MIN] = std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0));
-    theStats.stat[MAX] = std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0));
-
-    for(auto value : theStats.lstValues)
-    {
-        if(theStats.stat[MIN] == std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0)) || theStats.stat[MIN] > value)
-        {
-            theStats.stat[MIN] = value;
-        }
-        if(theStats.stat[MAX] < value)
-        {
-            theStats.stat[MAX] = value;
-        }
-    }
-
     if(theStats.lstValues.size() == m_nSampleSize)   //got enough to create an offset
     {
+        theStats.stat[MIN] = TIMEZERO;
+        theStats.stat[MAX] = TIMEZERO;
+        theStats.stat[VARIANCE] = TIMEZERO;
+        double dVariance(0.0);
+        for(auto value : theStats.lstValues)
+        {
+            if(theStats.stat[MIN] == std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0)) || theStats.stat[MIN] > value)
+            {
+                theStats.stat[MIN] = value;
+            }
+            if(theStats.stat[MAX] < value)
+            {
+                theStats.stat[MAX] = value;
+            }
+            double dVar = TimeToDouble((value-theStats.stat[MEAN]));
+
+            dVariance += (dVar*dVar);
+
+        }
+        theStats.stat[VARIANCE] = DoubleToTime(dVariance/static_cast<double>(m_nSampleSize-1));
+
         if(theStats.bSet == false)
         {
-            theStats.stat[SET] = theStats.stat[MEAN];
-            theStats.bSet = true;
+            if(TimeToNano(theStats.stat[VARIANCE]) < 6)
+            {
+                theStats.stat[SET] = theStats.stat[MEAN];
+                theStats.stat[SET_VARIANCE] = theStats.stat[VARIANCE];
+                theStats.bSet = true;
+                return true;
+            }
+            return false;
         }
         else
         {
              //@todo calculate whether we should change the offset or not
+             if(theStats.stat[VARIANCE] < theStats.stat[SET_VARIANCE])
+             {
+                 theStats.stat[SET_VARIANCE] = theStats.stat[VARIANCE];
+                 return true;
+             }
+             else
+             {
+                 return false;
+            }
         }
+    }
+    else
+    {
+        return false;
     }
 }
 
+void PtpV2Clock::ResyncToMaster()
+{
+    m_offset.bSet = false;
+    m_delay.bSet = false;
+}
 
 time_s_ns PtpV2Clock::GetPtpTime()  const
 {

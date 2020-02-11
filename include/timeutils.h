@@ -11,8 +11,11 @@ extern time_s_ns TimeNow();
 extern std::string TimeToString(const time_s_ns& ts);
 extern std::string TimeToIsoString(const time_s_ns& ts);
 
-extern unsigned long long int TimeToNano(const time_s_ns& ts);
-extern time_s_ns NanoToTime(unsigned long long int nNano);
+extern long long int TimeToNano(const time_s_ns& ts);
+extern time_s_ns NanoToTime(long long int nNano);
+
+extern double TimeToDouble(const time_s_ns& ts);
+extern time_s_ns DoubleToTime(double dNano);
 
 extern time_s_ns operator+(const time_s_ns& t1, const time_s_ns& t2);
 extern time_s_ns operator-(const time_s_ns& t1, const time_s_ns& t2);

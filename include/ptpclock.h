@@ -23,12 +23,12 @@ namespace ptpmonkey
             void FollowUpFrom(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
             void FollowUpTo(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
             void DelayResponseFrom(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload);
-            void DelayResponseTo(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload);
+            bool DelayResponseTo(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload);
             void DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
             bool UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce);
             void AddDelayRequest(unsigned short nSequence, const time_s_ns& timestamp);
 
-            enum enumCalc {MIN=0, MEAN=1, MAX=2, WEIGHTED=3, CURRENT=4, SET=5};
+            enum enumCalc {MIN=0, MEAN=1, MAX=2, WEIGHTED=3, CURRENT=4, SET=5, VARIANCE=6, SET_VARIANCE=7};
 
             time_s_ns GetPtpTime() const;
 
@@ -38,6 +38,7 @@ namespace ptpmonkey
             const std::string& GetClockId() const
             {   return m_sClockId;  }
 
+            void ResyncToMaster();
 
             unsigned char GetDomain() const
             {   return m_nDomain;   }
@@ -111,17 +112,17 @@ namespace ptpmonkey
             struct stats
             {
                 stats() : total(TIMEZERO),
-                          stat{TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO},
+                          stat{TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO},
                           bSet(false){}
 
 
 
                 time_s_ns total;
-                time_s_ns stat[6];
+                time_s_ns stat[8];
                 bool bSet;
                 std::list<time_s_ns> lstValues;
             };
-            void DoStats(unsigned long long int nCurrent, stats& theStats);
+            bool DoStats(unsigned long long int nCurrent, stats& theStats);
 
             stats m_delay;
             stats m_offset;

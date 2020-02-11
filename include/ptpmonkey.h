@@ -67,7 +67,14 @@ namespace ptpmonkey
             **/
             time_s_ns GetPtpTime() const;
 
+            /** @brief Checks whether the clock has received enough decent messages to have a calculated offset and thus be synced to the master
+            *   @return <i>bool</i> true if more than the sample size delay resp messages have been received and if the variance of the offsets is within tolerance
+            **/
             bool IsSyncedToMaster() const;
+
+            /** @brief Instructs the local clock to recalculate the offset
+            **/
+            void ResyncToMaster();
 
             /** @brief Gets the average offset between the system clock and the master clock for this domain. If there is no master clock returns <0,0>
             *   @return <i>time_s_ns</i> the time in seconds and nanoseconds

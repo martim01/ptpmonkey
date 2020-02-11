@@ -218,15 +218,18 @@ void PtpMonkeyImplementation::DelayResponse(std::shared_ptr<ptpV2Header> pHeader
     itClock = m_mClocks.find(pPayload->source.sSourceId);
     if(itClock != m_mClocks.end())
     {
-        itClock->second->DelayResponseTo(pHeader, pPayload);
+        bool bSync = itClock->second->DelayResponseTo(pHeader, pPayload);
 
         if(itClock->second == m_pLocal)
         {
             //update the delay request to match what the master clock says
             m_delayRequest = static_cast<ptpmonkey::Rate>(pHeader->nInterval);
-            for(auto pHandler : m_lstEventHandler)
+            if(bSync)
             {
-                pHandler->ClockTimeCalculated(itClock->second);
+                for(auto pHandler : m_lstEventHandler)
+                {
+                    pHandler->ClockTimeCalculated(itClock->second);
+                }
             }
         }
     }
@@ -278,6 +281,14 @@ bool PtpMonkeyImplementation::IsSyncedToMaster() const
 {
     return (m_pLocal && m_pLocal->IsSynced());
 
+}
+
+void PtpMonkeyImplementation::ResyncToMaster()
+{
+    if(m_pLocal)
+    {
+        m_pLocal->ResyncToMaster();
+    }
 }
 
 

@@ -42,6 +42,11 @@ bool PtpMonkey::IsSyncedToMaster() const
     return m_pImpl->IsSyncedToMaster();
 }
 
+void PtpMonkey::ResyncToMaster()
+{
+    return m_pImpl->ResyncToMaster();
+}
+
 
 std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator PtpMonkey::GetClocksBegin() const
 {
