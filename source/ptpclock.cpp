@@ -242,11 +242,14 @@ void PtpV2Clock::ResyncToMaster()
 
 time_s_ns PtpV2Clock::GetPtpTime()  const
 {
-    return TimeNow()-m_offset.stat[SET];
+    return (TimeNow()-m_calculatedAt)+m_calculatedPtp;//m_offset.stat[SET];
+
 }
 
 time_s_ns PtpV2Clock::GetOffset(enumCalc eCalc) const
 {
+    if(eCalc == CURRENT)
+        return (m_calculatedAt-m_calculatedPtp);
     return m_offset.stat[eCalc];
 }
 

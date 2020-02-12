@@ -224,7 +224,7 @@ void PtpMonkeyImplementation::DelayResponse(std::shared_ptr<ptpV2Header> pHeader
         {
             //update the delay request to match what the master clock says
             m_delayRequest = static_cast<ptpmonkey::Rate>(pHeader->nInterval);
-            if(bSync)
+            //if(bSync)
             {
                 for(auto pHandler : m_lstEventHandler)
                 {
