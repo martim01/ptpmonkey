@@ -80,6 +80,7 @@ namespace ptpmonkey
             *   @return <i>time_s_ns</i> the time in seconds and nanoseconds
             **/
             time_s_ns GetPtpOffset() const;
+            time_s_ns GetLastPtpOffset() const;
 
             /** @brief Gets the average network between the system clock and the master clock for this domain. If there is no master clock returns <0,0>
             *   @return <i>time_s_ns</i> the time in seconds and nanoseconds

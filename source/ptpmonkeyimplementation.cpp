@@ -321,12 +321,12 @@ std::string PtpMonkeyImplementation::GetMasterClockId() const
 }
 
 
-time_s_ns PtpMonkeyImplementation::GetPtpOffset() const
+time_s_ns PtpMonkeyImplementation::GetPtpOffset(PtpV2Clock::enumCalc eCalc) const
 {
     std::lock_guard<std::mutex> lg(m_mutex);
     if(m_pLocal)
     {
-        return m_pLocal->GetOffset();
+        return m_pLocal->GetOffset(eCalc);
     }
     else
     {
@@ -334,12 +334,12 @@ time_s_ns PtpMonkeyImplementation::GetPtpOffset() const
     }
 }
 
-time_s_ns PtpMonkeyImplementation::GetPtpDelay() const
+time_s_ns PtpMonkeyImplementation::GetPtpDelay(PtpV2Clock::enumCalc eCalc) const
 {
     std::lock_guard<std::mutex> lg(m_mutex);
     if(m_pLocal)
     {
-        return m_pLocal->GetDelay();
+        return m_pLocal->GetDelay(eCalc);
     }
     else
     {

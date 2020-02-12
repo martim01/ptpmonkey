@@ -1,5 +1,4 @@
 #include "ptpmonkey.h"
-
 #include "ptpmonkeyimplementation.h"
 
 
@@ -84,6 +83,11 @@ std::string PtpMonkey::GetLocalClockId() const
 time_s_ns PtpMonkey::GetPtpOffset() const
 {
     return m_pImpl->GetPtpOffset();
+}
+
+time_s_ns PtpMonkey::GetLastPtpOffset() const
+{
+    return m_pImpl->GetPtpOffset(PtpV2Clock::CURRENT);
 }
 
 time_s_ns PtpMonkey::GetPtpDelay() const

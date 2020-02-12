@@ -8,11 +8,11 @@
 #include "asio.hpp"
 #include <mutex>
 #include "namedtype.h"
+#include "ptpclock.h"
 
 namespace ptpmonkey
 {
 
-class PtpV2Clock;
 class PtpEventHandler;
 
 /** @class Main class for interfacing with the PTP code
@@ -46,12 +46,12 @@ class PtpMonkeyImplementation
         /** @brief Gets the set offset between the system clock and the master clock for this domain. If there is no master clock returns <0,0>
         *   @return <i>time_s_ns</i> the time in seconds and nanoseconds
         **/
-        time_s_ns GetPtpOffset() const;
+        time_s_ns GetPtpOffset(PtpV2Clock::enumCalc eCalc = PtpV2Clock::SET) const;
 
         /** @brief Gets the set network between the system clock and the master clock for this domain. If there is no master clock returns <0,0>
         *   @return <i>time_s_ns</i> the time in seconds and nanoseconds
         **/
-        time_s_ns GetPtpDelay() const;
+        time_s_ns GetPtpDelay(PtpV2Clock::enumCalc eCalc = PtpV2Clock::SET) const;
 
         /** @brief Gets the clock id of the master clock for this domain. If there is no master clock returns an empty string
         *   @return <i>string<i>
