@@ -143,16 +143,16 @@ bool PtpV2Clock::DelayResponseTo(std::shared_ptr<ptpV2Header> pHeader, std::shar
     {
         if(m_bT1Valid)
         {
-            unsigned long long int nt2s = TimeToNano(request->second);
-            unsigned long long int nt2r = TimeToNano(pPayload->originTime);
-            unsigned long long int nt3s = TimeToNano(pPayload->originTime);
-            unsigned long long int nt3r = TimeToNano(pHeader->timestamp);
+            long long int nt2s = TimeToNano(request->second);
+            long long int nt2r = TimeToNano(pPayload->originTime);
+            long long int nt3s = TimeToNano(pPayload->originTime);
+            long long int nt3r = TimeToNano(pHeader->timestamp);
 
             //unsigned long long int nOffsetNano = (m_nt1r-m_nt1s-nt2r+nt2s)/2;
 
-            unsigned long long int nDelayNano = (m_nt1r-m_nt1s+nt2r-nt2s)/2;
-            unsigned long long int nOffsetNano = nt3r-(nt3s+nDelayNano);
-            unsigned long long int nCheck = (m_nt1r-m_nt1s)-nOffsetNano;
+            long long int nDelayNano = (m_nt1r-m_nt1s+nt2r-nt2s)/2;
+            long long int nOffsetNano = nt3r-(nt3s+nDelayNano);
+            long long int nCheck = (m_nt1r-m_nt1s)-nOffsetNano;
 
             m_calculatedAt = pHeader->timestamp;
             m_calculatedPtp = NanoToTime(nDelayNano)+pPayload->originTime;
@@ -176,7 +176,6 @@ bool PtpV2Clock::DoStats(unsigned long long int nCurrent, stats& theStats)
     {
         theStats.total = theStats.total-theStats.lstValues.front();
         theStats.lstValues.pop_front();
-
     }
     theStats.stat[MEAN] = theStats.total/theStats.lstValues.size();
 
