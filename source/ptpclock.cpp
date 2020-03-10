@@ -204,7 +204,7 @@ bool PtpV2Clock::DoStats(unsigned long long int nCurrent, stats& theStats)
 
         if(theStats.bSet == false)
         {
-            if(TimeToNano(theStats.stat[VARIANCE]) < 6)
+            if(TimeToNano(theStats.stat[VARIANCE]) < 12)
             {
                 theStats.stat[SET] = theStats.stat[MEAN];
                 theStats.stat[SET_VARIANCE] = theStats.stat[VARIANCE];
