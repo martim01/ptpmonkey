@@ -2,10 +2,6 @@
 #include <vector>
 #include <string>
 #include "timeutils.h"
-#ifdef __GNU__
-#else
-#include "winsock2.h"
-#endif // __GNU__
 
 namespace ptpmonkey
 {
