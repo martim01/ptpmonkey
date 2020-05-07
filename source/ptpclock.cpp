@@ -56,6 +56,7 @@ void PtpV2Clock::UpdateDelayRequestTimestamp(unsigned short nSequence, const tim
     {
         //store the os delay
         m_OsDelay = timestamp-itRequest->second;
+        std::cout << "TX: " << TimeToIsoString(timestamp) << "\tApp: " << TimeToIsoString(itRequest->second) << std::endl;
         std::cout << "OS Delay=" << TimeToString(m_OsDelay) << std::endl;
         itRequest->second = timestamp;
     }
@@ -136,6 +137,7 @@ void PtpV2Clock::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_
     if(itRequest != m_mDelayRequest.end())
     {
         m_OsDelay = itRequest->second - pHeader->timestamp;
+        std::cout << "TX- " << TimeToIsoString(itRequest->second ) << "\tApp- " << TimeToIsoString(pHeader->timestamp) << std::endl;
         std::cout << "OS Delay=" << TimeToString(m_OsDelay) << std::endl;
     }
     else

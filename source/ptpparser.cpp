@@ -3,7 +3,6 @@
 #include <iomanip>
 #include <iostream>
 #include "ptpstructs.h"
-#include "ptpparseutil.h"
 #include "handler.h"
 
 using namespace ptpmonkey;

@@ -36,10 +36,13 @@ void Sender::Run()
     m_socket.set_option(option);
 
     #ifdef __GNU__
+
+    //@todo need to do more checking that we support this before doing it.
     int flags = SOF_TIMESTAMPING_TX_SOFTWARE | SOF_TIMESTAMPING_TX_HARDWARE;
     int nError = setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPING, &flags, sizeof(flags));
     int nError2 = setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPNS, &flags, sizeof(flags));
 
+    std::cout << "TX Timestamp: " << nError << " " << nError2 << std::endl;
     m_bTimestampEnabled = (nError == 0 && nError2 == 0);
 
     DoSend();
