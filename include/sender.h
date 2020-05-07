@@ -22,10 +22,10 @@ class Sender
         std::vector<unsigned char> CreateRequest();
     protected:
     private:
-        void do_send();
+        void DoSend();
+        void DoTimeout();
 
-        void do_timeout();
-
+        void GetTxTimestamp();
 
         PtpMonkeyImplementation& m_manager;
         IpAddress m_outboundIpAddress;
@@ -34,6 +34,8 @@ class Sender
         asio::steady_timer m_timer;
 
         unsigned short m_nSequence;
+
+        bool m_bTimestampEnabled;
 };
 
 };

@@ -49,9 +49,20 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
     m_mFlags[pHeader->nType] = pHeader->nFlags;
 }
 
-void PtpV2Clock::AddDelayRequest(unsigned short nSequence, const time_s_ns& timestamp)
+void PtpV2Clock::UpdateDelayRequestTimestamp(unsigned short nSequence, const time_s_ns& timestamp)
 {
-    m_mDelayRequest.insert(make_pair(nSequence, timestamp));
+    auto itRequest = m_mDelayRequest.find(nSequence);
+    if(itRequest != m_mDelayRequest.end())
+    {
+        //store the os delay
+        m_OsDelay = timestamp-itRequest->second;
+        std::cout << "OS Delay=" << TimeToString(m_OsDelay) << std::endl;
+        itRequest->second = timestamp;
+    }
+    else
+    {
+        m_mDelayRequest.insert(std::make_pair(nSequence, timestamp));
+    }
 
 
 }
@@ -113,12 +124,24 @@ void PtpV2Clock::FollowUpTo(std::shared_ptr<ptpV2Header> pHeader, std::shared_pt
 
 void PtpV2Clock::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
 {
+
     m_lastMessageTime = pHeader->timestamp;
     m_mInterval[ptpV2Header::DELAY_REQ] = pHeader->nInterval;
     m_mCount[ptpV2Header::DELAY_REQ].value++;
     m_mFlags[pHeader->nType] = pHeader->nFlags;
 
-     m_mDelayRequest.insert(make_pair(pHeader->nSequenceId, pHeader->timestamp));
+
+    // if we've already had a tx timestamp set for this message workout the os delay
+    auto itRequest = m_mDelayRequest.find(pHeader->nSequenceId);
+    if(itRequest != m_mDelayRequest.end())
+    {
+        m_OsDelay = itRequest->second - pHeader->timestamp;
+        std::cout << "OS Delay=" << TimeToString(m_OsDelay) << std::endl;
+    }
+    else
+    {
+        m_mDelayRequest.insert(make_pair(pHeader->nSequenceId, pHeader->timestamp));
+    }
 }
 
 void PtpV2Clock::DelayResponseFrom(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload)

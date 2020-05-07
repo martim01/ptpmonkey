@@ -2,6 +2,7 @@
 #include <sstream>
 #include <iomanip>
 #include <iostream>
+#include "timeutils.h"
 
 using namespace ptpmonkey;
 
@@ -112,6 +113,7 @@ std::vector<unsigned char> ptpV2Header::CreateMessage()
 
 void ptpV2Header::OutputValues()
 {
+    std::cout << std::dec;
     std::cout << "Type = " << (int)nType << std::endl;
     std::cout << "Version = " << (int)nVersion << std::endl;
     std::cout << "Length = " << (int)nMessageLength << std::endl;
@@ -123,6 +125,7 @@ void ptpV2Header::OutputValues()
     std::cout << "Sequence = " << nSequenceId << std::endl;
     std::cout << "Control = " << (int)nControl << std::endl;
     std::cout << "Interval = " << (int)nInterval << std::endl;
+    std::cout << "timestamp = " << TimeToIsoString(timestamp) << std::endl;
 }
 
 

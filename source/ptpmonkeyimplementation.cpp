@@ -67,15 +67,15 @@ bool PtpMonkeyImplementation::Run()
             Receiver r319(m_context, pParser);
             Receiver r320(m_context, pParser);
             Sender sDelay(*this, m_context, m_local, asio::ip::make_address(ssMulticast.str()), 319);
-            r319.run(asio::ip::make_address("0.0.0.0"),asio::ip::make_address(ssMulticast.str()), 319);
-            r320.run(asio::ip::make_address("0.0.0.0"),asio::ip::make_address(ssMulticast.str()), 320);
+            r319.Run(asio::ip::make_address("0.0.0.0"),asio::ip::make_address(ssMulticast.str()), 319);
+            r320.Run(asio::ip::make_address("0.0.0.0"),asio::ip::make_address(ssMulticast.str()), 320);
             sDelay.Run();
 
             m_context.run();
         }
         catch (const std::exception& e)
         {
-            std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Exception: " << e.what() << "\n";
+            std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!RUN: " << e.what() << "\n";
         }
     });
 
@@ -87,12 +87,12 @@ bool PtpMonkeyImplementation::Run()
 }
 
 
-void PtpMonkeyImplementation::AddDelayRequest(unsigned short nSequence, const time_s_ns& timestamp)
+void PtpMonkeyImplementation::UpdateDelayRequestTimestamp(unsigned short nSequence, const time_s_ns& timestamp)
 {
     //find the master clock and add the value to it
     if(m_pLocal)
     {
-        m_pLocal->AddDelayRequest(nSequence, timestamp);
+        m_pLocal->UpdateDelayRequestTimestamp(nSequence, timestamp);
     }
 
 }
