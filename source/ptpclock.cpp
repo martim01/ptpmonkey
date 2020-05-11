@@ -133,11 +133,12 @@ void PtpV2Clock::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_
     auto itRequest = m_mDelayRequest.find(pHeader->nSequenceId);
     if(itRequest != m_mDelayRequest.end())
     {
-        std::cout << "app: " << TimeToIsoString(pHeader->timestamp) << "\tSW/HW: " << TimeToIsoString(itRequest->second) << std::endl;
+        std::cout << "Sequence Id repeated" << std::endl;
     }
     else
     {
         m_mDelayRequest.insert(make_pair(pHeader->nSequenceId, pHeader->timestamp));
+        std::cout << "SW/HW: " << TimeToIsoString(pHeader->timestamp) << std::endl;
     }
 }
 

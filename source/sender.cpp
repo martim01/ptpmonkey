@@ -31,11 +31,12 @@ Sender::Sender(PtpMonkeyImplementation& manager, asio::io_context& io_context, c
 
 void Sender::Run()
 {
-
-
-
     asio::ip::multicast::outbound_interface option(asio::ip::address_v4::from_string(m_outboundIpAddress.Get()));
     m_socket.set_option(option);
+
+    //lets not loop the message back it gets confusing.
+    asio::ip::multicast::enable_loopback optionl(false);
+    m_socket.set_option(optionl);
 
     #ifdef __GNU__
     int flags = SOF_TIMESTAMPING_TX_SOFTWARE | SOF_TIMESTAMPING_TX_HARDWARE | SOF_TIMESTAMPING_SOFTWARE | SOF_TIMESTAMPING_RAW_HARDWARE;
@@ -136,6 +137,6 @@ void Sender::GetTxTimestamp()
     {
         ptpV2Message pMessage = PtpParser::ParseV2(aMessage.timestamp, "", aMessage.vBuffer);
         //tell the local client what the actual timestamp for this message a
-        m_manager.UpdateDelayRequestTimestamp(pMessage.first->nSequenceId, aMessage.timestamp);
+        m_manager.DelayRequestSent(pMessage.first, pMessage.second);
     }
 }

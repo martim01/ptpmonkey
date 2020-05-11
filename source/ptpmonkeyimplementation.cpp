@@ -86,15 +86,13 @@ bool PtpMonkeyImplementation::Run()
     return true;
 }
 
-
-void PtpMonkeyImplementation::UpdateDelayRequestTimestamp(unsigned short nSequence, const time_s_ns& timestamp)
+void PtpMonkeyImplementation::DelayRequestSent(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
 {
-    //find the master clock and add the value to it
+    GetOrCreateClock(pHeader, pPayload);
     if(m_pLocal)
     {
-        m_pLocal->UpdateDelayRequestTimestamp(nSequence, timestamp);
+        m_pLocal->DelayRequest(pHeader, pPayload);
     }
-
 }
 
 std::map<std::string, std::shared_ptr<PtpV2Clock> >::iterator PtpMonkeyImplementation::GetOrCreateClock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)

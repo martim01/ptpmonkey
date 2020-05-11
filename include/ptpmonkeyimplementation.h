@@ -111,7 +111,7 @@ class PtpMonkeyImplementation
         /** @brief Called by the Sender socket when it sends a delay request message and gets a tx timestamp message
         *   @note Should not be called by the user
         **/
-        void UpdateDelayRequestTimestamp(unsigned short nSequence, const time_s_ns& timestamp);
+        void DelayRequestSent(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
 
         void Stop();
         void Restart();

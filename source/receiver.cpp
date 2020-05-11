@@ -24,11 +24,10 @@ void Receiver::Run(const asio::ip::address& listen_address, const asio::ip::addr
     m_socket.open(listen_endpoint.protocol());
     m_socket.set_option(asio::ip::udp::socket::reuse_address(true));
 
-
     //set the rx hardware software timestamping
     #ifdef __GNU__
     int flags = SOF_TIMESTAMPING_RX_SOFTWARE | SOF_TIMESTAMPING_RX_HARDWARE | SOF_TIMESTAMPING_SOFTWARE | SOF_TIMESTAMPING_RAW_HARDWARE;
-   // if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPING, &flags, sizeof(flags)) < 0)
+    if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPING, &flags, sizeof(flags)) < 0)
     {
         int nError = setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPNS, &flags, sizeof(flags));
     }
@@ -36,13 +35,19 @@ void Receiver::Run(const asio::ip::address& listen_address, const asio::ip::addr
     #endif // __GNU__
 
 
+    asio::error_code ec;
+    m_socket.bind(listen_endpoint, ec);
+    if(ec)
+    {
+        std::cout << ec << std::endl;
+    }
+    else
+    {
+        // Join the multicast group.
+        m_socket.set_option(asio::ip::multicast::join_group(multicast_address));
 
-    m_socket.bind(listen_endpoint);
-
-    // Join the multicast group.
-    m_socket.set_option(asio::ip::multicast::join_group(multicast_address));
-
-    DoReceive();
+        DoReceive();
+    }
 }
 
 
@@ -52,6 +57,7 @@ void Receiver::DoReceive()
     {
         if (!ec)
         {
+            std::cout << "Receive" << std::endl;
             m_pParser->ParseMessage(m_sender_endpoint.address().to_string(), NativeReceive(m_socket, MSG_WAITALL));
             DoReceive();
         }
