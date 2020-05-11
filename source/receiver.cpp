@@ -57,7 +57,7 @@ void Receiver::DoReceive()
     {
         if (!ec)
         {
-            std::cout << "Receive" << std::endl;
+            std::cout << "RECEIVE: ";
             m_pParser->ParseMessage(m_sender_endpoint.address().to_string(), NativeReceive(m_socket, MSG_WAITALL));
             DoReceive();
         }
@@ -93,11 +93,11 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
     int res = recvmsg(aSocket.native_handle(), &msg, nFlags);
     unsigned char* pData = (unsigned char*)msg.msg_iov->iov_base;
 
-    int nOffset = (nFlags&MSG_ERRQUEUE) ? 42 : 0;
+    int nOffset = (nFlags&MSG_ERRQUEUE) ? 42 : 0;       // @todo why 42 bytes for error queue?
 
     rawMessage theMessage;
     theMessage.timestamp = TimeNow();
-    if(res > 34+nOffset)//&& (nFlags & MSG_ERRQUEUE))
+    if(res > 34+nOffset)        // @todo make 34 a constant referring to header size
     {
         std::cout << (nFlags & MSG_ERRQUEUE  ? "TX " : "RX ");
         //this should be the timestamp ,sg

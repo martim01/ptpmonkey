@@ -132,6 +132,7 @@ void Sender::DoTimeout()
 
 void Sender::GetTxTimestamp()
 {
+    std::cout << "SENDER: ";
     rawMessage aMessage = Receiver::NativeReceive(m_socket, MSG_ERRQUEUE);
     if(aMessage.vBuffer.size() >= 34)
     {

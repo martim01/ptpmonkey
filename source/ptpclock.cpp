@@ -133,7 +133,7 @@ void PtpV2Clock::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_
     auto itRequest = m_mDelayRequest.find(pHeader->nSequenceId);
     if(itRequest != m_mDelayRequest.end())
     {
-        std::cout << "Sequence Id repeated" << std::endl;
+        std::cout << "Sequence Id repeated: " << pHeader->nSequenceId << std::endl;
     }
     else
     {
