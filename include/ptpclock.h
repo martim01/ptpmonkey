@@ -128,7 +128,6 @@ namespace ptpmonkey
             stats m_offset;
             time_s_ns m_lastMessageTime;
 
-            time_s_ns m_OsDelay;
             bool m_bTimeSet;
 
             std::map<unsigned char, unsigned char> m_mInterval;

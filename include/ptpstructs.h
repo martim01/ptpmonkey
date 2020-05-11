@@ -6,6 +6,8 @@
 namespace ptpmonkey
 {
 
+
+
     /** @struct header
     *   @brief abstract base class for the header of any message
     **/

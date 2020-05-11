@@ -246,10 +246,6 @@
 			<Option target="Linux Shared Lib Release" />
 			<Option target="Linux Shared Lib Debug" />
 		</Unit>
-		<Unit filename="include/receiver.cpp">
-			<Option target="Linux Shared Lib Release" />
-			<Option target="Linux Shared Lib Debug" />
-		</Unit>
 		<Unit filename="include/receiver.h">
 			<Option target="Windows Debug" />
 			<Option target="Windows Release" />
@@ -338,6 +334,10 @@
 			<Option target="Windows Debug" />
 			<Option target="Windows Release" />
 			<Option target="Windows tests" />
+			<Option target="Linux Shared Lib Release" />
+			<Option target="Linux Shared Lib Debug" />
+		</Unit>
+		<Unit filename="source/receiver.cpp">
 			<Option target="Linux Shared Lib Release" />
 			<Option target="Linux Shared Lib Debug" />
 		</Unit>

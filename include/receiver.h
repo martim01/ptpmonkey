@@ -5,6 +5,7 @@ namespace ptpmonkey
 {
 
     class Parser;
+    struct rawMessage;
 
     class Receiver
     {
@@ -13,6 +14,7 @@ namespace ptpmonkey
 
             void Run(const asio::ip::address& listen_address, const asio::ip::address& multicast_address, unsigned int nPort);
 
+            static rawMessage NativeReceive(asio::ip::udp::socket& aSocket, int nFlags);
         private:
             void DoReceive();
 

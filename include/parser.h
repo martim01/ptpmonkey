@@ -8,6 +8,14 @@ namespace ptpmonkey
 {
     class Handler;
 
+    /** @struct raw message
+    *   @brief struct holding rx timestamp and raw message data
+    **/
+    struct rawMessage
+    {
+        time_s_ns timestamp;
+        std::vector<unsigned char> vBuffer;
+    };
 
     class Parser
     {
@@ -22,7 +30,7 @@ namespace ptpmonkey
                 m_lstHandler.push_back(pHandler);
             }
 
-            virtual void ParseMessage(const time_s_ns& socketTime,const std::string& sSenderIp, std::vector<unsigned char> vMessage)=0;
+            virtual void ParseMessage(const std::string& sSenderIp, const rawMessage& aMessage)=0;
 
         protected:
 

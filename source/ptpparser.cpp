@@ -3,7 +3,6 @@
 #include <iomanip>
 #include <iostream>
 #include "ptpstructs.h"
-#include "ptpparseutil.h"
 #include "handler.h"
 
 using namespace ptpmonkey;
@@ -50,18 +49,21 @@ ptpV2Message PtpParser::ParseV2(const time_s_ns& socketTime, const std::string& 
 
 
 
-void PtpParser::ParseMessage(const time_s_ns& socketTime, const std::string& sSenderIp, std::vector<unsigned char> vMessage)
+void PtpParser::ParseMessage(const std::string& sSenderIp, const rawMessage& aMessage)
 {
+    if(aMessage.vBuffer.size() < 34)
+        return;
 
-    unsigned char nVersion = vMessage[1] & 0xF;
+
+    unsigned char nVersion = aMessage.vBuffer[1] & 0xF;
     switch(nVersion)
     {
     case 1:
-        ParseV1(socketTime, sSenderIp, vMessage);
+        ParseV1(aMessage.timestamp, sSenderIp, aMessage.vBuffer);
         break;
     case 2:
         {
-            ptpV2Message pMessage = ParseV2(socketTime, sSenderIp, vMessage);
+            ptpV2Message pMessage = ParseV2(aMessage.timestamp, sSenderIp, aMessage.vBuffer);
             for(auto pHandler : m_lstHandler)
             {
                 pHandler->HandleParsedMessage(pMessage.first, pMessage.second);

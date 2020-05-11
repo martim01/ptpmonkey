@@ -13,7 +13,7 @@ namespace ptpmonkey
     {
         public:
             PtpParser(std::shared_ptr<Handler> pHandler) : Parser(pHandler){};
-            void ParseMessage(const time_s_ns& socketTime,const std::string& sSenderIp, std::vector<unsigned char> vMessage) override;
+            void ParseMessage(const std::string& sSenderIp, const rawMessage& aMessage) override;
 
             static ptpV1Message ParseV1(const time_s_ns& socketTime, const std::string& sSenderIp, std::vector<unsigned char> vMessage);
             static ptpV2Message ParseV2(const time_s_ns& socketTime, const std::string& sSenderIp, std::vector<unsigned char> vMessage);
