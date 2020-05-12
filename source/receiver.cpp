@@ -1,8 +1,8 @@
 #include "receiver.h"
 #include "parser.h"
 #include <iomanip>
-
-
+#include "log.h"
+#include "ptpmonkey.h"
 #ifdef __GNU__
 #include <linux/socket.h>
 #include <linux/net_tstamp.h>
@@ -12,7 +12,10 @@
 
 using namespace ptpmonkey;
 
-Receiver::Receiver(asio::io_context& io_context, std::shared_ptr<Parser> pParser) : m_socket(io_context), m_pParser(pParser)
+Receiver::Receiver(asio::io_context& io_context, std::shared_ptr<Parser> pParser, int nTimestampingSupported) :
+    m_socket(io_context),
+    m_pParser(pParser),
+    m_nTimestampingSupported(nTimestampingSupported)
 {
 
 }
@@ -26,12 +29,29 @@ void Receiver::Run(const asio::ip::address& listen_address, const asio::ip::addr
 
     //set the rx hardware software timestamping
     #ifdef __GNU__
-    int flags = SOF_TIMESTAMPING_RX_SOFTWARE | SOF_TIMESTAMPING_RX_HARDWARE | SOF_TIMESTAMPING_SOFTWARE | SOF_TIMESTAMPING_RAW_HARDWARE;
-    if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPING, &flags, sizeof(flags)) < 0)
-    {
-        int nError = setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPNS, &flags, sizeof(flags));
-    }
+     int nFlags(0);
+    nFlags |= (m_nTimestampingSupported & PtpMonkey::TIMESTAMP_RX_HARDWARE) ? (SOF_TIMESTAMPING_RX_HARDWARE | SOF_TIMESTAMPING_RAW_HARDWARE) : 0;
+    nFlags |= (m_nTimestampingSupported & PtpMonkey::TIMESTAMP_RX_SOFTWARE) ? (SOF_TIMESTAMPING_RX_SOFTWARE | SOF_TIMESTAMPING_SOFTWARE) : 0;
 
+    if(nFlags != 0)
+    {
+        if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPING, &nFlags, sizeof(nFlags)) < 0)
+        {
+            pml::Log::Get(pml::Log::LOG_WARN) << "Receiver [" << nPort << "]: Failed to set SO_TIMESTAMPING" << std::endl;
+            if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPNS, &nFlags, sizeof(nFlags)))
+            {
+                pml::Log::Get(pml::Log::LOG_WARN) << "Receiver [" << nPort << "]: Failed to set SO_TIMESTAMPNS" << std::endl;
+            }
+            else
+            {
+                pml::Log::Get(pml::Log::LOG_INFO) << "Receiver [" << nPort << "]: Set SO_TIMESTAMPNS timestamping" << std::endl;
+            }
+        }
+        else
+        {
+            pml::Log::Get(pml::Log::LOG_INFO) << "Receiver [" << nPort << "]: Set SO_TIMESTAMPING timestamping" << std::endl;
+        }
+    }
     #endif // __GNU__
 
 
@@ -39,7 +59,7 @@ void Receiver::Run(const asio::ip::address& listen_address, const asio::ip::addr
     m_socket.bind(listen_endpoint, ec);
     if(ec)
     {
-        std::cout << ec << std::endl;
+        pml::Log::Get(pml::Log::LOG_CRITICAL) << "Receiver [" << nPort << "]: Can't bind receiver to endpoint: " << ec << std::endl;
     }
     else
     {
@@ -57,13 +77,13 @@ void Receiver::DoReceive()
     {
         if (!ec)
         {
-            std::cout << "RECEIVE: ";
+            pml::Log::Get(pml::Log::LOG_TRACE) << "RECEIVE: ";
             m_pParser->ParseMessage(m_sender_endpoint.address().to_string(), NativeReceive(m_socket, MSG_WAITALL));
             DoReceive();
         }
         else
         {
-            std::cout << ec << std::endl;
+            pml::Log::Get(pml::Log::LOG_ERROR) << "Receiver: wait error: " << ec << std::endl;
         }
     });
 }
@@ -99,7 +119,7 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
     theMessage.timestamp = TimeNow();
     if(res > 34+nOffset)        // @todo make 34 a constant referring to header size
     {
-        std::cout << (nFlags & MSG_ERRQUEUE  ? "TX " : "RX ");
+        pml::Log::Get(pml::Log::LOG_TRACE) << (nFlags & MSG_ERRQUEUE  ? "TX " : "RX ");
         //this should be the timestamp ,sg
         for(cmsghdr* cmsg = CMSG_FIRSTHDR(&msg); cmsg; cmsg = CMSG_NXTHDR(&msg, cmsg))
         {
@@ -107,14 +127,14 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
             {
                 if(cmsg->cmsg_type == SO_TIMESTAMPING) //hardware tx timetamp
                 {
-                    std::cout << " SO_TIMESTAMPING ";
+                    pml::Log::Get(pml::Log::LOG_TRACE) << " SO_TIMESTAMPING ";
 
                     timespec *stamp = (timespec *)CMSG_DATA(cmsg);
                     //get the software timestamp
                     theMessage.timestamp.first = std::chrono::seconds(stamp->tv_sec);
                     theMessage.timestamp.second = std::chrono::nanoseconds(stamp->tv_nsec);
 
-                    std::cout << "SW : " << TimeToIsoString(theMessage.timestamp) << "\t" << TimeToIsoString(TimeNow());
+                    pml::Log::Get(pml::Log::LOG_TRACE) << "SW : " << TimeToIsoString(theMessage.timestamp) << "\t" << TimeToIsoString(TimeNow());
                     stamp++;
                     stamp++;
 
@@ -122,7 +142,7 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
                     {
                         theMessage.timestamp.first = std::chrono::seconds(stamp->tv_sec);
                         theMessage.timestamp.second = std::chrono::nanoseconds(stamp->tv_nsec);
-                        std::cout << "HWr: " << TimeToIsoString(theMessage.timestamp);
+                        pml::Log::Get(pml::Log::LOG_TRACE) << "HW: " << TimeToIsoString(theMessage.timestamp);
                     }
 
                     break;
@@ -134,12 +154,14 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
                     theMessage.timestamp.first = std::chrono::seconds(ts->tv_sec);
                     theMessage.timestamp.second = std::chrono::nanoseconds(ts->tv_nsec);
 
-                    std::cout << "SO_TIMESTAMPNS: " << TimeToIsoString(theMessage.timestamp) << "\t" << TimeToIsoString(TimeNow());
+                    pml::Log::Get(pml::Log::LOG_TRACE) << "SO_TIMESTAMPNS: " << TimeToIsoString(theMessage.timestamp) << "\tNow: " << TimeToIsoString(TimeNow());
                 }
             }
         }
-        std::cout << "\t" << TimeToString(TimeNow()-theMessage.timestamp);
-        std::cout << std::endl;
+        pml::Log::Get(pml::Log::LOG_TRACE) << "\tDelay: " << TimeToString(TimeNow()-theMessage.timestamp);
+        pml::Log::Get(pml::Log::LOG_TRACE) << std::endl;
+
+
         theMessage.vBuffer = std::vector<unsigned char>(pData+nOffset, pData+(res+1));
     }
     return theMessage;

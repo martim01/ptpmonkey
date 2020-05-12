@@ -72,6 +72,7 @@
 				<Linker>
 					<Add library="pthread" />
 					<Add library="ptpmonkeyd" />
+					<Add library="pml_logd" />
 				</Linker>
 			</Target>
 			<Target title="Linux Release">
@@ -91,6 +92,7 @@
 					<Add option="-s" />
 					<Add library="pthread" />
 					<Add library="ptpmonkey" />
+					<Add library="pml_log" />
 					<Add directory="./bin" />
 				</Linker>
 			</Target>
@@ -133,7 +135,11 @@
 			<Add option="-fexceptions" />
 			<Add option="-DASIO_STANDALONE" />
 			<Add directory="include" />
+			<Add directory="../log/include" />
 		</Compiler>
+		<Linker>
+			<Add directory="../log" />
+		</Linker>
 		<Unit filename="examples/main.cpp">
 			<Option target="Windows Debug" />
 			<Option target="Windows Release" />
@@ -230,12 +236,6 @@
 			<Option target="Windows Debug" />
 			<Option target="Windows Release" />
 			<Option target="Windows tests" />
-			<Option target="Linux Shared Lib Release" />
-			<Option target="Linux Shared Lib Debug" />
-		</Unit>
-		<Unit filename="include/ptpparseutil.h">
-			<Option target="Windows Debug" />
-			<Option target="Windows Release" />
 			<Option target="Linux Shared Lib Release" />
 			<Option target="Linux Shared Lib Debug" />
 		</Unit>

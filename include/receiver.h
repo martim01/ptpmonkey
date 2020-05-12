@@ -10,7 +10,7 @@ namespace ptpmonkey
     class Receiver
     {
         public:
-            Receiver(asio::io_context& io_context, std::shared_ptr<Parser> pParser);
+            Receiver(asio::io_context& io_context, std::shared_ptr<Parser> pParser, int nTimestampingSupported);
 
             void Run(const asio::ip::address& listen_address, const asio::ip::address& multicast_address, unsigned int nPort);
 
@@ -23,5 +23,6 @@ namespace ptpmonkey
             std::array<unsigned char, 1024> m_data;
 
             std::shared_ptr<Parser> m_pParser;
+            int m_nTimestampingSupported;
     };
 };

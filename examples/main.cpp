@@ -22,23 +22,29 @@
 #include <thread>
 #include <chrono>
 #include "ptpeventloghandler.h"
+#include "log.h"
 
 constexpr short multicast_port = 319;
 
+using namespace pml;
 
 int main(int argc, char* argv[])
 {
-    std::cout << "Start" << std::endl;
+    pml::Log::Get().AddOutput(std::unique_ptr<LogOutput>(new LogOutput()));
+    pml::Log::Get() << "Start" << std::endl;
+
+
+
     ptpmonkey::PtpMonkey ptp(IpInterface("eth0"), 0, 10, ptpmonkey::Rate::PER_SEC_2);
     ptp.AddEventHandler(std::make_shared<ptpmonkey::PtpEventLogHandler>(false));
     ptp.Run();
     do
     {
         getchar();
-        std::cout << "PAUSE" << std::endl;
+        pml::Log::Get() << "PAUSE" << std::endl;
         ptp.Stop();
         getchar();
-        std::cout << "RUN" << std::endl;
+        pml::Log::Get() << "RUN" << std::endl;
         ptp.Restart();
 
     }while(true);

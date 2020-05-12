@@ -1,5 +1,6 @@
 #include "ptpclock.h"
 #include <iostream>
+#include "log.h"
 using namespace ptpmonkey;
 
 PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce) :
@@ -47,22 +48,6 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
     m_lastMessageTime(pHeader->timestamp)
 {
     m_mFlags[pHeader->nType] = pHeader->nFlags;
-}
-
-void PtpV2Clock::UpdateDelayRequestTimestamp(unsigned short nSequence, const time_s_ns& timestamp)
-{
-    auto itRequest = m_mDelayRequest.find(nSequence);
-    if(itRequest != m_mDelayRequest.end())
-    {
-        std::cout << "App: " << TimeToIsoString(itRequest->second) << "\tSW/HW: " << TimeToIsoString(timestamp) <<  std::endl;
-        itRequest->second = timestamp;
-    }
-    else
-    {
-        m_mDelayRequest.insert(std::make_pair(nSequence, timestamp));
-    }
-
-
 }
 
 void PtpV2Clock::SyncFrom(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
@@ -133,12 +118,12 @@ void PtpV2Clock::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_
     auto itRequest = m_mDelayRequest.find(pHeader->nSequenceId);
     if(itRequest != m_mDelayRequest.end())
     {
-        std::cout << "Sequence Id repeated: " << pHeader->nSequenceId << std::endl;
+        pml::Log::Get(pml::Log::LOG_WARN) << "DelayRequest: Sequence Id repeated: " << std::dec << pHeader->nSequenceId << std::endl;
     }
     else
     {
         m_mDelayRequest.insert(make_pair(pHeader->nSequenceId, pHeader->timestamp));
-        std::cout << "SW/HW: " << TimeToIsoString(pHeader->timestamp) << std::endl;
+        pml::Log::Get(pml::Log::LOG_TRACE) << "DelayRequest: " << std::dec << pHeader->nSequenceId << " timed at: " << TimeToIsoString(pHeader->timestamp) << std::endl;
     }
 }
 

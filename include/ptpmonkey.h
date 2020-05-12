@@ -122,6 +122,12 @@ namespace ptpmonkey
             **/
             std::shared_ptr<const PtpV2Clock> GetLocalClock() const;
 
+
+
+            static int GetTimestampingSupported(const IpInterface& interface);
+
+            enum {TIMESTAMP_TX_HARDWARE = 1, TIMESTAMP_TX_SOFTWARE = 2, TIMESTAMP_RX_HARDWARE = 4, TIMESTAMP_RX_SOFTWARE = 8 };
+
         protected:
             PtpMonkey(){}
             std::unique_ptr<PtpMonkeyImplementation, PtpMonkeyImplDeleter> m_pImpl;

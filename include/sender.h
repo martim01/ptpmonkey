@@ -17,7 +17,7 @@ class Sender
     public:
 
         Sender(PtpMonkeyImplementation& manager, asio::io_context& io_context, const IpAddress& outboundIpAddress, const asio::ip::address& multicast_address,
-        unsigned short nPort);
+        unsigned short nPort, int nTimestampingSupported);
         void Run();
         std::vector<unsigned char> CreateRequest();
     protected:
@@ -36,6 +36,9 @@ class Sender
         unsigned short m_nSequence;
 
         bool m_bTimestampEnabled;
+        int m_nTimestampingSupported;
+
+        std::vector<unsigned char> m_vBuffer;
 };
 
 };

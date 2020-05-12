@@ -122,6 +122,8 @@ class PtpMonkeyImplementation
         Rate GetDelayRate() const
         {   return m_delayRequest;  }
 
+        static int GetTimestampingSupported(const IpInterface& interface);
+
     protected:
         asio::io_context m_context;
 
@@ -131,6 +133,7 @@ class PtpMonkeyImplementation
         void CheckForDeadClocks();
 
         IpAddress m_local;
+        IpInterface m_Interface;
         unsigned char m_nDomain;
         unsigned short m_nSampleSize;
         Rate m_delayRequest;
@@ -146,6 +149,8 @@ class PtpMonkeyImplementation
         unsigned long long int m_nLocalClockId;
         std::shared_ptr<PtpV2Clock> m_pLocal;
         mutable std::mutex m_mutex;
+
+        enum {TIMESTAMP_TX_HARDWARE = 1, TIMESTAMP_TX_SOFTWARE = 2, TIMESTAMP_RX_HARDWARE = 4, TIMESTAMP_RX_SOFTWARE = 8 };
 
 };
 

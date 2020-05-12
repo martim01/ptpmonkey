@@ -6,6 +6,8 @@
 #include <cmath>
 #include "ptpparser.h"
 #include "receiver.h"
+#include "ptpmonkey.h"
+
 #ifdef __GNU__
 #include <linux/socket.h>
 #include <linux/net_tstamp.h>
@@ -13,18 +15,21 @@
 #endif // __GNU__
 #include <iostream>
 #include <iomanip>
+#include "log.h"
 
+#define FORCE_SO 1
 
 using namespace ptpmonkey;
 
 Sender::Sender(PtpMonkeyImplementation& manager, asio::io_context& io_context, const IpAddress& outboundIpAddress, const asio::ip::address& multicast_address,
-        unsigned short nPort) : m_manager(manager),
+        unsigned short nPort, int nTimestampingSupported) : m_manager(manager),
           m_outboundIpAddress(outboundIpAddress),
           m_endpoint(multicast_address, nPort),
           m_socket(io_context, m_endpoint.protocol()),
           m_timer(io_context),
           m_nSequence(0),
-          m_bTimestampEnabled(false)
+          m_bTimestampEnabled(false),
+          m_nTimestampingSupported(nTimestampingSupported)
 {
 
 }
@@ -39,14 +44,36 @@ void Sender::Run()
     m_socket.set_option(optionl);
 
     #ifdef __GNU__
-    int flags = SOF_TIMESTAMPING_TX_SOFTWARE | SOF_TIMESTAMPING_TX_HARDWARE | SOF_TIMESTAMPING_SOFTWARE | SOF_TIMESTAMPING_RAW_HARDWARE;
-    if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPING, &flags, sizeof(flags)) < 0)
+    // @todo for some reason we get tx software timestamps even though pi says it doesn't suppport it. add this bodge for now to aid debugging
+    #if FORCE_SO==1
+    m_nTimestampingSupported |= PtpMonkey::TIMESTAMP_TX_SOFTWARE;
+    pml::Log::Get(pml::Log::LOG_WARN) << "Sender: Attempt to set tx software timestamping anyway." << std::endl;
+    #endif // FORCE_SO
+
+    int nFlags(0);
+    nFlags |= (m_nTimestampingSupported & PtpMonkey::TIMESTAMP_TX_HARDWARE) ? (SOF_TIMESTAMPING_TX_HARDWARE | SOF_TIMESTAMPING_RAW_HARDWARE) : 0;
+    nFlags |= (m_nTimestampingSupported & PtpMonkey::TIMESTAMP_TX_SOFTWARE) ? (SOF_TIMESTAMPING_TX_SOFTWARE | SOF_TIMESTAMPING_SOFTWARE) : 0;
+
+    if(nFlags != 0)
     {
-        m_bTimestampEnabled = (setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPNS, &flags, sizeof(flags)) >= 0);
-    }
-    else
-    {
-        m_bTimestampEnabled = true;
+        if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPING, &nFlags, sizeof(nFlags)) < 0)
+        {
+            pml::Log::Get(pml::Log::LOG_WARN) << "Sender: Failed to set SO_TIMESTAMPING" << std::endl;
+            m_bTimestampEnabled = (setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPNS, &nFlags, sizeof(nFlags)) >= 0);
+            if(!m_bTimestampEnabled)
+            {
+                pml::Log::Get(pml::Log::LOG_WARN) << "Sender: Failed to set SO_TIMESTAMPNS" << std::endl;
+            }
+            else
+            {
+                pml::Log::Get(pml::Log::LOG_INFO) << "Sender: Set SO_TIMESTAMPNS timestamping" << std::endl;
+            }
+        }
+        else
+        {
+            m_bTimestampEnabled = true;
+            pml::Log::Get(pml::Log::LOG_INFO) << "Sender: Set SO_TIMESTAMPING timestamping" << std::endl;
+        }
     }
     #endif
     DoSend();
@@ -70,11 +97,19 @@ void Sender::DoSend()
                 {
                     GetTxTimestamp();
                 }
+                else
+                {
+                    //approximate the timestamp.
+                    time_s_ns timestamp(TimeNow());
+                    ptpV2Message pMessage = PtpParser::ParseV2(timestamp, "", m_vBuffer);
+                    //tell the local client we've sent a delay request message
+                    m_manager.DelayRequestSent(pMessage.first, pMessage.second);
+                }
                 DoTimeout();
             }
             else
             {
-                std::cout << ec << std::endl;
+                pml::Log::Get(pml::Log::LOG_ERROR) << "Sender: Send failed: " << ec << std::endl;
             }
         });
     }
@@ -86,6 +121,8 @@ void Sender::DoSend()
 
 std::vector<unsigned char> Sender::CreateRequest()
 {
+    m_vBuffer.clear();
+
     ptpV2Header theHeader;
     ptpV2Payload thePayload;
 
@@ -105,14 +142,14 @@ std::vector<unsigned char> Sender::CreateRequest()
 
     thePayload.originTime = TimeNow();
 
-    std::vector<unsigned char> vMessage(theHeader.CreateMessage());
+    m_vBuffer = theHeader.CreateMessage();
     std::vector<unsigned char> vPayload(thePayload.CreateMessage());
 
-    std::copy(vPayload.begin(), vPayload.end(), std::back_inserter(vMessage));
+    std::copy(vPayload.begin(), vPayload.end(), std::back_inserter(m_vBuffer));
 
 
     m_nSequence++;
-    return vMessage;
+    return m_vBuffer;
 }
 
 
@@ -132,7 +169,7 @@ void Sender::DoTimeout()
 
 void Sender::GetTxTimestamp()
 {
-    std::cout << "SENDER: ";
+    pml::Log::Get(pml::Log::LOG_TRACE) << "SENDER: ";
     rawMessage aMessage = Receiver::NativeReceive(m_socket, MSG_ERRQUEUE);
     if(aMessage.vBuffer.size() >= 34)
     {

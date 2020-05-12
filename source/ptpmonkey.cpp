@@ -1,5 +1,9 @@
 #include "ptpmonkey.h"
 #include "ptpmonkeyimplementation.h"
+#include <iostream>
+#include <cstring>
+
+
 
 
 using namespace ptpmonkey;
@@ -116,3 +120,9 @@ std::shared_ptr<const PtpV2Clock> PtpMonkey::GetClock(const std::string& sClockI
     return m_pImpl->GetClock(sClockId);
 }
 
+
+
+int PtpMonkey::GetTimestampingSupported(const IpInterface& interface)
+{
+    return PtpMonkeyImplementation::GetTimestampingSupported(interface);
+}

@@ -26,7 +26,7 @@ namespace ptpmonkey
             bool DelayResponseTo(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload);
             void DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
             bool UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce);
-            void UpdateDelayRequestTimestamp(unsigned short nSequence, const time_s_ns& timestamp);
+
 
             enum enumCalc {MIN=0, MEAN=1, MAX=2, WEIGHTED=3, CURRENT=4, SET=5, VARIANCE=6, SET_VARIANCE=7};
 
