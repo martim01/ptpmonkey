@@ -1,3 +1,6 @@
 [submodule "external/asio"]
 	path = external/asio
 	url = https://github.com/chriskohlhoff/asio
+[submodule "external/log"]
+	path = external/log
+	url = https://github.com/martim01/log.git
