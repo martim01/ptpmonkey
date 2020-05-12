@@ -10,6 +10,8 @@ It can be used to sync client clocks, however as it is a software only implement
 * PTPMonkey is written in c++ and needs a c++14 compliant compiler.
 * It uses the non-boost Asio libary for networking. This can be downloaded from [GiHhub](https://github.com/chriskohlhoff/asio) or [Think-Sync](http://think-async.com/Asio/).
 Alternatively the CMake project will clone the GitHub files for you in to the relevant directories.
+* It uses my log library for logging which can be downloaded from [GiHhub](https://github.com/martim01/log)
+Alternatively the CMake project will clone the GitHub files for you in to the relevant directories.
 
 ## Building
 The simplest way to build the library is to use the CMake project.
@@ -22,6 +24,8 @@ sudo cmake --build . --target install
 ```
 This will check that the Asio library is downloaded to ``` {ptpmonkey directory}/external/asio ``` and build the libray.
 It will then install it to ```/usr/local/lib/ ```
+
+Note: It is possible that running ``` cmake .. ``` will report errors the first time, after it has downloaded the external submodules. If so running it again should make it configure correctly.
 
 It is also possible to build the library using the provided Code::Blocks project.
 
@@ -39,7 +43,7 @@ Now call ``` PtpMonkey.Run() ``` to start the monitoring/syncing in a separate t
 #include "ptpeventloghandler.h"
 ...
 
-PtpMonkey ptp("192.168.0.1" 0);
+PtpMonkey ptp("192.168.0.1", 0);
 ptp.AddEventHandler(std::make_shared<PtpEventLogHandler>());
 ptp.Run();
 ```
