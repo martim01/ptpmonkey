@@ -82,7 +82,7 @@ void Sender::Run()
 
 void Sender::DoSend()
 {
-    bool bDebug = true;
+    bool bDebug = false;
 
     if(m_manager.GetMasterClock() != nullptr || bDebug)
     {

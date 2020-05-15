@@ -12,7 +12,7 @@ add_library(ptpmonkey SHARED 	"source/loghander.cpp"
 				"source/ptpmonkeyimplementation.cpp" 
 				"source/ptpparser.cpp" 
 				"source/ptpstructs.cpp" 
-                "source/receiver.cpp" 
+		                "source/receiver.cpp" 
 				"source/sender.cpp" 
 				"source/timeutils.cpp" )
 
@@ -37,18 +37,7 @@ if((NOT LOG_INCLUDE_DIR) OR (NOT EXISTS ${LOG_INCLUDE_DIR}))
     set(LOG_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/log/include
         CACHE PATH "log include directory")
 
-    # also install it
-    #set(asio_dest /usr/local/include)
-    #install(DIRECTORY ${ASIO_INCLUDE_DIR}/asio DESTINATION ${asio_dest})
-
-    # for convenience setup a target
-    #add_library(asio INTERFACE)
-    #target_include_directories(asio INTERFACE
-    #                           $<BUILD_INTERFACE:${ASIO_INCLUDE_DIR}>
-    #                           $<INSTALL_INTERFACE:${asio_dest}>)
-
-    # need to export target as well
-    #install(TARGETS asio EXPORT my_export_set DESTINATION ${asio_dest})
+    find_path(LOG_INCLUDE_DIR NAMES "log.h" PATHS ${CMAKE_CURRENT_SOURCE_DIR}/external/log/include)
 else()
 	 add_subdirectory(${PROJECT_SOURCE_DIR}/external/log ${CMAKE_CURRENT_BINARY_DIR}/log)
 	message("Found pml::log")
@@ -74,18 +63,6 @@ if((NOT ASIO_INCLUDE_DIR) OR (NOT EXISTS ${ASIO_INCLUDE_DIR}))
     set(ASIO_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/asio/asio/include
         CACHE PATH "asio include directory")
 
-    # also install it
-    #set(asio_dest /usr/local/include)
-    #install(DIRECTORY ${ASIO_INCLUDE_DIR}/asio DESTINATION ${asio_dest})
-
-    # for convenience setup a target
-    #add_library(asio INTERFACE)
-    #target_include_directories(asio INTERFACE
-    #                           $<BUILD_INTERFACE:${ASIO_INCLUDE_DIR}>
-    #                           $<INSTALL_INTERFACE:${asio_dest}>)
-
-    # need to export target as well
-    #install(TARGETS asio EXPORT my_export_set DESTINATION ${asio_dest})
 else()
 	message("Found Asio")
 endif()
@@ -105,7 +82,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	target_link_libraries(ptpmonkey pthread)
 endif()
 
-set_target_properties(ptpmonkey PROPERTIES LIBRARY_OUTPUT_DIRECTORY "../lib/")
+set_target_properties(ptpmonkey PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../lib/)
 
 #linux specific
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -124,6 +101,6 @@ target_compile_definitions(ptpmonkeyexample PUBLIC NDEBUG DLL_EXPORTS)
 
 target_link_libraries(ptpmonkeyexample ptpmonkey)
 
-set_target_properties(ptpmonkeyexample PROPERTIES RUNTIME_OUTPUT_DIRECTORY "../bin")
+set_target_properties(ptpmonkeyexample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 
 
