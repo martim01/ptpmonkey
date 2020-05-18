@@ -105,6 +105,7 @@
 				<Compiler>
 					<Add option="-O3" />
 					<Add option="-D__GNU__" />
+					<Add option="-DNDEBUG" />
 					<Add directory="$(#asio.INCLUDE)" />
 				</Compiler>
 				<Linker>
