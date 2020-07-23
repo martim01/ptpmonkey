@@ -71,10 +71,11 @@ class PtpMonkeyImplementation
         **/
         std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator GetClocksEnd() const;
 
-        /** @brief Gets a const pointer to the current master clock. May return nullptr if there is no current master.
+        /** @brief Gets a const pointer to the current sync master clock. May return nullptr if there is no current master.
         *   @return <i>std::shared_ptr<const PtpV2Clock></i>
+        *   @note the returned clock may be a boundary clock or the grandmaster
         **/
-        std::shared_ptr<const PtpV2Clock> GetMasterClock() const;
+        std::shared_ptr<const PtpV2Clock> GetSyncMasterClock() const;
 
         /** @brief Gets the clock id of the local clock.
         *   @return <i>string<i>
@@ -129,7 +130,7 @@ class PtpMonkeyImplementation
 
         std::map<std::string, std::shared_ptr<PtpV2Clock> >::iterator GetOrCreateClock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
 
-        void ChangeMaster(std::shared_ptr<PtpV2Clock> pNewMaster);
+        void ChangeSyncMaster(std::shared_ptr<PtpV2Clock> pNewMaster);
         void CheckForDeadClocks();
 
         IpAddress m_local;
@@ -140,7 +141,7 @@ class PtpMonkeyImplementation
 
         std::map<std::string, std::shared_ptr<PtpV2Clock> > m_mClocks;
 
-        std::shared_ptr<PtpV2Clock> m_pMaster;
+        std::shared_ptr<PtpV2Clock> m_pSyncMaster;
 
         std::list<std::shared_ptr<PtpEventHandler>> m_lstEventHandler;
 

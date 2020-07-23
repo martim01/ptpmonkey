@@ -318,6 +318,12 @@ bool PtpV2Clock::UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::share
         bChanged = true;
     }
 
+    if(m_sGrandmasterClockId != pAnnounce->sGrandmasterClockId)
+    {
+        m_sGrandmasterClockId = pAnnounce->sGrandmasterClockId;
+        bChanged = true;
+    }
+
     if(m_sClockId != pHeader->source.sSourceId)
     {
         m_sClockId = pHeader->source.sSourceId;

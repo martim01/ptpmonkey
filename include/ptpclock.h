@@ -56,6 +56,8 @@ namespace ptpmonkey
             {   return m_nGrandmasterPriority2; }
             const std::string& GetId() const
             {   return m_sClockId;  }
+            const std::string& GetGrandmasterId() const
+            {   return m_sGrandmasterClockId;  }
             unsigned short GetStepsRemoved() const
             {   return m_nStepsRemoved; }
             unsigned char GetTimeSource() const
@@ -87,6 +89,7 @@ namespace ptpmonkey
             unsigned char m_nGrandmasterAccuracy;
             unsigned short m_nGrandmasterVariance;
             unsigned char m_nGrandmasterPriority2;
+            std::string m_sGrandmasterClockId;
             std::string m_sClockId;
             unsigned short m_nStepsRemoved;
             unsigned char m_nTimeSource;

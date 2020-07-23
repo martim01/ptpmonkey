@@ -34,7 +34,7 @@ PtpMonkeyImplementation::PtpMonkeyImplementation(const IpAddress& ipAddress, uns
     m_nDomain(nDomain),
     m_nSampleSize(nSampleSize),
     m_delayRequest(enumDelayRequest),
-    m_pMaster(nullptr),
+    m_pSyncMaster(nullptr),
     m_nLocalClockId(GenerateClockIdentity(m_local)),
     m_pLocal(nullptr)
 {
@@ -46,7 +46,7 @@ PtpMonkeyImplementation::PtpMonkeyImplementation(const IpInterface& ipInterface,
     m_nDomain(nDomain),
     m_nSampleSize(nSampleSize),
     m_delayRequest(enumDelayRequest),
-    m_pMaster(nullptr),
+    m_pSyncMaster(nullptr),
     m_nLocalClockId(GenerateClockIdentity(m_local)),
     m_pLocal(nullptr)
 {
@@ -140,9 +140,9 @@ void PtpMonkeyImplementation::Sync(std::shared_ptr<ptpV2Header> pHeader, std::sh
             pHandler->SyncSent(itClock->second);
         }
 
-        if(m_pMaster != itClock->second)
+        if(m_pSyncMaster != itClock->second)
         {
-            ChangeMaster(itClock->second);
+            ChangeSyncMaster(itClock->second);
         }
 
 
@@ -155,18 +155,18 @@ void PtpMonkeyImplementation::Sync(std::shared_ptr<ptpV2Header> pHeader, std::sh
     }
 }
 
-void PtpMonkeyImplementation::ChangeMaster(std::shared_ptr<PtpV2Clock> pNewMaster)
+void PtpMonkeyImplementation::ChangeSyncMaster(std::shared_ptr<PtpV2Clock> pNewMaster)
 {
     for(auto pHandler : m_lstEventHandler)
     {
         pHandler->ClockBecomeMaster(pNewMaster);
-        if(m_pMaster)
+        if(m_pSyncMaster)
         {
-            pHandler->ClockBecomeSlave(m_pMaster);
+            pHandler->ClockBecomeSlave(m_pSyncMaster);
         }
     }
     std::lock_guard<std::mutex> lg(m_mutex);
-    m_pMaster = pNewMaster;
+    m_pSyncMaster = pNewMaster;
 }
 
 void PtpMonkeyImplementation::FollowUp(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
@@ -181,9 +181,9 @@ void PtpMonkeyImplementation::FollowUp(std::shared_ptr<ptpV2Header> pHeader, std
             pHandler->FollowUpSent(itClock->second);
         }
 
-        if(m_pMaster != itClock->second)
+        if(m_pSyncMaster != itClock->second)
         {
-            ChangeMaster(itClock->second);
+            ChangeSyncMaster(itClock->second);
         }
     }
     //send the sync to our local clock
@@ -219,9 +219,9 @@ void PtpMonkeyImplementation::DelayResponse(std::shared_ptr<ptpV2Header> pHeader
         {
             pHandler->DelayResponseSent(itClock->second);
         }
-        if(m_pMaster != itClock->second)
+        if(m_pSyncMaster != itClock->second)
         {
-            ChangeMaster(itClock->second);
+            ChangeSyncMaster(itClock->second);
         }
     }
 
@@ -313,20 +313,20 @@ std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator PtpMonkeyImp
     return m_mClocks.end();
 }
 
-std::shared_ptr<const PtpV2Clock> PtpMonkeyImplementation::GetMasterClock() const
+std::shared_ptr<const PtpV2Clock> PtpMonkeyImplementation::GetSyncMasterClock() const
 {
     std::lock_guard<std::mutex> lg(m_mutex);
 
-    return m_pMaster;
+    return m_pSyncMaster;
 }
 
 std::string PtpMonkeyImplementation::GetMasterClockId() const
 {
     std::lock_guard<std::mutex> lg(m_mutex);
 
-    if(m_pMaster)
+    if(m_pSyncMaster)
     {
-        return m_pMaster->GetClockId();
+        return m_pSyncMaster->GetGrandmasterClockId();
     }
     return "";
 }
@@ -370,9 +370,9 @@ void PtpMonkeyImplementation::CheckForDeadClocks()
             {
                 pHandler->ClockRemoved(itClock->second);
             }
-            if(m_pMaster == itClock->second)
+            if(m_pSyncMaster == itClock->second)
             {
-                m_pMaster = nullptr;
+                m_pSyncMaster = nullptr;
             }
             if(m_pLocal == itClock->second)
             {
@@ -392,7 +392,7 @@ void PtpMonkeyImplementation::CheckForDeadClocks()
 void PtpMonkeyImplementation::Stop()
 {
     m_context.stop();
-    m_pMaster = nullptr;
+    m_pSyncMaster = nullptr;
     m_mClocks.clear();
 }
 

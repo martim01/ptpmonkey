@@ -128,7 +128,7 @@ namespace ptpmonkey
         unsigned char nGrandmasterAccuracy;
         unsigned short nGrandmasterVariance;
         unsigned char nGrandmasterPriority2;
-        std::string sClockId;
+        std::string sGrandmasterClockId;
         unsigned short nStepsRemoved;
         unsigned char nTimeSource;
 

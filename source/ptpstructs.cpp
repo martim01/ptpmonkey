@@ -193,7 +193,7 @@ ptpAnnounce::ptpAnnounce(const std::vector<unsigned char>& vMessage) : ptpV2Payl
         ssId << std::setw(2) << std::setfill('0') << std::hex;
         ssId << (int)vMessage[i+19];
     }
-    sClockId = ssId.str();
+    sGrandmasterClockId = ssId.str();
 
     nStepsRemoved = (vMessage[27] << 8) | vMessage[28];
     nTimeSource = vMessage[29];
@@ -208,7 +208,7 @@ void ptpAnnounce::OutputValues()
     pml::Log::Get(pml::Log::LOG_DEBUG) << "GrandmasterAccuracy = " << (int)nGrandmasterAccuracy << std::endl;
     pml::Log::Get(pml::Log::LOG_DEBUG) << "GrandmasterVariance = " << (int)nGrandmasterVariance << std::endl;
     pml::Log::Get(pml::Log::LOG_DEBUG) << "GrandmasterPriority2 = " << (int)nGrandmasterPriority2 << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "Clock Id = " << sClockId << std::endl;
+    pml::Log::Get(pml::Log::LOG_DEBUG) << "Grandmaster ClockId = " << sGrandmasterClockId << std::endl;
     pml::Log::Get(pml::Log::LOG_DEBUG) << "Steps = " << (int)nStepsRemoved << std::endl;
     pml::Log::Get(pml::Log::LOG_DEBUG) << "Time Source = " << (int)nTimeSource << std::endl;
 }
