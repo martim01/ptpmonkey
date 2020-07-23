@@ -102,10 +102,10 @@ namespace ptpmonkey
             **/
             std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator GetClocksEnd() const;
 
-            /** @brief Gets a const pointer to the current master clock. May return nullptr if there is no current master.
+            /** @brief Gets a const pointer to the current master or boundary clock. May return nullptr if there is no current master.
             *   @return <i>std::shared_ptr<const PtpV2Clock></i>
             **/
-            std::shared_ptr<const PtpV2Clock> GetMasterClock() const;
+            std::shared_ptr<const PtpV2Clock> GetSyncMasterClock() const;
 
             /** @brief Gets a const pointer to the clock with the given id. May return nullptr if there is no clock.
             *   @return <i>std::shared_ptr<const PtpV2Clock></i>

@@ -61,9 +61,9 @@ std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator PtpMonkey::G
     return m_pImpl->GetClocksEnd();
 }
 
-std::shared_ptr<const PtpV2Clock> PtpMonkey::GetMasterClock() const
+std::shared_ptr<const PtpV2Clock> PtpMonkey::GetSyncMasterClock() const
 {
-    return m_pImpl->GetMasterClock();
+    return m_pImpl->GetSyncMasterClock();
 }
 
 std::string PtpMonkey::GetMasterClockId() const

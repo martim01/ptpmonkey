@@ -56,7 +56,7 @@ namespace ptpmonkey
             {   return m_nGrandmasterPriority2; }
             const std::string& GetId() const
             {   return m_sClockId;  }
-            const std::string& GetGrandmasterId() const
+            const std::string& GetGrandmasterClockId() const
             {   return m_sGrandmasterClockId;  }
             unsigned short GetStepsRemoved() const
             {   return m_nStepsRemoved; }

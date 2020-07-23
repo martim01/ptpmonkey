@@ -119,7 +119,7 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
     theMessage.timestamp = TimeNow();
     if(res > 34+nOffset)        // @todo make 34 a constant referring to header size
     {
-        pml::Log::Get(pml::Log::LOG_TRACE) << (nFlags & MSG_ERRQUEUE)  ? "TX " : "RX ";
+        pml::Log::Get(pml::Log::LOG_TRACE) << ((nFlags & MSG_ERRQUEUE)  ? "TX " : "RX ");
         //this should be the timestamp ,sg
         for(cmsghdr* cmsg = CMSG_FIRSTHDR(&msg); cmsg; cmsg = CMSG_NXTHDR(&msg, cmsg))
         {

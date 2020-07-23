@@ -84,7 +84,7 @@ void Sender::DoSend()
 {
     bool bDebug = false;
 
-    if(m_manager.GetMasterClock() != nullptr || bDebug)
+    if(m_manager.GetSyncMasterClock() != nullptr || bDebug)
     {
 
         m_socket.async_send_to(asio::buffer(CreateRequest()), m_endpoint,

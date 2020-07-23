@@ -62,6 +62,7 @@ if((NOT ASIO_INCLUDE_DIR) OR (NOT EXISTS ${ASIO_INCLUDE_DIR}))
     # set ASIO_INCLUDE_DIR properly
     set(ASIO_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/asio/asio/include
         CACHE PATH "asio include directory")
+find_path(ASIO_INCLUDE_DIR NAMES "asio.hpp" PATHS ${CMAKE_CURRENT_SOURCE_DIR}/external/asio/asio/include)
 
 else()
 	message("Found Asio")
