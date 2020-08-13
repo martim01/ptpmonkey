@@ -1,17 +1,28 @@
 #pragma once
 #include <string>
 #include <chrono>
+#include "ptpdll.h"
 
 
 static const std::chrono::seconds LEAP_SECONDS(37);
 
 using time_s_ns = std::pair<std::chrono::seconds, std::chrono::nanoseconds>;
 
+extern PTP_IMPEXPORT time_s_ns Now();
+extern PTP_IMPEXPORT std::string TimeToString(const time_s_ns& ts);
+extern PTP_IMPEXPORT std::string TimeToIsoString(const time_s_ns& ts);
+
+extern PTP_IMPEXPORT long long int TimeToNano(const time_s_ns& ts);
+extern PTP_IMPEXPORT time_s_ns NanoToTime(long long int nNano);
+
+extern PTP_IMPEXPORT double TimeToDouble(const time_s_ns& ts);
+extern PTP_IMPEXPORT time_s_ns DoubleToTime(double dNano);
 
 extern time_s_ns operator+(const time_s_ns& t1, const time_s_ns& t2);
 extern time_s_ns operator-(const time_s_ns& t1, const time_s_ns& t2);
 extern time_s_ns operator/(const time_s_ns& t1, unsigned int nDivisor);
 extern bool operator==(const time_s_ns& t1, const time_s_ns& t2);
+
 
 namespace ptpmonkey
 {
@@ -20,14 +31,6 @@ namespace ptpmonkey
 
     static constexpr time_s_ns TIMEZERO = std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0));
 
-    extern time_s_ns Now();
-    extern std::string TimeToString(const time_s_ns& ts);
-    extern std::string TimeToIsoString(const time_s_ns& ts);
 
-    extern long long int TimeToNano(const time_s_ns& ts);
-    extern time_s_ns NanoToTime(long long int nNano);
-
-    extern double TimeToDouble(const time_s_ns& ts);
-    extern time_s_ns DoubleToTime(double dNano);
 
 };
