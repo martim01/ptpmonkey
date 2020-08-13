@@ -169,6 +169,7 @@ void Sender::DoTimeout()
 
 void Sender::GetTxTimestamp()
 {
+    #ifdef __GNU__
     pml::Log::Get(pml::Log::LOG_TRACE) << "SENDER: ";
     rawMessage aMessage = Receiver::NativeReceive(m_socket, MSG_ERRQUEUE);
     if(aMessage.vBuffer.size() >= 34)
@@ -177,4 +178,5 @@ void Sender::GetTxTimestamp()
         //tell the local client what the actual timestamp for this message a
         m_manager.DelayRequestSent(pMessage.first, pMessage.second);
     }
+    #endif // __GNU__
 }

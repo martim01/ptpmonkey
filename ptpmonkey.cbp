@@ -33,6 +33,7 @@
 					<Add option="-std=c++14" />
 					<Add option="-D_WIN32_WINNT=0x0601" />
 					<Add directory="$(#asio.INCLUDE)" />
+					<Add directory="../log/include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />

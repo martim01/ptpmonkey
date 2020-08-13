@@ -110,9 +110,12 @@ unsigned long long int GenerateClockIdentity(const IpAddress& ipAddress)
 }
 
 #else
-#include "winsock2.h"
+#include "windef.h"
+#include "winbase.h"
 #include "iphlpapi.h"
+#include "iptypes.h"
 #include "ws2tcpip.h"
+#include "winsock2.h"
 
 unsigned long long int GenerateClockIdentity(const IpAddress& sIpAddress)
 {
