@@ -116,7 +116,7 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
     int nOffset = (nFlags&MSG_ERRQUEUE) ? 42 : 0;       // @todo why 42 bytes for error queue?
 
     rawMessage theMessage;
-    theMessage.timestamp = TimeNow();
+    theMessage.timestamp = Now();
     if(res > 34+nOffset)        // @todo make 34 a constant referring to header size
     {
         pml::Log::Get(pml::Log::LOG_TRACE) << ((nFlags & MSG_ERRQUEUE)  ? "TX " : "RX ");
@@ -134,7 +134,7 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
                     theMessage.timestamp.first = std::chrono::seconds(stamp->tv_sec);
                     theMessage.timestamp.second = std::chrono::nanoseconds(stamp->tv_nsec);
 
-                    pml::Log::Get(pml::Log::LOG_TRACE) << "SW : " << TimeToIsoString(theMessage.timestamp) << "\t" << TimeToIsoString(TimeNow());
+                    pml::Log::Get(pml::Log::LOG_TRACE) << "SW : " << TimeToIsoString(theMessage.timestamp) << "\t" << TimeToIsoString(Now());
                     stamp++;
                     stamp++;
 
@@ -154,11 +154,11 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
                     theMessage.timestamp.first = std::chrono::seconds(ts->tv_sec);
                     theMessage.timestamp.second = std::chrono::nanoseconds(ts->tv_nsec);
 
-                    pml::Log::Get(pml::Log::LOG_TRACE) << "SO_TIMESTAMPNS: " << TimeToIsoString(theMessage.timestamp) << "\tNow: " << TimeToIsoString(TimeNow());
+                    pml::Log::Get(pml::Log::LOG_TRACE) << "SO_TIMESTAMPNS: " << TimeToIsoString(theMessage.timestamp) << "\tNow: " << TimeToIsoString(Now());
                 }
             }
         }
-        pml::Log::Get(pml::Log::LOG_TRACE) << "\tDelay: " << TimeToString(TimeNow()-theMessage.timestamp);
+        pml::Log::Get(pml::Log::LOG_TRACE) << "\tDelay: " << TimeToString(Now()-theMessage.timestamp);
         pml::Log::Get(pml::Log::LOG_TRACE) << std::endl;
 
 

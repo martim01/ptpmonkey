@@ -3,6 +3,8 @@
 #include <memory>
 #include <map>
 #include <list>
+#include "ptpdll.h"
+
 
 namespace ptpmonkey
 {
@@ -12,7 +14,7 @@ namespace ptpmonkey
 
     };
 
-    class PtpV2Clock : public PtpClock
+    class PTP_IMPEXPORT PtpV2Clock : public PtpClock
     {
         public:
             PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce);
@@ -62,8 +64,11 @@ namespace ptpmonkey
             {   return m_nStepsRemoved; }
             unsigned char GetTimeSource() const
             {   return m_nTimeSource;   }
-            bool IsMaster() const
-            {   return m_bMaster;   }
+            bool IsGrandMaster() const
+            {   return m_bGrandMaster;   }
+            bool IsSyncMaster() const
+            {   return m_bSyncMaster;   }
+
             unsigned short GetFlags(ptpV2Header::enumType eType) const;
 
             time_s_ns GetLastMessageTime() const
@@ -93,7 +98,8 @@ namespace ptpmonkey
             std::string m_sClockId;
             unsigned short m_nStepsRemoved;
             unsigned char m_nTimeSource;
-            bool m_bMaster;
+            bool m_bGrandMaster;
+            bool m_bSyncMaster;
             unsigned short m_nFollowUpSequence;
             unsigned short m_nSampleSize;
 

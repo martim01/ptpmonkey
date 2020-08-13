@@ -5,8 +5,9 @@
 #include <ctime>
 
 
+using namespace ptpmonkey;
 
-time_s_ns TimeNow()
+time_s_ns Now()
 {
     std::chrono::time_point<std::chrono::high_resolution_clock> tp(std::chrono::high_resolution_clock::now());
    // tp += LEAP_SECONDS;

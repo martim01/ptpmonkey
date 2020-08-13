@@ -14,7 +14,8 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
     m_sClockId(pHeader->source.sSourceId),
     m_nStepsRemoved(pAnnounce->nStepsRemoved),
     m_nTimeSource(pAnnounce->nTimeSource),
-    m_bMaster(false),
+    m_bGrandMaster(false),
+    m_bSyncMaster(false),
     m_nSampleSize(10),
     m_sIpAddress(pHeader->sIpAddress),
     m_nt1s(0),
@@ -39,7 +40,8 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
     m_sClockId(pHeader->source.sSourceId),
     m_nStepsRemoved(0),
     m_nTimeSource(0),
-    m_bMaster(false),
+    m_bGrandMaster(false),
+    m_bSyncMaster(false),
     m_nSampleSize(10),
     m_sIpAddress(pHeader->sIpAddress),
     m_nt1s(0),
@@ -58,13 +60,13 @@ void PtpV2Clock::SyncFrom(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<
     m_mCount[ptpV2Header::SYNC].value++;
 
     m_mFlags[pHeader->nType] = pHeader->nFlags;
-    m_bMaster = true;
+    m_bSyncMaster = true;
 
 }
 
 void PtpV2Clock::SyncTo(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
 {
-    m_bMaster = false;
+    m_bSyncMaster = false;
     if((pHeader->nFlags & ptpV2Header::TWO_STEP) != 0)   //2-step
     {
         m_nt1r = TimeToNano(pHeader->timestamp);
@@ -88,14 +90,14 @@ void PtpV2Clock::FollowUpFrom(std::shared_ptr<ptpV2Header> pHeader, std::shared_
     m_mCount[ptpV2Header::FOLLOW_UP].value++;
     m_mFlags[pHeader->nType] = pHeader->nFlags;
 
-    m_bMaster = true;
+    m_bSyncMaster = true;
 
 
 }
 
 void PtpV2Clock::FollowUpTo(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
 {
-    m_bMaster = false;
+    m_bSyncMaster = false;
     m_nt1s = TimeToNano(pPayload->originTime);
 
     //check the follow up sequence is correct
@@ -133,7 +135,7 @@ void PtpV2Clock::DelayResponseFrom(std::shared_ptr<ptpV2Header> pHeader, std::sh
     m_mInterval[ptpV2Header::DELAY_RESP] = pHeader->nInterval;
     m_mCount[ptpV2Header::DELAY_RESP].value++;
     m_mFlags[pHeader->nType] = pHeader->nFlags;
-    m_bMaster = true;
+    m_bSyncMaster = true;
 
 }
 
@@ -247,7 +249,7 @@ void PtpV2Clock::ResyncToMaster()
 
 time_s_ns PtpV2Clock::GetPtpTime()  const
 {
-    return (TimeNow()-m_calculatedAt)+m_calculatedPtp;//m_offset.stat[SET];
+    return (Now()-m_calculatedAt)+m_calculatedPtp;//m_offset.stat[SET];
 
 }
 
@@ -321,6 +323,7 @@ bool PtpV2Clock::UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::share
     if(m_sGrandmasterClockId != pAnnounce->sGrandmasterClockId)
     {
         m_sGrandmasterClockId = pAnnounce->sGrandmasterClockId;
+        m_bGrandMaster = (m_sGrandmasterClockId == m_sClockId);
         bChanged = true;
     }
 

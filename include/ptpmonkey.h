@@ -4,7 +4,7 @@
 #include <map>
 #include <list>
 #include "namedtype.h"
-
+#include "ptpdll.h"
 namespace ptpmonkey
 {
 
@@ -22,7 +22,7 @@ namespace ptpmonkey
 
     /** @class Main class for interfacing with the PTP code
     **/
-    class PtpMonkey
+    class PTP_IMPEXPORT PtpMonkey
     {
         public:
 

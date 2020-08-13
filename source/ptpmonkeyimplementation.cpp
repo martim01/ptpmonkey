@@ -361,7 +361,7 @@ time_s_ns PtpMonkeyImplementation::GetPtpDelay(PtpV2Clock::enumCalc eCalc) const
 void PtpMonkeyImplementation::CheckForDeadClocks()
 {
 
-    auto now = TimeNow();
+    auto now = Now();
     for(auto itClock  = m_mClocks.begin(); itClock != m_mClocks.end();)
     {
         if((TimeToNano(now) - TimeToNano(itClock->second->GetLastMessageTime())) > 5*1e9)

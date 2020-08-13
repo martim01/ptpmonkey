@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include "timeutils.h"
+#include "ptpdll.h"
 
 namespace ptpmonkey
 {
@@ -11,7 +12,7 @@ namespace ptpmonkey
     /** @struct header
     *   @brief abstract base class for the header of any message
     **/
-    struct header
+    struct PTP_IMPEXPORT header
     {
         /** @brief Output the header values for debug purposes **/
         virtual void OutputValues()=0;
@@ -21,7 +22,7 @@ namespace ptpmonkey
     /** @struct payload
     *   @brief abstract base class for the payload of any message
     **/
-    struct payload
+    struct PTP_IMPEXPORT payload
     {
         /** @brief Output the payload values for debug purposes **/
         virtual void OutputValues()=0;
@@ -30,7 +31,7 @@ namespace ptpmonkey
     /** @struct ptpHeader
     *   @brief  base class for the header of a v1 and v2 ptp message
     **/
-    struct ptpHeader : header
+    struct PTP_IMPEXPORT ptpHeader : header
     {
         ptpHeader(const time_s_ns& socketTime);
         ptpHeader(){};
@@ -45,7 +46,7 @@ namespace ptpmonkey
     /** @struct ptpPayload
     *   @brief  base class for the payload of a v1 and v2 ptp message
     **/
-    struct ptpPayload : payload
+    struct PTP_IMPEXPORT ptpPayload : payload
     {
         time_s_ns originTime;   ///< The time the message was sent by the ptp clock
     };
@@ -53,7 +54,7 @@ namespace ptpmonkey
     /** @struct ptpPayload
     *   @brief  contains the source id and port of a ptp clock
     **/
-    struct ptpSource
+    struct PTP_IMPEXPORT ptpSource
     {
         ///< default constructor
         ptpSource(){}
@@ -69,7 +70,7 @@ namespace ptpmonkey
         unsigned short nSourcePort;
     };
 
-    struct ptpV2Header : public ptpHeader
+    struct PTP_IMPEXPORT ptpV2Header : public ptpHeader
     {
         ptpV2Header(){}
         ptpV2Header(const time_s_ns& socketTime, const std::vector<unsigned char>& vMessage);
@@ -107,7 +108,7 @@ namespace ptpmonkey
 
 
 
-    struct ptpV2Payload : public ptpPayload
+    struct PTP_IMPEXPORT ptpV2Payload : public ptpPayload
     {
         ptpV2Payload(){}
         ptpV2Payload(const std::vector<unsigned char>& vMessage);
@@ -117,7 +118,7 @@ namespace ptpmonkey
 
     };
 
-    struct ptpAnnounce : public ptpV2Payload
+    struct PTP_IMPEXPORT ptpAnnounce : public ptpV2Payload
     {
         ptpAnnounce(const std::vector<unsigned char>& vMessage);
         void OutputValues() final;
@@ -141,7 +142,7 @@ namespace ptpmonkey
             enum enumTimeSource {ATOMIC = 0x10, GPS = 0x20, RADIO = 0x30, PTP = 0x40, NTP = 0x50, HANDSET = 0x60, OTHER = 0x90, INTERNAL = 0xA0};
     };
 
-    struct ptpDelayResponse : public ptpV2Payload
+    struct PTP_IMPEXPORT ptpDelayResponse : public ptpV2Payload
     {
         ptpDelayResponse(const std::vector<unsigned char>& vMessage);
         void OutputValues() final;

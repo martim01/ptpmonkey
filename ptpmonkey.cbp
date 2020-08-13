@@ -76,7 +76,7 @@
 					<Add library="pml_logd" />
 				</Linker>
 			</Target>
-			<Target title="Linux Release">
+			<Target title="Linux Example Release">
 				<Option platforms="Unix;" />
 				<Option output="bin/Release/ptpmonkey" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
@@ -88,12 +88,13 @@
 					<Add option="-O3" />
 					<Add option="-D__GNU__" />
 					<Add directory="$(#asio.INCLUDE)" />
+					<Add directory="/usr/local/lib/pam2" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add library="pthread" />
-					<Add library="ptpmonkey" />
 					<Add library="pml_log" />
+					<Add library="ptpmonkey" />
 					<Add directory="./bin" />
 				</Linker>
 			</Target>
@@ -146,7 +147,7 @@
 			<Option target="Windows Debug" />
 			<Option target="Windows Release" />
 			<Option target="Windows tests" />
-			<Option target="Linux Release" />
+			<Option target="Linux Example Release" />
 			<Option target="Linux Debug" />
 		</Unit>
 		<Unit filename="include/handler.h">
@@ -174,7 +175,7 @@
 			<Option target="Windows Debug" />
 			<Option target="Windows Release" />
 			<Option target="Windows tests" />
-			<Option target="Linux Release" />
+			<Option target="Linux Example Release" />
 			<Option target="Linux Shared Lib Release" />
 			<Option target="Linux Shared Lib Debug" />
 		</Unit>

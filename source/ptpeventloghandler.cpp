@@ -20,7 +20,8 @@ void PtpEventLogHandler::ClockAdded(std::shared_ptr<PtpV2Clock> pClock)
     pml::Log::Get() << "Steps:\t\t" << (int)pClock->GetStepsRemoved()  << std::endl;
     pml::Log::Get() << "Source:\t\t" << std::hex << "0x" << (int)pClock->GetTimeSource()  << std::endl;
     pml::Log::Get() << "Flags:\t\t" << std::hex << "0x" << (int)pClock->GetFlags(ptpV2Header::ANNOUNCE)  << std::endl;
-    pml::Log::Get() << (pClock->IsMaster() ? "Master" : "Slave") << std::endl;
+    pml::Log::Get() << (pClock->IsGrandMaster() ? "Master" : "Slave") << std::endl;
+    pml::Log::Get() << (pClock->IsSyncMaster() ? "Sync Master" : "Slave") << std::endl;
     pml::Log::Get() << "---------------------------" << std::endl;
 }
 
@@ -39,7 +40,8 @@ void PtpEventLogHandler::ClockUpdated(std::shared_ptr<PtpV2Clock> pClock)
     pml::Log::Get() << "Steps:\t\t" << (int)pClock->GetStepsRemoved()  << std::endl;
     pml::Log::Get() << "Source:\t\t" << std::hex << "0x" << (int)pClock->GetTimeSource()  << std::endl;
     pml::Log::Get() << "Flags:\t\t" << std::hex << "0x" << (int)pClock->GetFlags(ptpV2Header::ANNOUNCE)  << std::endl;
-    pml::Log::Get() << (pClock->IsMaster() ? "Master" : "Slave") << std::endl;
+    pml::Log::Get() << (pClock->IsGrandMaster() ? "Master" : "Slave") << std::endl;
+    pml::Log::Get() << (pClock->IsSyncMaster() ? "Sync Master" : "Slave") << std::endl;
     pml::Log::Get() << "---------------------------" << std::endl;
 }
 
@@ -67,7 +69,7 @@ void PtpEventLogHandler::ClockRemoved(std::shared_ptr<PtpV2Clock> pClock)
 void PtpEventLogHandler::ClockTimeCalculated(std::shared_ptr<PtpV2Clock> pClock)
 {
     pml::Log::Get() << "Time Calculated :\t\t" << pClock->GetId() << std::endl;
-    pml::Log::Get() << TimeToIsoString(pClock->GetPtpTime()) << "\tat " << TimeToIsoString(TimeNow()) << "\t" << TimeToString(TimeNow()-pClock->GetPtpTime()) << std::endl;
+    pml::Log::Get() << TimeToIsoString(pClock->GetPtpTime()) << "\tat " << TimeToIsoString(Now()) << "\t" << TimeToString(Now()-pClock->GetPtpTime()) << std::endl;
     pml::Log::Get() << "Requests: " << pClock->GetCount(ptpV2Header::DELAY_REQ) << " interval: " << std::hex << (int)pClock->GetInterval(ptpV2Header::DELAY_REQ) << std::dec << std::endl;
     pml::Log::Get() << "Responses: " << pClock->GetCount(ptpV2Header::DELAY_RESP) << " interval: " << std::hex << (int)pClock->GetInterval(ptpV2Header::DELAY_RESP) << std::dec << std::endl;
     pml::Log::Get() << "Delay_Set:" << TimeToString(pClock->GetDelay(PtpV2Clock::SET)) << std::endl;

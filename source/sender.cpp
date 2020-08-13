@@ -100,7 +100,7 @@ void Sender::DoSend()
                 else
                 {
                     //approximate the timestamp.
-                    time_s_ns timestamp(TimeNow());
+                    time_s_ns timestamp(Now());
                     ptpV2Message pMessage = PtpParser::ParseV2(timestamp, "", m_vBuffer);
                     //tell the local client we've sent a delay request message
                     m_manager.DelayRequestSent(pMessage.first, pMessage.second);
@@ -128,7 +128,7 @@ std::vector<unsigned char> Sender::CreateRequest()
 
     theHeader.nVersion = 2;
     theHeader.nType = 1;
-    theHeader.timestamp = TimeNow();
+    theHeader.timestamp = Now();
 
     theHeader.nMessageLength = 44;
     theHeader.nDomain = 0;  //@todo need to set the domain
@@ -140,7 +140,7 @@ std::vector<unsigned char> Sender::CreateRequest()
     theHeader.nControl = 1;
     theHeader.nInterval = static_cast<unsigned char>(m_manager.GetDelayRate());
 
-    thePayload.originTime = TimeNow();
+    thePayload.originTime = Now();
 
     m_vBuffer = theHeader.CreateMessage();
     std::vector<unsigned char> vPayload(thePayload.CreateMessage());
