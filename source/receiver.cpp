@@ -96,7 +96,8 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
     msghdr msg;
     iovec entry;
     sockaddr_in from_addr;
-    struct { cmsghdr cm; char control[512]; } control;
+    char control[512];
+//    struct { cmsghdr cm; char control[512]; } control;
 
     memset(&msg, 0, sizeof(msg));
     msg.msg_iov = &entry;
