@@ -37,19 +37,19 @@ void Receiver::Run(const asio::ip::address& listen_address, const asio::ip::addr
     {
         if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPING, &nFlags, sizeof(nFlags)) < 0)
         {
-            pml::Log::Get(pml::Log::LOG_WARN) << "Receiver [" << nPort << "]: Failed to set SO_TIMESTAMPING" << std::endl;
+            pml::Log::Get(pml::Log::LOG_WARN) << "PtpMonkey\t" << "Receiver [" << nPort << "]: Failed to set SO_TIMESTAMPING" << std::endl;
             if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPNS, &nFlags, sizeof(nFlags)))
             {
-                pml::Log::Get(pml::Log::LOG_WARN) << "Receiver [" << nPort << "]: Failed to set SO_TIMESTAMPNS" << std::endl;
+                pml::Log::Get(pml::Log::LOG_WARN) << "PtpMonkey\t" << "Receiver [" << nPort << "]: Failed to set SO_TIMESTAMPNS" << std::endl;
             }
             else
             {
-                pml::Log::Get(pml::Log::LOG_INFO) << "Receiver [" << nPort << "]: Set SO_TIMESTAMPNS timestamping" << std::endl;
+                pml::Log::Get(pml::Log::LOG_INFO) << "PtpMonkey\t" << "Receiver [" << nPort << "]: Set SO_TIMESTAMPNS timestamping" << std::endl;
             }
         }
         else
         {
-            pml::Log::Get(pml::Log::LOG_INFO) << "Receiver [" << nPort << "]: Set SO_TIMESTAMPING timestamping" << std::endl;
+            pml::Log::Get(pml::Log::LOG_INFO) << "PtpMonkey\t" << "Receiver [" << nPort << "]: Set SO_TIMESTAMPING timestamping" << std::endl;
         }
     }
     #endif // __GNU__
@@ -59,7 +59,7 @@ void Receiver::Run(const asio::ip::address& listen_address, const asio::ip::addr
     m_socket.bind(listen_endpoint, ec);
     if(ec)
     {
-        pml::Log::Get(pml::Log::LOG_CRITICAL) << "Receiver [" << nPort << "]: Can't bind receiver to endpoint: " << ec << std::endl;
+        pml::Log::Get(pml::Log::LOG_CRITICAL) << "PtpMonkey\t" << "Receiver [" << nPort << "]: Can't bind receiver to endpoint: " << ec << std::endl;
     }
     else
     {
@@ -77,13 +77,13 @@ void Receiver::DoReceive()
     {
         if (!ec)
         {
-            pml::Log::Get(pml::Log::LOG_TRACE) << "RECEIVE: ";
+            pml::Log::Get(pml::Log::LOG_TRACE) << "PtpMonkey\t" << "RECEIVE: ";
             m_pParser->ParseMessage(m_sender_endpoint.address().to_string(), NativeReceive(m_socket, MSG_WAITALL));
             DoReceive();
         }
         else
         {
-            pml::Log::Get(pml::Log::LOG_ERROR) << "Receiver: wait error: " << ec << std::endl;
+            pml::Log::Get(pml::Log::LOG_ERROR) << "PtpMonkey\t" << "Receiver: wait error: " << ec << std::endl;
         }
     });
 }

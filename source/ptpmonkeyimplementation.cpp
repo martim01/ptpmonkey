@@ -88,7 +88,7 @@ bool PtpMonkeyImplementation::Run()
         }
         catch (const std::exception& e)
         {
-            pml::Log::Get(pml::Log::LOG_CRITICAL) << "RUN: " << e.what() << "\n";
+            pml::Log::Get(pml::Log::LOG_CRITICAL) << "PtpMonkey\tRUN: " << e.what() << "\n";
         }
     });
 
@@ -451,27 +451,27 @@ int PtpMonkeyImplementation::GetTimestampingSupported(const IpInterface& interfa
     ioctl(fd, SIOCETHTOOL, & ifr);
 
 
-    pml::Log::Get(pml::Log::LOG_DEBUG) << tsi.so_timestamping << std::endl;
+    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << tsi.so_timestamping << std::endl;
     if(tsi.so_timestamping & SOF_TIMESTAMPING_TX_HARDWARE)
     {
         nSupports |= TIMESTAMP_TX_HARDWARE;
-        pml::Log::Get(pml::Log::LOG_DEBUG) << ifr.ifr_name << " supports harware tx" << std::endl;
+        pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t"<< ifr.ifr_name << " supports harware tx" << std::endl;
     }
     if(tsi.so_timestamping & SOF_TIMESTAMPING_TX_SOFTWARE)
     {
         nSupports |= TIMESTAMP_TX_SOFTWARE;
-        pml::Log::Get(pml::Log::LOG_DEBUG) << ifr.ifr_name << " supports software tx" << std::endl;
+        pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t"<< ifr.ifr_name << " supports software tx" << std::endl;
     }
 
     if(tsi.so_timestamping & SOF_TIMESTAMPING_RX_HARDWARE)
     {
         nSupports |= TIMESTAMP_RX_HARDWARE;
-        pml::Log::Get(pml::Log::LOG_DEBUG) << ifr.ifr_name << " supports harware rx" << std::endl;
+        pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t"<< ifr.ifr_name << " supports harware rx" << std::endl;
     }
     if(tsi.so_timestamping & SOF_TIMESTAMPING_RX_SOFTWARE)
     {
         nSupports |= TIMESTAMP_RX_SOFTWARE;
-        pml::Log::Get(pml::Log::LOG_DEBUG) << ifr.ifr_name << " supports software rx" << std::endl;
+        pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t"<< ifr.ifr_name << " supports software rx" << std::endl;
     }
     #endif // __GNU__
     return nSupports;

@@ -120,12 +120,12 @@ void PtpV2Clock::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_
     auto itRequest = m_mDelayRequest.find(pHeader->nSequenceId);
     if(itRequest != m_mDelayRequest.end())
     {
-        pml::Log::Get(pml::Log::LOG_WARN) << "DelayRequest: Sequence Id repeated: " << std::dec << pHeader->nSequenceId << std::endl;
+        pml::Log::Get(pml::Log::LOG_WARN) << "PtpMonkey\tDelayRequest: Sequence Id repeated: " << std::dec << pHeader->nSequenceId << std::endl;
     }
     else
     {
         m_mDelayRequest.insert(make_pair(pHeader->nSequenceId, pHeader->timestamp));
-        pml::Log::Get(pml::Log::LOG_TRACE) << "DelayRequest: " << std::dec << pHeader->nSequenceId << " timed at: " << TimeToIsoString(pHeader->timestamp) << std::endl;
+        pml::Log::Get(pml::Log::LOG_TRACE) << "PtpMonkey\tDelayRequest: " << std::dec << pHeader->nSequenceId << " timed at: " << TimeToIsoString(pHeader->timestamp) << std::endl;
     }
 }
 
