@@ -113,19 +113,19 @@ std::vector<unsigned char> ptpV2Header::CreateMessage()
 
 void ptpV2Header::OutputValues()
 {
-    pml::Log::Get(pml::Log::LOG_DEBUG) << std::dec;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "Type = " << (int)nType << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "Version = " << (int)nVersion << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "Length = " << (int)nMessageLength << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "SubDomain = " << (int)nDomain << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "Flags = 0x" << std::hex << nFlags << std::dec << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "Correction = " << nCorrection << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "SourceId = " << source.sSourceId << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "SourcePort = " << source.nSourcePort << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "Sequence = " << nSequenceId << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "Control = " << (int)nControl << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "Interval = " << (int)nInterval << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "timestamp = " << TimeToIsoString(timestamp) << std::endl;
+    pml::Log(pml::LOG_DEBUG) << std::dec;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Type = " << (int)nType;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Version = " << (int)nVersion;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Length = " << (int)nMessageLength ;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "SubDomain = " << (int)nDomain ;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Flags = 0x" << std::hex << nFlags << std::dec ;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Correction = " << nCorrection ;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "SourceId = " << source.sSourceId ;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "SourcePort = " << source.nSourcePort ;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Sequence = " << nSequenceId ;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Control = " << (int)nControl ;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Interval = " << (int)nInterval ;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "timestamp = " << TimeToIsoString(timestamp) ;
 }
 
 
@@ -156,7 +156,7 @@ std::vector<unsigned char> ptpV2Payload::CreateMessage()
 
 void ptpV2Payload::OutputValues()
 {
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "Timestamp = " << TimeToString(originTime) << std::endl;
+    pml::Log(pml::LOG_DEBUG) << "Timestamp = " << TimeToString(originTime) ;
 }
 
 
@@ -169,8 +169,8 @@ source(std::vector<unsigned char>(vMessage.begin()+10, vMessage.end()))
 void ptpDelayResponse::OutputValues()
 {
     ptpV2Payload::OutputValues();
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "Source = " << source.sSourceId << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "SourcePort = " << source.nSourcePort << std::endl;
+    pml::Log(pml::LOG_DEBUG) << "Source = " << source.sSourceId ;
+    pml::Log(pml::LOG_DEBUG) << "SourcePort = " << source.nSourcePort ;
 }
 
 ptpAnnounce::ptpAnnounce(const std::vector<unsigned char>& vMessage) : ptpV2Payload(vMessage)
@@ -202,13 +202,13 @@ ptpAnnounce::ptpAnnounce(const std::vector<unsigned char>& vMessage) : ptpV2Payl
 void ptpAnnounce::OutputValues()
 {
     ptpV2Payload::OutputValues();
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "UTC Offset = " << (int)nUtcOffset << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterPriority1 = " << (int)nGrandmasterPriority1 << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterClass = " << (int)nGrandmasterClass << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterAccuracy = " << (int)nGrandmasterAccuracy << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterVariance = " << (int)nGrandmasterVariance << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterPriority2 = " << (int)nGrandmasterPriority2 << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "Grandmaster ClockId = " << sGrandmasterClockId << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "Steps = " << (int)nStepsRemoved << std::endl;
-    pml::Log::Get(pml::Log::LOG_DEBUG) << "PtpMonkey\t" << "Time Source = " << (int)nTimeSource << std::endl;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "UTC Offset = " << (int)nUtcOffset ;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterPriority1 = " << (int)nGrandmasterPriority1 ;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterClass = " << (int)nGrandmasterClass ;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterAccuracy = " << (int)nGrandmasterAccuracy ;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterVariance = " << (int)nGrandmasterVariance ;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterPriority2 = " << (int)nGrandmasterPriority2 ;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Grandmaster ClockId = " << sGrandmasterClockId ;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Steps = " << (int)nStepsRemoved ;
+    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Time Source = " << (int)nTimeSource ;
 }
