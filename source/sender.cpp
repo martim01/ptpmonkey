@@ -47,7 +47,7 @@ void Sender::Run()
     // @todo for some reason we get tx software timestamps even though pi says it doesn't suppport it. add this bodge for now to aid debugging
     #if FORCE_SO==1
     m_nTimestampingSupported |= PtpMonkey::TIMESTAMP_TX_SOFTWARE;
-    pml::Log(pml::LOG_WARN) << "PtpMonkey\t" << "Sender: Attempt to set tx software timestamping anyway.";
+    pmlLog(pml::LOG_WARN) << "PtpMonkey\t" << "Sender: Attempt to set tx software timestamping anyway.";
     #endif // FORCE_SO
 
     int nFlags(0);
@@ -58,21 +58,21 @@ void Sender::Run()
     {
         if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPING, &nFlags, sizeof(nFlags)) < 0)
         {
-            pml::Log(pml::LOG_WARN) << "PtpMonkey\t" << "Sender: Failed to set SO_TIMESTAMPING";
+            pmlLog(pml::LOG_WARN) << "PtpMonkey\t" << "Sender: Failed to set SO_TIMESTAMPING";
             m_bTimestampEnabled = (setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPNS, &nFlags, sizeof(nFlags)) >= 0);
             if(!m_bTimestampEnabled)
             {
-                pml::Log(pml::LOG_WARN) << "PtpMonkey\t" << "Sender: Failed to set SO_TIMESTAMPNS";
+                pmlLog(pml::LOG_WARN) << "PtpMonkey\t" << "Sender: Failed to set SO_TIMESTAMPNS";
             }
             else
             {
-                pml::Log(pml::LOG_INFO) << "PtpMonkey\t" << "Sender: Set SO_TIMESTAMPNS timestamping";
+                pmlLog(pml::LOG_INFO) << "PtpMonkey\t" << "Sender: Set SO_TIMESTAMPNS timestamping";
             }
         }
         else
         {
             m_bTimestampEnabled = true;
-            pml::Log(pml::LOG_INFO) << "PtpMonkey\t" << "Sender: Set SO_TIMESTAMPING timestamping";
+            pmlLog(pml::LOG_INFO) << "PtpMonkey\t" << "Sender: Set SO_TIMESTAMPING timestamping";
         }
     }
     #endif
@@ -100,8 +100,7 @@ void Sender::DoSend()
                 else
                 {
                     //approximate the timestamp.
-                    time_s_ns timestamp(Now());
-                    ptpV2Message pMessage = PtpParser::ParseV2(timestamp, "", m_vBuffer);
+                    ptpV2Message pMessage = PtpParser::ParseV2(Now(), "", m_vBuffer);
                     //tell the local client we've sent a delay request message
                     m_manager.DelayRequestSent(pMessage.first, pMessage.second);
                 }
@@ -109,7 +108,7 @@ void Sender::DoSend()
             }
             else
             {
-                pml::Log(pml::LOG_ERROR) << "PtpMonkey\t" << "Sender: Send failed: " << ec;
+                pmlLog(pml::LOG_ERROR) << "PtpMonkey\t" << "Sender: Send failed: " << ec;
             }
         });
     }
@@ -170,7 +169,7 @@ void Sender::DoTimeout()
 void Sender::GetTxTimestamp()
 {
     #ifdef __GNU__
-    pml::Log(pml::LOG_TRACE) << "PtpMonkey\t" << "SENDER: ";
+    pmlLog(pml::LOG_TRACE) << "PtpMonkey\t" << "SENDER: ";
     rawMessage aMessage = Receiver::NativeReceive(m_socket, MSG_ERRQUEUE);
     if(aMessage.vBuffer.size() >= 34)
     {

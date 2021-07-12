@@ -35,23 +35,23 @@ class PtpMonkeyImplementation
         bool Run();
 
         /** @brief Get the time of the master clock for this domain. If there is no master clock returns the system clock time
-        *   @return <i>time_s_ns</i> the time in seconds and nanoseconds
+        *   @return <i>std::chrono::nanoseconds</i> the time in seconds and nanoseconds
         **/
-        time_s_ns GetPtpTime() const;
+        std::chrono::nanoseconds GetPtpTime() const;
 
         bool IsSyncedToMaster() const;
 
         void ResyncToMaster();
 
         /** @brief Gets the set offset between the system clock and the master clock for this domain. If there is no master clock returns <0,0>
-        *   @return <i>time_s_ns</i> the time in seconds and nanoseconds
+        *   @return <i>std::chrono::nanoseconds</i> the time in seconds and nanoseconds
         **/
-        time_s_ns GetPtpOffset(PtpV2Clock::enumCalc eCalc = PtpV2Clock::SET) const;
+        std::chrono::nanoseconds GetPtpOffset(PtpV2Clock::enumCalc eCalc = PtpV2Clock::SET) const;
 
         /** @brief Gets the set network between the system clock and the master clock for this domain. If there is no master clock returns <0,0>
-        *   @return <i>time_s_ns</i> the time in seconds and nanoseconds
+        *   @return <i>std::chrono::nanoseconds</i> the time in seconds and nanoseconds
         **/
-        time_s_ns GetPtpDelay(PtpV2Clock::enumCalc eCalc = PtpV2Clock::SET) const;
+        std::chrono::nanoseconds GetPtpDelay(PtpV2Clock::enumCalc eCalc = PtpV2Clock::SET) const;
 
         /** @brief Gets the clock id of the master clock for this domain. If there is no master clock returns an empty string
         *   @return <i>string<i>

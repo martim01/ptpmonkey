@@ -3,102 +3,76 @@
 #include <iomanip>
 #include <iostream>
 #include <ctime>
-
+#include "log.h"
 
 using namespace ptpmonkey;
 
-time_s_ns Now()
+
+std::chrono::nanoseconds Now()
 {
     std::chrono::time_point<std::chrono::high_resolution_clock> tp(std::chrono::high_resolution_clock::now());
    // tp += LEAP_SECONDS;
-
-    std::chrono::seconds first = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch());
-    std::chrono::nanoseconds second = std::chrono::nanoseconds(std::chrono::duration_cast<std::chrono::nanoseconds>(tp.time_since_epoch()).count()%1000000000);
-    return std::make_pair(first,second);
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(tp.time_since_epoch());
 }
 
-std::string TimeToString(const time_s_ns& ts)
+std::pair<std::chrono::seconds, std::chrono::nanoseconds> Split(const std::chrono::nanoseconds& ts)
+{
+    auto nSeconds = std::chrono::duration_cast<std::chrono::seconds>(ts).count();
+    auto rounded = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(nSeconds));
+    auto nano = ts - rounded;
+    if(nano < std::chrono::nanoseconds(0))
+    {
+        nano = -nano;
+    }
+    return std::make_pair(std::chrono::seconds(nSeconds), nano);
+}
+
+std::string TimeToString(const std::chrono::nanoseconds& ts)
 {
     std::stringstream ss;
-    ss << ts.first.count() << "." << std::setw(9) << std::setfill('0') << ts.second.count();
+    auto split =Split(ts);
+
+    ss << split.first.count() << "." << std::setw(9) << std::setfill('0') << split.second.count();
     return ss.str();
 }
 
-std::string TimeToIsoString(const time_s_ns& ts)
+std::string TimeToIsoString(const std::chrono::nanoseconds& ts)
 {
     std::stringstream ss;
-    std::time_t t = ts.first.count();
+    auto split =Split(ts);
+
+    std::time_t t(split.first.count());
     if(t >= 0)
     {
         std::tm timetm = *std::localtime(&t);
-        ss << std::put_time(&timetm, "%Y-%m-%dT%H:%M:%S") << "." << std::setw(9) << std::setfill('0') << ts.second.count();
+        ss << std::put_time(&timetm, "%Y-%m-%dT%H:%M:%S") << "." << std::setw(9) << std::setfill('0') << split.second.count();
     }
     return ss.str();
 }
 
-long long int TimeToNano(const time_s_ns& ts)
+long long int TimeToNano(const std::chrono::nanoseconds& ts)
 {
+    return ts.count();
 
-    return (std::chrono::duration_cast<std::chrono::nanoseconds>(ts.first)+ts.second).count();
 }
 
-double TimeToDouble(const time_s_ns& ts)
+double TimeToDouble(const std::chrono::nanoseconds& ts)
 {
-    return (static_cast<double>(ts.first.count())+(static_cast<double>(ts.second.count())/1e9));
-}
-time_s_ns DoubleToTime(double dNano)
-{
-    long long int nNano = static_cast<long long int>((dNano-static_cast<long long int>(dNano))*1e9);
-    return make_pair(std::chrono::seconds(static_cast<long long int>(dNano)),
-                    std::chrono::nanoseconds(nNano));
-}
+    double dNano = ts.count();
+    return dNano / (1e9);
 
-time_s_ns NanoToTime(long long int nNano)
+}
+std::chrono::nanoseconds DoubleToTime(double dSeconds)
 {
-    return make_pair( std::chrono::duration_cast<std::chrono::seconds>(std::chrono::nanoseconds(nNano)), (std::chrono::nanoseconds(nNano%1000000000)));
+    return std::chrono::nanoseconds(static_cast<long long int>(dSeconds*1e9));
 }
 
-
-time_s_ns operator+(const time_s_ns& t1, const time_s_ns& t2)
+std::chrono::nanoseconds NanoToTime(long long int nNano)
 {
-    time_s_ns result;
-    std::chrono::nanoseconds tn = t1.second+t2.second;
-    std::chrono::seconds sec = std::chrono::duration_cast<std::chrono::seconds>(tn);
-    result.first = t1.first+t2.first + sec;
-    result.second = tn - std::chrono::duration_cast<std::chrono::nanoseconds>(sec);
-    return result;
+    return std::chrono::nanoseconds(nNano);
 }
 
-time_s_ns operator-(const time_s_ns& t1, const time_s_ns& t2)
+std::chrono::nanoseconds operator*(const std::chrono::nanoseconds& t1, const std::chrono::nanoseconds& t2)
 {
-
-    time_s_ns result;
-    long long int nn = t1.second.count()-t2.second.count();
-
-    result.first = t1.first-t2.first;
-    if(nn < 0)
-    {
-        result.first -= std::chrono::seconds(1);
-        result.second = std::chrono::nanoseconds(1000000000 + (nn%1000000000));
-    }
-    else
-    {
-        result.second = std::chrono::nanoseconds(nn%1000000000);
-    }
-
-    return result;
-}
-
-time_s_ns operator/(const time_s_ns& t1, unsigned int nDivisor)
-{
-    time_s_ns result;
-    result.first = std::chrono::seconds(t1.first.count()/nDivisor);
-    std::chrono::nanoseconds remainder = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(t1.first.count()%nDivisor))+t1.second;
-    result.second = std::chrono::nanoseconds(remainder.count()/nDivisor);
-    return result;
-}
-
-bool operator==(const time_s_ns& t1, const time_s_ns& t2)
-{
-    return (t1.first == t2.first && t1.second == t2.second);
+    return std::chrono::nanoseconds(t1.count()*t2.count());
 }

@@ -10,14 +10,14 @@ using namespace ptpmonkey;
 
 
 
-ptpV1Message PtpParser::ParseV1(const time_s_ns& socketTime, const std::string& sSenderIp, std::vector<unsigned char> vMessage)
+ptpV1Message PtpParser::ParseV1(const std::chrono::nanoseconds& socketTime, const std::string& sSenderIp, std::vector<unsigned char> vMessage)
 {
     return std::make_pair(nullptr, nullptr);
 }
 
 
 
-ptpV2Message PtpParser::ParseV2(const time_s_ns& socketTime, const std::string& sSenderIp, std::vector<unsigned char> vMessage)
+ptpV2Message PtpParser::ParseV2(const std::chrono::nanoseconds& socketTime, const std::string& sSenderIp, std::vector<unsigned char> vMessage)
 {
     //first byte is meesage type:
     std::shared_ptr<ptpV2Header> pHeader = std::make_shared<ptpV2Header>(socketTime, vMessage);

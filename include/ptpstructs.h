@@ -33,13 +33,13 @@ namespace ptpmonkey
     **/
     struct PTP_IMPEXPORT ptpHeader : header
     {
-        ptpHeader(const time_s_ns& socketTime);
+        ptpHeader(const std::chrono::nanoseconds& socketTime);
         ptpHeader(){};
 
 
         unsigned char nVersion; ///< The ptp version
         unsigned char nType;    ///< The type of message the payload contains
-        time_s_ns timestamp;    ///< The time the message was recevied by the application
+        std::chrono::nanoseconds timestamp;    ///< The time the message was recevied by the application
 
     };
 
@@ -48,7 +48,7 @@ namespace ptpmonkey
     **/
     struct PTP_IMPEXPORT ptpPayload : payload
     {
-        time_s_ns originTime;   ///< The time the message was sent by the ptp clock
+        std::chrono::nanoseconds originTime;   ///< The time the message was sent by the ptp clock
     };
 
     /** @struct ptpPayload
@@ -73,7 +73,7 @@ namespace ptpmonkey
     struct PTP_IMPEXPORT ptpV2Header : public ptpHeader
     {
         ptpV2Header(){}
-        ptpV2Header(const time_s_ns& socketTime, const std::vector<unsigned char>& vMessage);
+        ptpV2Header(const std::chrono::nanoseconds& socketTime, const std::vector<unsigned char>& vMessage);
         void OutputValues() final;
 
         std::vector<unsigned char> CreateMessage();

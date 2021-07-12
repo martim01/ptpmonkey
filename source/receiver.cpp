@@ -37,19 +37,19 @@ void Receiver::Run(const asio::ip::address& listen_address, const asio::ip::addr
     {
         if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPING, &nFlags, sizeof(nFlags)) < 0)
         {
-            pml::Log(pml::LOG_WARN) << "PtpMonkey\t" << "Receiver [" << nPort << "]: Failed to set SO_TIMESTAMPING";
+            pmlLog(pml::LOG_WARN) << "PtpMonkey\t" << "Receiver [" << nPort << "]: Failed to set SO_TIMESTAMPING";
             if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPNS, &nFlags, sizeof(nFlags)))
             {
-                pml::Log(pml::LOG_WARN) << "PtpMonkey\t" << "Receiver [" << nPort << "]: Failed to set SO_TIMESTAMPNS";
+                pmlLog(pml::LOG_WARN) << "PtpMonkey\t" << "Receiver [" << nPort << "]: Failed to set SO_TIMESTAMPNS";
             }
             else
             {
-                pml::Log(pml::LOG_INFO) << "PtpMonkey\t" << "Receiver [" << nPort << "]: Set SO_TIMESTAMPNS timestamping";
+                pmlLog(pml::LOG_INFO) << "PtpMonkey\t" << "Receiver [" << nPort << "]: Set SO_TIMESTAMPNS timestamping";
             }
         }
         else
         {
-            pml::Log(pml::LOG_INFO) << "PtpMonkey\t" << "Receiver [" << nPort << "]: Set SO_TIMESTAMPING timestamping";
+            pmlLog(pml::LOG_INFO) << "PtpMonkey\t" << "Receiver [" << nPort << "]: Set SO_TIMESTAMPING timestamping";
         }
     }
     #endif // __GNU__
@@ -59,7 +59,7 @@ void Receiver::Run(const asio::ip::address& listen_address, const asio::ip::addr
     m_socket.bind(listen_endpoint, ec);
     if(ec)
     {
-        pml::Log(pml::LOG_CRITICAL) << "PtpMonkey\t" << "Receiver [" << nPort << "]: Can't bind receiver to endpoint: " << ec;
+        pmlLog(pml::LOG_CRITICAL) << "PtpMonkey\t" << "Receiver [" << nPort << "]: Can't bind receiver to endpoint: " << ec;
     }
     else
     {
@@ -77,13 +77,13 @@ void Receiver::DoReceive()
     {
         if (!ec)
         {
-            pml::Log(pml::LOG_TRACE) << "PtpMonkey\t" << "RECEIVE: ";
+            pmlLog(pml::LOG_TRACE) << "PtpMonkey\t" << "RECEIVE: ";
             m_pParser->ParseMessage(m_sender_endpoint.address().to_string(), NativeReceive(m_socket, MSG_WAITALL));
             DoReceive();
         }
         else
         {
-            pml::Log(pml::LOG_ERROR) << "PtpMonkey\t" << "Receiver: wait error: " << ec;
+            pmlLog(pml::LOG_ERROR) << "PtpMonkey\t" << "Receiver: wait error: " << ec;
         }
     });
 }
@@ -135,8 +135,8 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
 
                     timespec *stamp = (timespec *)CMSG_DATA(cmsg);
                     //get the software timestamp
-                    theMessage.timestamp.first = std::chrono::seconds(stamp->tv_sec);
-                    theMessage.timestamp.second = std::chrono::nanoseconds(stamp->tv_nsec);
+                    theMessage.timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(stamp->tv_sec));
+                    theMessage.timestamp += std::chrono::nanoseconds(stamp->tv_nsec);
 
                     ls(pml::LOG_TRACE) << "SW : " << TimeToIsoString(theMessage.timestamp) << "\t" << TimeToIsoString(Now());
                     stamp++;
@@ -144,8 +144,8 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
 
                     if(stamp->tv_sec != 0 || stamp->tv_nsec != 0)   //got a valid hardware timestamp
                     {
-                        theMessage.timestamp.first = std::chrono::seconds(stamp->tv_sec);
-                        theMessage.timestamp.second = std::chrono::nanoseconds(stamp->tv_nsec);
+                        theMessage.timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(stamp->tv_sec));
+                        theMessage.timestamp += std::chrono::nanoseconds(stamp->tv_nsec);
                         ls(pml::LOG_TRACE) << "HW: " << TimeToIsoString(theMessage.timestamp);
                     }
 
@@ -155,8 +155,8 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
                 {
                     //Get the software timestamp
                     timespec* ts = (timespec*)CMSG_DATA(cmsg);
-                    theMessage.timestamp.first = std::chrono::seconds(ts->tv_sec);
-                    theMessage.timestamp.second = std::chrono::nanoseconds(ts->tv_nsec);
+                    theMessage.timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(ts->tv_sec));
+                    theMessage.timestamp += std::chrono::nanoseconds(ts->tv_nsec);
 
                     ls(pml::LOG_TRACE) << "SO_TIMESTAMPNS: " << TimeToIsoString(theMessage.timestamp) << "\tNow: " << TimeToIsoString(Now());
                 }

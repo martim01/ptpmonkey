@@ -35,7 +35,7 @@ bool PtpMonkey::Run()
 }
 
 
-time_s_ns PtpMonkey::GetPtpTime() const
+std::chrono::nanoseconds PtpMonkey::GetPtpTime() const
 {
     return m_pImpl->GetPtpTime();
 }
@@ -84,17 +84,17 @@ std::string PtpMonkey::GetLocalClockId() const
 
 
 
-time_s_ns PtpMonkey::GetPtpOffset() const
+std::chrono::nanoseconds PtpMonkey::GetPtpOffset() const
 {
     return m_pImpl->GetPtpOffset();
 }
 
-time_s_ns PtpMonkey::GetLastPtpOffset() const
+std::chrono::nanoseconds PtpMonkey::GetLastPtpOffset() const
 {
     return m_pImpl->GetPtpOffset(PtpV2Clock::CURRENT);
 }
 
-time_s_ns PtpMonkey::GetPtpDelay() const
+std::chrono::nanoseconds PtpMonkey::GetPtpDelay() const
 {
     return m_pImpl->GetPtpDelay();
 }

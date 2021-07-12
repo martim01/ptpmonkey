@@ -13,7 +13,7 @@ namespace ptpmonkey
     **/
     struct rawMessage
     {
-        time_s_ns timestamp;
+        std::chrono::nanoseconds timestamp;
         std::vector<unsigned char> vBuffer;
     };
 

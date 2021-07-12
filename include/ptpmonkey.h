@@ -63,9 +63,9 @@ namespace ptpmonkey
             bool IsStopped();
 
             /** @brief Get the time of the master clock for this domain. If there is no master clock returns the system clock time
-            *   @return <i>time_s_ns</i> the time in seconds and nanoseconds
+            *   @return <i>std::chrono::nanoseconds</i> the time in seconds and nanoseconds
             **/
-            time_s_ns GetPtpTime() const;
+            std::chrono::nanoseconds GetPtpTime() const;
 
             /** @brief Checks whether the clock has received enough decent messages to have a calculated offset and thus be synced to the master
             *   @return <i>bool</i> true if more than the sample size delay resp messages have been received and if the variance of the offsets is within tolerance
@@ -77,15 +77,15 @@ namespace ptpmonkey
             void ResyncToMaster();
 
             /** @brief Gets the average offset between the system clock and the master clock for this domain. If there is no master clock returns <0,0>
-            *   @return <i>time_s_ns</i> the time in seconds and nanoseconds
+            *   @return <i>std::chrono::nanoseconds</i> the time in seconds and nanoseconds
             **/
-            time_s_ns GetPtpOffset() const;
-            time_s_ns GetLastPtpOffset() const;
+            std::chrono::nanoseconds GetPtpOffset() const;
+            std::chrono::nanoseconds GetLastPtpOffset() const;
 
             /** @brief Gets the average network between the system clock and the master clock for this domain. If there is no master clock returns <0,0>
-            *   @return <i>time_s_ns</i> the time in seconds and nanoseconds
+            *   @return <i>std::chrono::nanoseconds</i> the time in seconds and nanoseconds
             **/
-            time_s_ns GetPtpDelay() const;
+            std::chrono::nanoseconds GetPtpDelay() const;
 
             /** @brief Gets the clock id of the master clock for this domain. If there is no master clock returns an empty string
             *   @return <i>string<i>

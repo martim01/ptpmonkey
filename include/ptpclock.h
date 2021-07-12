@@ -32,10 +32,13 @@ namespace ptpmonkey
 
             enum enumCalc {MIN=0, MEAN=1, MAX=2, WEIGHTED=3, CURRENT=4, SET=5, VARIANCE=6, SET_VARIANCE=7};
 
-            time_s_ns GetPtpTime() const;
+            std::chrono::nanoseconds GetPtpTime() const;
 
-            time_s_ns GetOffset(enumCalc eCalc = SET) const;
-            time_s_ns GetDelay(enumCalc eCalc = SET) const;
+            std::chrono::nanoseconds GetOffset(enumCalc eCalc = SET) const;
+            std::chrono::nanoseconds GetDelay(enumCalc eCalc = SET) const;
+
+            std::chrono::nanoseconds GetLastCalculatedTime() const {return m_calculatedAt;}
+            std::chrono::nanoseconds GetLastPtpTime() const {return m_calculatedPtp;}
 
             const std::string& GetClockId() const
             {   return m_sClockId;  }
@@ -71,7 +74,7 @@ namespace ptpmonkey
 
             unsigned short GetFlags(ptpV2Header::enumType eType) const;
 
-            time_s_ns GetLastMessageTime() const
+            std::chrono::nanoseconds GetLastMessageTime() const
             {
                 return m_lastMessageTime;
             }
@@ -86,6 +89,12 @@ namespace ptpmonkey
                 m_nSampleSize = nSampleSize;
             }
             bool IsSynced() const;
+
+            double GetOffsetSlope() const;
+            double GetOffsetIntersection() const;
+            std::vector<std::pair<double,double> > GetOffsetData() const;
+
+
         protected:
             unsigned char m_nDomain;
             unsigned short m_nUtcOffset;
@@ -107,13 +116,14 @@ namespace ptpmonkey
 
 
             std::string m_sIpAddress;
-            std::map<unsigned short, time_s_ns> m_mDelayRequest;
+            std::map<unsigned short, std::chrono::nanoseconds> m_mDelayRequest;
 
             unsigned long long int  m_nt1s;
             unsigned long long int  m_nt1r;
 
-            time_s_ns m_calculatedAt;
-            time_s_ns m_calculatedPtp;
+            std::chrono::nanoseconds m_calculatedAt;
+            std::chrono::nanoseconds m_calculatedFirst;
+            std::chrono::nanoseconds m_calculatedPtp;
 
             bool m_bT1Valid;
 
@@ -122,20 +132,23 @@ namespace ptpmonkey
             {
                 stats() : total(TIMEZERO),
                           stat{TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO},
-                          bSet(false){}
+                          bSet(false),
+                          m_c(0.0,0.0){}
 
 
-
-                time_s_ns total;
-                time_s_ns stat[8];
+                std::chrono::nanoseconds total;
+                std::chrono::nanoseconds stat[8];
                 bool bSet;
-                std::list<time_s_ns> lstValues;
+                std::pair<double, double> m_c;
+                std::list<std::chrono::nanoseconds> lstValues;
+                std::list<double> lstTimesLinReg;
+                std::list<double> lstValuesLinReg;
             };
-            bool DoStats(unsigned long long int nCurrent, stats& theStats);
+            bool DoStats(unsigned long long int nCurrent, std::chrono::nanoseconds calcAt, stats& theStats);
 
             stats m_delay;
             stats m_offset;
-            time_s_ns m_lastMessageTime;
+            std::chrono::nanoseconds m_lastMessageTime;
 
             bool m_bTimeSet;
 

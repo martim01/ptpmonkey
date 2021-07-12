@@ -30,8 +30,9 @@ using namespace pml;
 
 int main(int argc, char* argv[])
 {
-    pml::Log::Get().AddOutput(std::unique_ptr<LogOutput>(new LogOutput()));
-    pml::Log::Get() << "Start" << std::endl;
+    pml::LogStream::AddOutput(std::unique_ptr<LogOutput>(new LogOutput()));
+    pml::LogStream::SetOutputLevel(pml::LOG_INFO);
+    pmlLog() << "Start" << std::endl;
 
 
 
@@ -41,10 +42,10 @@ int main(int argc, char* argv[])
     do
     {
         getchar();
-        pml::Log::Get() << "PAUSE" << std::endl;
+        pmlLog() << "PAUSE" << std::endl;
         ptp.Stop();
         getchar();
-        pml::Log::Get() << "RUN" << std::endl;
+        pmlLog() << "RUN" << std::endl;
         ptp.Restart();
 
     }while(true);

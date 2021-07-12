@@ -1,6 +1,8 @@
 #include "ptpclock.h"
 #include <iostream>
 #include "log.h"
+#include "linearregression.h"
+
 using namespace ptpmonkey;
 
 PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce) :
@@ -20,6 +22,7 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
     m_sIpAddress(pHeader->sIpAddress),
     m_nt1s(0),
     m_nt1r(0),
+    m_calculatedFirst(TIMEZERO),
     m_bT1Valid(false),
     m_lastMessageTime(pHeader->timestamp)
 {
@@ -46,6 +49,7 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
     m_sIpAddress(pHeader->sIpAddress),
     m_nt1s(0),
     m_nt1r(0),
+    m_calculatedFirst(TIMEZERO),
     m_bT1Valid(false),
     m_lastMessageTime(pHeader->timestamp)
 {
@@ -120,12 +124,12 @@ void PtpV2Clock::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_
     auto itRequest = m_mDelayRequest.find(pHeader->nSequenceId);
     if(itRequest != m_mDelayRequest.end())
     {
-        pml::Log(pml::LOG_WARN) << "PtpMonkey\tDelayRequest: Sequence Id repeated: " << std::dec << pHeader->nSequenceId;
+        pmlLog(pml::LOG_WARN) << "PtpMonkey\tDelayRequest: Sequence Id repeated: " << std::dec << pHeader->nSequenceId;
     }
     else
     {
         m_mDelayRequest.insert(make_pair(pHeader->nSequenceId, pHeader->timestamp));
-        pml::Log(pml::LOG_TRACE) << "PtpMonkey\tDelayRequest: " << std::dec << pHeader->nSequenceId << " timed at: " << TimeToIsoString(pHeader->timestamp);
+        pmlLog(pml::LOG_TRACE) << "PtpMonkey\tDelayRequest: " << std::dec << pHeader->nSequenceId << " timed at: " << TimeToIsoString(pHeader->timestamp);
     }
 }
 
@@ -163,31 +167,47 @@ bool PtpV2Clock::DelayResponseTo(std::shared_ptr<ptpV2Header> pHeader, std::shar
             long long int nCheck = (m_nt1r-m_nt1s)-nOffsetNano;
 
             m_calculatedAt = pHeader->timestamp;
-            m_calculatedPtp = NanoToTime(nDelayNano)+pPayload->originTime;
+            if(m_calculatedAt != TIMEZERO)
+            {
 
-             bSyncChange = DoStats(nOffsetNano, m_offset);
-             DoStats(nDelayNano, m_delay);
+                m_calculatedPtp = NanoToTime(nDelayNano)+pPayload->originTime;
+                if(m_calculatedFirst == TIMEZERO)
+                {
+                    m_calculatedFirst = m_calculatedAt;
+                }
+
+                 DoStats(nDelayNano, m_calculatedAt, m_delay);
+
+                 bSyncChange = DoStats(nOffsetNano, m_calculatedAt, m_offset);
+
+            }
         }
         m_mDelayRequest.erase(request);
     }
     return bSyncChange;
 }
 
-bool PtpV2Clock::DoStats(unsigned long long int nCurrent, stats& theStats)
+bool PtpV2Clock::DoStats(unsigned long long int nCurrent, std::chrono::nanoseconds calcAt, stats& theStats)
 {
     theStats.stat[CURRENT] = NanoToTime(nCurrent);
 
     theStats.total = theStats.total+theStats.stat[CURRENT];
 
     theStats.lstValues.push_back(theStats.stat[CURRENT]);
-    if(theStats.lstValues.size() > m_nSampleSize)
+    theStats.lstTimesLinReg.push_back(TimeToDouble(calcAt-m_calculatedFirst));
+    theStats.lstValuesLinReg.push_back(TimeToDouble(theStats.stat[CURRENT]));
+
+
+    if(theStats.lstValues.size() > m_nSampleSize*20)
     {
         theStats.total = theStats.total-theStats.lstValues.front();
         theStats.lstValues.pop_front();
+        theStats.lstTimesLinReg.pop_front();
+        theStats.lstValuesLinReg.pop_front();
     }
     theStats.stat[MEAN] = theStats.total/theStats.lstValues.size();
 
-    if(theStats.lstValues.size() == m_nSampleSize)   //got enough to create an offset
+    if(theStats.lstValues.size() >= m_nSampleSize)   //got enough to create an offset
     {
         theStats.stat[MIN] = TIMEZERO;
         theStats.stat[MAX] = TIMEZERO;
@@ -195,11 +215,11 @@ bool PtpV2Clock::DoStats(unsigned long long int nCurrent, stats& theStats)
         double dVariance(0.0);
         for(auto value : theStats.lstValues)
         {
-            if(theStats.stat[MIN] == std::make_pair(std::chrono::seconds(0), std::chrono::nanoseconds(0)) || theStats.stat[MIN] > value)
+            if(theStats.stat[MIN] == TIMEZERO || theStats.stat[MIN] > value)
             {
                 theStats.stat[MIN] = value;
             }
-            if(theStats.stat[MAX] < value)
+            if(theStats.stat[MAX] == TIMEZERO || theStats.stat[MAX] < value)
             {
                 theStats.stat[MAX] = value;
             }
@@ -208,7 +228,12 @@ bool PtpV2Clock::DoStats(unsigned long long int nCurrent, stats& theStats)
             dVariance += (dVar*dVar);
 
         }
-        theStats.stat[VARIANCE] = DoubleToTime(dVariance/static_cast<double>(m_nSampleSize-1));
+        theStats.stat[VARIANCE] = DoubleToTime(dVariance/static_cast<double>(theStats.lstValues.size()-1));
+
+        theStats.m_c = GetSlopeAndIntercept(theStats.lstTimesLinReg, theStats.lstValuesLinReg);
+
+        //pmlLog() << "Predicted: " << (theStats.lstTimesLinReg.back()*theStats.m_c.first + theStats.m_c.second);
+
 
         if(theStats.bSet == false)
         {
@@ -247,20 +272,20 @@ void PtpV2Clock::ResyncToMaster()
     m_delay.bSet = false;
 }
 
-time_s_ns PtpV2Clock::GetPtpTime()  const
+std::chrono::nanoseconds PtpV2Clock::GetPtpTime()  const
 {
     return (Now()-m_calculatedAt)+m_calculatedPtp;//m_offset.stat[SET];
 
 }
 
-time_s_ns PtpV2Clock::GetOffset(enumCalc eCalc) const
+std::chrono::nanoseconds PtpV2Clock::GetOffset(enumCalc eCalc) const
 {
     if(eCalc == CURRENT)
-        return (m_calculatedAt-m_calculatedPtp);
+        return (m_calculatedPtp-m_calculatedAt);
     return m_offset.stat[eCalc];
 }
 
-time_s_ns PtpV2Clock::GetDelay(enumCalc eCalc) const
+std::chrono::nanoseconds PtpV2Clock::GetDelay(enumCalc eCalc) const
 {
     return m_delay.stat[eCalc];
 }
@@ -381,4 +406,28 @@ unsigned short PtpV2Clock::GetFlags(ptpV2Header::enumType eType) const
 bool PtpV2Clock::IsSynced() const
 {
     return m_offset.bSet;
+}
+
+
+double PtpV2Clock::GetOffsetSlope() const
+{
+    return m_offset.m_c.first;
+}
+
+double PtpV2Clock::GetOffsetIntersection() const
+{
+    return m_offset.m_c.second;
+}
+
+std::vector<std::pair<double,double>> PtpV2Clock::GetOffsetData() const
+{
+    std::vector<std::pair<double,double>> vData;
+    vData.reserve(m_offset.lstTimesLinReg.size());
+    auto itY = m_offset.lstValuesLinReg.begin();
+    for(auto x : m_offset.lstTimesLinReg)
+    {
+        vData.push_back(std::make_pair(x, (*itY)));
+        ++itY;
+    }
+    return vData;
 }

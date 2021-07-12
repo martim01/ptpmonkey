@@ -51,13 +51,13 @@ void ptpSource::CreateMessage(std::vector<unsigned char>& vMessage, size_t nBegi
 }
 
 
-ptpHeader::ptpHeader(const time_s_ns& socketTime) :
+ptpHeader::ptpHeader(const std::chrono::nanoseconds& socketTime) :
     timestamp(socketTime)
 {
 
 }
 
-ptpV2Header::ptpV2Header(const time_s_ns& socketTime, const std::vector<unsigned char>& vMessage) : ptpHeader(socketTime),
+ptpV2Header::ptpV2Header(const std::chrono::nanoseconds& socketTime, const std::vector<unsigned char>& vMessage) : ptpHeader(socketTime),
     source(std::vector<unsigned char>(vMessage.begin()+20, vMessage.end()))
 {
     nVersion = 2;
@@ -113,42 +113,46 @@ std::vector<unsigned char> ptpV2Header::CreateMessage()
 
 void ptpV2Header::OutputValues()
 {
-    pml::Log(pml::LOG_DEBUG) << std::dec;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Type = " << (int)nType;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Version = " << (int)nVersion;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Length = " << (int)nMessageLength ;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "SubDomain = " << (int)nDomain ;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Flags = 0x" << std::hex << nFlags << std::dec ;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Correction = " << nCorrection ;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "SourceId = " << source.sSourceId ;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "SourcePort = " << source.nSourcePort ;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Sequence = " << nSequenceId ;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Control = " << (int)nControl ;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Interval = " << (int)nInterval ;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "timestamp = " << TimeToIsoString(timestamp) ;
+    pmlLog(pml::LOG_DEBUG) << std::dec;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "Type = " << (int)nType;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "Version = " << (int)nVersion;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "Length = " << (int)nMessageLength ;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "SubDomain = " << (int)nDomain ;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "Flags = 0x" << std::hex << nFlags << std::dec ;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "Correction = " << nCorrection ;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "SourceId = " << source.sSourceId ;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "SourcePort = " << source.nSourcePort ;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "Sequence = " << nSequenceId ;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "Control = " << (int)nControl ;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "Interval = " << (int)nInterval ;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "timestamp = " << TimeToIsoString(timestamp) ;
 }
 
 
 ptpV2Payload::ptpV2Payload(const std::vector<unsigned char>& vMessage)
 {
-    originTime.first = std::chrono::seconds((static_cast<unsigned long long int>(vMessage[0])<<40) | (static_cast<unsigned long long int>(vMessage[1])<<32) | (static_cast<unsigned long long int>(vMessage[2])<<24) | (static_cast<unsigned long long int>(vMessage[3])<<16) | (static_cast<unsigned long long int>(vMessage[4])<<8) | (vMessage[5]));
-    originTime.second = std::chrono::nanoseconds((static_cast<unsigned long long int>(vMessage[6])<<24) | (static_cast<unsigned long long int>(vMessage[7])<<16) | (static_cast<unsigned long long int>(vMessage[8])<<8) | (vMessage[9]));
+    auto seconds = std::chrono::seconds((static_cast<unsigned long long int>(vMessage[0])<<40) | (static_cast<unsigned long long int>(vMessage[1])<<32) | (static_cast<unsigned long long int>(vMessage[2])<<24) | (static_cast<unsigned long long int>(vMessage[3])<<16) | (static_cast<unsigned long long int>(vMessage[4])<<8) | (vMessage[5]));
+    auto nano = std::chrono::nanoseconds((static_cast<unsigned long long int>(vMessage[6])<<24) | (static_cast<unsigned long long int>(vMessage[7])<<16) | (static_cast<unsigned long long int>(vMessage[8])<<8) | (vMessage[9]));
+
+    originTime = std::chrono::duration_cast<std::chrono::nanoseconds>(seconds)+nano;
 }
 
 std::vector<unsigned char> ptpV2Payload::CreateMessage()
 {
-    std::vector<unsigned char> vMessage(10,0);
-    vMessage[0] = (originTime.first.count()>>40) & 0xFF;
-    vMessage[1] = (originTime.first.count()>>32) & 0xFF;
-    vMessage[2] = (originTime.first.count()>>24) & 0xFF;
-    vMessage[3] = (originTime.first.count()>>16) & 0xFF;
-    vMessage[4] = (originTime.first.count()>> 8) & 0xFF;
-    vMessage[5] = (originTime.first.count()) & 0xFF;
+    auto split = Split(originTime);
 
-    vMessage[6] = (originTime.second.count()>>24) & 0xFF;
-    vMessage[7] = (originTime.second.count()>>16) & 0xFF;
-    vMessage[8] = (originTime.second.count()>> 8) & 0xFF;
-    vMessage[9] = (originTime.second.count()) & 0xFF;
+    std::vector<unsigned char> vMessage(10,0);
+    vMessage[0] = (split.first.count()>>40) & 0xFF;
+    vMessage[1] = (split.first.count()>>32) & 0xFF;
+    vMessage[2] = (split.first.count()>>24) & 0xFF;
+    vMessage[3] = (split.first.count()>>16) & 0xFF;
+    vMessage[4] = (split.first.count()>> 8) & 0xFF;
+    vMessage[5] = (split.first.count()) & 0xFF;
+
+    vMessage[6] = (split.second.count()>>24) & 0xFF;
+    vMessage[7] = (split.second.count()>>16) & 0xFF;
+    vMessage[8] = (split.second.count()>> 8) & 0xFF;
+    vMessage[9] = (split.second.count()) & 0xFF;
 
     return vMessage;
 
@@ -156,7 +160,7 @@ std::vector<unsigned char> ptpV2Payload::CreateMessage()
 
 void ptpV2Payload::OutputValues()
 {
-    pml::Log(pml::LOG_DEBUG) << "Timestamp = " << TimeToString(originTime) ;
+    pmlLog(pml::LOG_DEBUG) << "Timestamp = " << TimeToString(originTime) ;
 }
 
 
@@ -169,8 +173,8 @@ source(std::vector<unsigned char>(vMessage.begin()+10, vMessage.end()))
 void ptpDelayResponse::OutputValues()
 {
     ptpV2Payload::OutputValues();
-    pml::Log(pml::LOG_DEBUG) << "Source = " << source.sSourceId ;
-    pml::Log(pml::LOG_DEBUG) << "SourcePort = " << source.nSourcePort ;
+    pmlLog(pml::LOG_DEBUG) << "Source = " << source.sSourceId ;
+    pmlLog(pml::LOG_DEBUG) << "SourcePort = " << source.nSourcePort ;
 }
 
 ptpAnnounce::ptpAnnounce(const std::vector<unsigned char>& vMessage) : ptpV2Payload(vMessage)
@@ -202,13 +206,13 @@ ptpAnnounce::ptpAnnounce(const std::vector<unsigned char>& vMessage) : ptpV2Payl
 void ptpAnnounce::OutputValues()
 {
     ptpV2Payload::OutputValues();
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "UTC Offset = " << (int)nUtcOffset ;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterPriority1 = " << (int)nGrandmasterPriority1 ;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterClass = " << (int)nGrandmasterClass ;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterAccuracy = " << (int)nGrandmasterAccuracy ;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterVariance = " << (int)nGrandmasterVariance ;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterPriority2 = " << (int)nGrandmasterPriority2 ;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Grandmaster ClockId = " << sGrandmasterClockId ;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Steps = " << (int)nStepsRemoved ;
-    pml::Log(pml::LOG_DEBUG) << "PtpMonkey\t" << "Time Source = " << (int)nTimeSource ;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "UTC Offset = " << (int)nUtcOffset ;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterPriority1 = " << (int)nGrandmasterPriority1 ;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterClass = " << (int)nGrandmasterClass ;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterAccuracy = " << (int)nGrandmasterAccuracy ;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterVariance = " << (int)nGrandmasterVariance ;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "GrandmasterPriority2 = " << (int)nGrandmasterPriority2 ;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "Grandmaster ClockId = " << sGrandmasterClockId ;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "Steps = " << (int)nStepsRemoved ;
+    pmlLog(pml::LOG_DEBUG) << "PtpMonkey\t" << "Time Source = " << (int)nTimeSource ;
 }
