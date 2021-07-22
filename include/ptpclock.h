@@ -29,8 +29,10 @@ namespace ptpmonkey
             void DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
             bool UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce);
 
+            void ClearStats();
 
-            enum enumCalc {MIN=0, MEAN=1, MAX=2, WEIGHTED=3, CURRENT=4, SET=5, VARIANCE=6, SET_VARIANCE=7};
+
+            enum enumCalc {MIN=0, MEAN=1, MAX=2, WEIGHTED=3, CURRENT=4, SET=5, SD=6, SE=7};
 
             std::chrono::nanoseconds GetPtpTime() const;
 
@@ -39,6 +41,7 @@ namespace ptpmonkey
 
             std::chrono::nanoseconds GetLastCalculatedTime() const {return m_calculatedAt;}
             std::chrono::nanoseconds GetLastPtpTime() const {return m_calculatedPtp;}
+            std::chrono::nanoseconds GetFirstOffsetTime() const { return m_calculatedFirst; }
 
             const std::string& GetClockId() const
             {   return m_sClockId;  }
@@ -94,6 +97,10 @@ namespace ptpmonkey
             double GetOffsetIntersection() const;
             std::vector<std::pair<double,double> > GetOffsetData() const;
 
+            double GetDelaySlope() const;
+            double GetDelayIntersection() const;
+            std::vector<std::pair<double,double> > GetDelayData() const;
+
 
         protected:
             unsigned char m_nDomain;
@@ -130,13 +137,13 @@ namespace ptpmonkey
 
             struct stats
             {
-                stats() : total(TIMEZERO),
+                stats() : dTotal(0.0),
                           stat{TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO},
                           bSet(false),
                           m_c(0.0,0.0){}
 
 
-                std::chrono::nanoseconds total;
+                double dTotal;
                 std::chrono::nanoseconds stat[8];
                 bool bSet;
                 std::pair<double, double> m_c;
@@ -145,6 +152,8 @@ namespace ptpmonkey
                 std::list<double> lstValuesLinReg;
             };
             bool DoStats(unsigned long long int nCurrent, std::chrono::nanoseconds calcAt, stats& theStats);
+
+            void ClearStats(stats& theStats);
 
             stats m_delay;
             stats m_offset;

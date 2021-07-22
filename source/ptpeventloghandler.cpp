@@ -73,14 +73,13 @@ void PtpEventLogHandler::ClockTimeCalculated(std::shared_ptr<PtpV2Clock> pClock)
     pmlLog() << "Sync: " << (pClock->IsSynced() ? "YES" : "NO");
     pmlLog() << "Requests: " << pClock->GetCount(ptpV2Header::DELAY_REQ) << " interval: " << std::hex << (int)pClock->GetInterval(ptpV2Header::DELAY_REQ) << std::dec;
     pmlLog() << "Responses: " << pClock->GetCount(ptpV2Header::DELAY_RESP) << " interval: " << std::hex << (int)pClock->GetInterval(ptpV2Header::DELAY_RESP) << std::dec;
-    pmlLog() << "Delay_Set:" << TimeToString(pClock->GetDelay(PtpV2Clock::SET));
     pmlLog() << "Delay_Mean:" << TimeToString(pClock->GetDelay(PtpV2Clock::MEAN));
     pmlLog() << "DelayRange :" << TimeToString(pClock->GetDelay(PtpV2Clock::MIN)) << "-" << TimeToString(pClock->GetDelay(PtpV2Clock::MAX)) << "=" << TimeToString((pClock->GetDelay(PtpV2Clock::MAX)-pClock->GetDelay(PtpV2Clock::MIN)));
-    pmlLog() << "Delay Variance :" << TimeToString(pClock->GetDelay(PtpV2Clock::SET_VARIANCE)) << " " << TimeToString(pClock->GetDelay(PtpV2Clock::VARIANCE));
+    pmlLog() << "Delay SD :" << TimeToString(pClock->GetDelay(PtpV2Clock::SD)) << " " << TimeToString(pClock->GetDelay(PtpV2Clock::SE));
     pmlLog() << "Offset_Current:" << TimeToString(pClock->GetOffset(PtpV2Clock::CURRENT));
     pmlLog() << "Offset_Mean:" << TimeToString(pClock->GetOffset(PtpV2Clock::MEAN));
     pmlLog() << "OffsetRange :" << TimeToString(pClock->GetOffset(PtpV2Clock::MIN)) << "-" << TimeToString(pClock->GetOffset(PtpV2Clock::MAX)) << "=" << TimeToString((pClock->GetOffset(PtpV2Clock::MAX)-pClock->GetOffset(PtpV2Clock::MIN)));
-    pmlLog() << "Offset Variance :" << TimeToString(pClock->GetOffset(PtpV2Clock::SET_VARIANCE)) << " " << TimeToString(pClock->GetOffset(PtpV2Clock::VARIANCE));
+    pmlLog() << "Offset SD :" << TimeToString(pClock->GetOffset(PtpV2Clock::SD)) << " " << TimeToString(pClock->GetOffset(PtpV2Clock::SE));
     pmlLog() << "Offset Slope&C :" << pClock->GetOffsetSlope()*1e9 << "\t" << pClock->GetOffsetIntersection();
     pmlLog() << "---------------------------";
 }

@@ -2,7 +2,7 @@
 #include <iostream>
 #include "log.h"
 #include "linearregression.h"
-
+#include <cmath>
 using namespace ptpmonkey;
 
 PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce) :
@@ -160,11 +160,21 @@ bool PtpV2Clock::DelayResponseTo(std::shared_ptr<ptpV2Header> pHeader, std::shar
             long long int nt3s = TimeToNano(pPayload->originTime);
             long long int nt3r = TimeToNano(pHeader->timestamp);
 
-            //unsigned long long int nOffsetNano = (m_nt1r-m_nt1s-nt2r+nt2s)/2;
 
-            long long int nDelayNano = (m_nt1r-m_nt1s+nt2r-nt2s)/2;
-            long long int nOffsetNano = nt3r-(nt3s+nDelayNano);
-            long long int nCheck = (m_nt1r-m_nt1s)-nOffsetNano;
+            long long int nOffsetNano1 = m_nt1r-m_nt1s;
+            long long int nOffsetNano2 = -nt2r+nt2s;
+            long long int nOffsetNano = (nOffsetNano1+nOffsetNano2)/2;
+
+            long long int nDelayNano1 = nOffsetNano1;
+            long long int nDelayNano2 = nt2r-nt2s;
+
+            long long int nDelayNano = (nDelayNano1+nDelayNano2)/2;
+
+
+
+            //long long int nOffsetNano = (m_nt1r-m_nt1s-nt2r+nt2s)/2;
+
+            //long long int nCheck = (m_nt1r-m_nt1s)-nOffsetNano;
 
             m_calculatedAt = pHeader->timestamp;
             if(m_calculatedAt != TIMEZERO)
@@ -189,29 +199,39 @@ bool PtpV2Clock::DelayResponseTo(std::shared_ptr<ptpV2Header> pHeader, std::shar
 
 bool PtpV2Clock::DoStats(unsigned long long int nCurrent, std::chrono::nanoseconds calcAt, stats& theStats)
 {
+
     theStats.stat[CURRENT] = NanoToTime(nCurrent);
 
-    theStats.total = theStats.total+theStats.stat[CURRENT];
+    theStats.dTotal = theStats.dTotal+TimeToDouble(theStats.stat[CURRENT]);
 
     theStats.lstValues.push_back(theStats.stat[CURRENT]);
     theStats.lstTimesLinReg.push_back(TimeToDouble(calcAt-m_calculatedFirst));
     theStats.lstValuesLinReg.push_back(TimeToDouble(theStats.stat[CURRENT]));
 
 
-    if(theStats.lstValues.size() > m_nSampleSize*20)
+    if(theStats.lstValues.size() > 100)
     {
-        theStats.total = theStats.total-theStats.lstValues.front();
+        theStats.dTotal -= TimeToDouble(theStats.lstValues.front());
         theStats.lstValues.pop_front();
         theStats.lstTimesLinReg.pop_front();
         theStats.lstValuesLinReg.pop_front();
     }
-    theStats.stat[MEAN] = theStats.total/theStats.lstValues.size();
+    theStats.stat[MEAN] = DoubleToTime(theStats.dTotal/static_cast<double>(theStats.lstValues.size()));
 
     if(theStats.lstValues.size() >= m_nSampleSize)   //got enough to create an offset
     {
         theStats.stat[MIN] = TIMEZERO;
         theStats.stat[MAX] = TIMEZERO;
-        theStats.stat[VARIANCE] = TIMEZERO;
+        theStats.stat[SD] = TIMEZERO;
+
+
+        double dTotal = 0.0;
+        for(auto value : theStats.lstValues)
+        {
+            dTotal += TimeToDouble(value);
+        }
+        double dMean =dTotal / static_cast<double>(theStats.lstValues.size());
+
         double dVariance(0.0);
         for(auto value : theStats.lstValues)
         {
@@ -223,42 +243,21 @@ bool PtpV2Clock::DoStats(unsigned long long int nCurrent, std::chrono::nanosecon
             {
                 theStats.stat[MAX] = value;
             }
-            double dVar = TimeToDouble((value-theStats.stat[MEAN]));
+            double dVar = TimeToDouble(value)-dMean;
 
             dVariance += (dVar*dVar);
 
         }
-        theStats.stat[VARIANCE] = DoubleToTime(dVariance/static_cast<double>(theStats.lstValues.size()-1));
+        theStats.stat[MEAN] = DoubleToTime(dMean);
+
+        theStats.stat[SD] = DoubleToTime(std::sqrt(dVariance/static_cast<double>(theStats.lstValues.size()-1)));
+        theStats.stat[SE] = DoubleToTime(std::sqrt(dVariance/static_cast<double>(theStats.lstValues.size()-1))/std::sqrt(static_cast<double>(theStats.lstValues.size())));
+        //std::cout << TimeToNano(theStats.stat[SD]) << std::endl;
 
         theStats.m_c = GetSlopeAndIntercept(theStats.lstTimesLinReg, theStats.lstValuesLinReg);
 
-        //pmlLog() << "Predicted: " << (theStats.lstTimesLinReg.back()*theStats.m_c.first + theStats.m_c.second);
-
-
-        if(theStats.bSet == false)
-        {
-            if(TimeToNano(theStats.stat[VARIANCE]) < 12)
-            {
-                theStats.stat[SET] = theStats.stat[MEAN];
-                theStats.stat[SET_VARIANCE] = theStats.stat[VARIANCE];
-                theStats.bSet = true;
-                return true;
-            }
-            return false;
-        }
-        else
-        {
-             //@todo calculate whether we should change the offset or not
-             if(theStats.stat[VARIANCE] < theStats.stat[SET_VARIANCE])
-             {
-                 theStats.stat[SET_VARIANCE] = theStats.stat[VARIANCE];
-                 return true;
-             }
-             else
-             {
-                 return false;
-            }
-        }
+        theStats.bSet = true;
+        return true;
     }
     else
     {
@@ -280,8 +279,8 @@ std::chrono::nanoseconds PtpV2Clock::GetPtpTime()  const
 
 std::chrono::nanoseconds PtpV2Clock::GetOffset(enumCalc eCalc) const
 {
-    if(eCalc == CURRENT)
-        return (m_calculatedPtp-m_calculatedAt);
+    //if(eCalc == CURRENT)
+      //  return (m_calculatedAt-m_calculatedPtp);
     return m_offset.stat[eCalc];
 }
 
@@ -419,6 +418,7 @@ double PtpV2Clock::GetOffsetIntersection() const
     return m_offset.m_c.second;
 }
 
+
 std::vector<std::pair<double,double>> PtpV2Clock::GetOffsetData() const
 {
     std::vector<std::pair<double,double>> vData;
@@ -431,3 +431,48 @@ std::vector<std::pair<double,double>> PtpV2Clock::GetOffsetData() const
     }
     return vData;
 }
+
+double PtpV2Clock::GetDelaySlope() const
+{
+    return m_delay.m_c.first;
+}
+
+double PtpV2Clock::GetDelayIntersection() const
+{
+    return m_delay.m_c.second;
+}
+
+
+std::vector<std::pair<double,double>> PtpV2Clock::GetDelayData() const
+{
+    std::vector<std::pair<double,double>> vData;
+    vData.reserve(m_delay.lstTimesLinReg.size());
+    auto itY = m_delay.lstValuesLinReg.begin();
+    for(auto x : m_delay.lstTimesLinReg)
+    {
+        vData.push_back(std::make_pair(x, (*itY)));
+        ++itY;
+    }
+    return vData;
+}
+
+void PtpV2Clock::ClearStats()
+{
+    ClearStats(m_offset);
+    ClearStats(m_delay);
+}
+
+void PtpV2Clock::ClearStats(stats& theStats)
+{
+    theStats.dTotal = 0.0;
+    for(size_t i = 0; i < 8; i++)
+    {
+        theStats.stat[i] = TIMEZERO;
+    }
+    theStats.bSet = false;
+    theStats.m_c = std::make_pair(0.0,0.0);
+    theStats.lstValues.clear();
+    theStats.lstTimesLinReg.clear();
+    theStats.lstValuesLinReg.clear();
+}
+
