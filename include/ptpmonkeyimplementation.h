@@ -124,6 +124,7 @@ class PtpMonkeyImplementation
         {   return m_delayRequest;  }
 
         static int GetTimestampingSupported(const IpInterface& interface);
+        void ResetLocalClockStats();
 
     protected:
         asio::io_context m_context;

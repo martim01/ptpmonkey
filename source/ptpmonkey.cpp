@@ -126,3 +126,9 @@ int PtpMonkey::GetTimestampingSupported(const IpInterface& interface)
 {
     return PtpMonkeyImplementation::GetTimestampingSupported(interface);
 }
+
+
+void PtpMonkey::ResetLocalClockStats()
+{
+    m_pImpl->ResetLocalClockStats();
+}

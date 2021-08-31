@@ -117,11 +117,12 @@ namespace ptpmonkey
             **/
             std::string GetLocalClockId() const;
 
-            /** @brief Gets a const pointer to the local clock. May return nullptr if there is no current local clock.
+            /** @brief Gets a  pointer to the local clock. May return nullptr if there is no current local clock.
             *   @return <i>std::shared_ptr<const PtpV2Clock></i>
             **/
             std::shared_ptr<const PtpV2Clock> GetLocalClock() const;
 
+            void ResetLocalClockStats();
 
 
             static int GetTimestampingSupported(const IpInterface& interface);

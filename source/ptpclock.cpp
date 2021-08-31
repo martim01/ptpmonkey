@@ -186,10 +186,15 @@ bool PtpV2Clock::DelayResponseTo(std::shared_ptr<ptpV2Header> pHeader, std::shar
                     m_calculatedFirst = m_calculatedAt;
                 }
 
-                 DoStats(nDelayNano, m_calculatedAt, m_delay);
-
-                 bSyncChange = DoStats(nOffsetNano, m_calculatedAt, m_offset);
-
+                DoStats(nDelayNano, m_calculatedAt, m_delay);
+                if(m_offset.lstValues.size() < m_nSampleSize || NanoToTime(nDelayNano) < m_delay.stat[MEAN]+m_delay.stat[SD])
+                {
+                    bSyncChange = DoStats(nOffsetNano, m_calculatedAt, m_offset);
+                }
+                else
+                {   //delayed message just pretend its the mean offset here
+                    bSyncChange = DoStats(TimeToNano(m_offset.stat[MEAN]), m_calculatedAt, m_offset);
+                }
             }
         }
         m_mDelayRequest.erase(request);
@@ -476,3 +481,7 @@ void PtpV2Clock::ClearStats(stats& theStats)
     theStats.lstValuesLinReg.clear();
 }
 
+size_t PtpV2Clock::GetStatsSize() const
+{
+    return m_offset.lstValues.size();
+}

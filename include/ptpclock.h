@@ -96,10 +96,12 @@ namespace ptpmonkey
             double GetOffsetSlope() const;
             double GetOffsetIntersection() const;
             std::vector<std::pair<double,double> > GetOffsetData() const;
+            size_t GetStatsSize() const;
 
             double GetDelaySlope() const;
             double GetDelayIntersection() const;
             std::vector<std::pair<double,double> > GetDelayData() const;
+
 
 
         protected:

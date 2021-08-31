@@ -476,3 +476,8 @@ int PtpMonkeyImplementation::GetTimestampingSupported(const IpInterface& interfa
     #endif // __GNU__
     return nSupports;
 }
+
+void PtpMonkeyImplementation::ResetLocalClockStats()
+{
+    m_pLocal->ClearStats();
+}
