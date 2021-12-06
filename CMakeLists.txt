@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(ptpmonkey LANGUAGES CXX)
 
+SET(DIR_BASE $ENV{HOME} CACHE STRING "base location for libraries")
+SET(DIR_LOG ${DIR_BASE}/log CACHE STRING "location of pml log")
+SET(DIR_ASIO ${DIR_BASE}/asio CACHE STRING "location of asio")
+
+SET(BUILD_LOG ON CACHE BOOL "set to OFF if pml::log built by parent project")
+
 
 add_library(ptpmonkey SHARED 	"source/loghander.cpp" 
 				"source/mac.cpp" 
@@ -17,65 +23,62 @@ add_library(ptpmonkey SHARED 	"source/loghander.cpp"
 				"source/timeutils.cpp" )
 
 
-target_include_directories(ptpmonkey PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-#pml_log
-find_path(LOG_INCLUDE_DIR NAMES "log.h" PATHS ${CMAKE_CURRENT_SOURCE_DIR}/external/log/include)
-message(${CMAKE_CURRENT_SOURCE_DIR}/external/log/include)
 
-if((NOT LOG_INCLUDE_DIR) OR (NOT EXISTS ${LOG_INCLUDE_DIR}))
-    # we couldn't find the header files for FOO or they don't exist
-    message("Unable to find pml::log")
-    
-    # we have a submodule setup for log, assume it is under external/log
-    # now we need to clone this submodule
-    execute_process(COMMAND git submodule update --init -- external/log
-                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
-    add_subdirectory(${PROJECT_SOURCE_DIR}/external/log ${CMAKE_CURRENT_BINARY_DIR}/log)
-    # set LOG_INCLUDE_DIR properly
-    set(LOG_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/log/include
-        CACHE PATH "log include directory")
+#Get log
+find_path(TEMP_DIR7 NAMES "CMakeLists.txt" PATHS ${DIR_LOG})
+if((NOT TEMP_DIR7) OR (NOT EXISTS ${TEMP_DIR7}))
+	message("log not found - clone from GitHub")
+	execute_process(COMMAND git clone https://github.com/martim01/log/ ${DIR_LOG})
+endif()
+unset(TEMP_DIR7)
 
-    find_path(LOG_INCLUDE_DIR NAMES "log.h" PATHS ${CMAKE_CURRENT_SOURCE_DIR}/external/log/include)
+find_path(TEMP_DIR8 NAMES "CMakeLists.txt" PATHS ${DIR_LOG})
+if((NOT TEMP_DIR8) OR (NOT EXISTS ${TEMP_DIR8}))
+	message(FATAL_ERROR "Failed to clone pml::Log")
+endif()
+unset(TEMP_DIR8)
+
+if(${BUILD_LOG})
+	add_subdirectory(${DIR_LOG} ${DIR_LOG}/build)
 else()
-	 add_subdirectory(${PROJECT_SOURCE_DIR}/external/log ${CMAKE_CURRENT_BINARY_DIR}/log)
-	message("Found pml::log")
+	message("Restgoose - pml::log being build elsewhere")
 endif()
 
-target_include_directories(ptpmonkey PUBLIC ${LOG_INCLUDE_DIR})
 
 # ASIO
-find_path(ASIO_INCLUDE_DIR NAMES "asio.hpp" PATHS ${CMAKE_CURRENT_SOURCE_DIR}/external/asio/asio/include)
-message(${CMAKE_CURRENT_SOURCE_DIR}/external/asio/asio/include)
-
-if((NOT ASIO_INCLUDE_DIR) OR (NOT EXISTS ${ASIO_INCLUDE_DIR}))
-    # we couldn't find the header files for FOO or they don't exist
-    message("Unable to find Asio")
-    
-
-    # we have a submodule setup for asio, assume it is under external/asio
-    # now we need to clone this submodule
-    execute_process(COMMAND git submodule update --init -- external/asio
-                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-
-    # set ASIO_INCLUDE_DIR properly
-    set(ASIO_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/external/asio/asio/include
-        CACHE PATH "asio include directory")
-find_path(ASIO_INCLUDE_DIR NAMES "asio.hpp" PATHS ${CMAKE_CURRENT_SOURCE_DIR}/external/asio/asio/include)
-
-else()
-	message("Found Asio")
+message(${DIR_ASIO}/asio/include)
+find_path(TEMP_DIR NAMES "asio.hpp" PATHS ${DIR_ASIO}/asio/include)
+if((NOT TEMP_DIR) OR (NOT EXISTS ${TEMP_DIR}))
+	message("asio not found - clone from GitHub")
+	execute_process(COMMAND git clone https://github.com/chriskohlhoff/asio ${DIR_ASIO})
 endif()
 
+find_path(TEMP_DIR2 NAMES "asio.hpp" PATHS ${TEMP_DIR})
+if((NOT TEMP_DIR2) OR (NOT EXISTS ${TEMP_DIR2}))
+	message(FATAL_ERROR "Failed to clone pml::Log")
+endif()
+unset(TEMP_DIR2)
+message("Asio found at " ${TEMP_DIR})
+target_include_directories(ptpmonkey PUBLIC ${PROJECT_SOURCE_DIR}/include)
+include_directories(${DIR_LOG}/include)
+target_include_directories(ptpmonkey PUBLIC ${DIR_ASIO}/asio/include)
 
-target_include_directories(ptpmonkey PUBLIC ${ASIO_INCLUDE_DIR})
+list(APPEND flags "-fPIC" "-Wall" "-fpermissive"  "-std=c++14")
 
-list(APPEND flags "-Wall" "-s" "-O3" "-fexceptions")
+if(CMAKE_BUILD_TYPE MATCHES Release)
+   list(APPEND flags "-O3")
+   target_compile_definitions(ptpmonkey PUBLIC NDEBUG DLL_EXPORTS _MSL_STDINT_H)
+else()
+   list(APPEND flags "-g")
+   target_compile_definitions(ptpmonkey PUBLIC DEBUG DLL_EXPORTS _MSL_STDINT_H)
+endif()
+
 target_compile_options(ptpmonkey PRIVATE ${flags})
 target_compile_definitions(ptpmonkey PUBLIC ASIO_STANDALONE)
 
-target_link_libraries(ptpmonkey pml_log)
+target_link_libraries(ptpmonkey optimized pml_log debug pml_logd)
 
 #linux specific
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -83,7 +86,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	target_link_libraries(ptpmonkey pthread)
 endif()
 
-set_target_properties(ptpmonkey PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../lib/)
+set_target_properties(ptpmonkey PROPERTIES DEBUG_POSTFIX "d")
+set_target_properties(ptpmonkey PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/)
 
 #linux specific
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
