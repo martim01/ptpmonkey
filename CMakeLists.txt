@@ -25,20 +25,22 @@ add_library(ptpmonkey SHARED 	"source/loghander.cpp"
 
 
 
-
 #Get log
-find_path(TEMP_DIR7 NAMES "CMakeLists.txt" PATHS ${DIR_LOG})
-if((NOT TEMP_DIR7) OR (NOT EXISTS ${TEMP_DIR7}))
-	message(STATUS "log not found - clone from GitHub")
-	execute_process(COMMAND git clone https://github.com/martim01/log/ ${DIR_LOG})
-endif()
-unset(TEMP_DIR7)
+message(STATUS "Find pml::log")
+find_path(PTP_TEMP_DIR NAMES "CMakeLists.txt" PATHS ${DIR_LOG})
+if((NOT PTP_TEMP_DIR) OR (NOT EXISTS ${PTP_TEMP_DIR}))
+        message(STATUS "log not found - clone from GitHub")
+        execute_process(COMMAND git clone https://github.com/martim01/log/ ${DIR_LOG})
 
-find_path(TEMP_DIR8 NAMES "CMakeLists.txt" PATHS ${DIR_LOG})
-if((NOT TEMP_DIR8) OR (NOT EXISTS ${TEMP_DIR8}))
-	message(FATAL_ERROR "Failed to clone pml::Log")
+    find_path(PTP_TEMP_DIR2 NAMES "CMakeLists.txt" PATHS ${DIR_LOG})
+    if((NOT PTP_TEMP_DIR2) OR (NOT EXISTS ${TEMP_DIR2}))
+        message(FATAL_ERROR "Failed to clone pml::Log")
+    endif()
+else()
+    message(STATUS "log found - update to latest version")
+    execute_process(COMMAND git -C ${DIR_LOG} pull)
 endif()
-unset(TEMP_DIR8)
+
 
 if(${BUILD_LOG})
 	add_subdirectory(${DIR_LOG} ${DIR_LOG}/build)
@@ -48,20 +50,23 @@ endif()
 
 
 # ASIO
-find_path(TEMP_DIR NAMES "asio.hpp" PATHS ${DIR_ASIO}/asio/include)
-if((NOT TEMP_DIR) OR (NOT EXISTS ${TEMP_DIR}))
+find_path(PTP_TEMP_ASIO NAMES "asio.hpp" PATHS ${DIR_ASIO}/asio/include)
+if((NOT PTP_TEMP_ASIO) OR (NOT EXISTS ${PTP_TEMP_ASIO}))
 	message("asio not found - clone from GitHub")
 	execute_process(COMMAND git clone https://github.com/chriskohlhoff/asio ${DIR_ASIO})
+
+	find_path(PTP_TEMP_ASIO2 NAMES "asio.hpp" PATHS ${DIR_ASIO}/asio/include)
+	if((NOT PTP_TEMP_ASIO2) OR (NOT EXISTS ${PTP_TEMP_ASIO2}))
+        	message(FATAL_ERROR "Failed to clone asio")
+	endif()
+else()
+	message(STATUS "asio found - update to latest version")
+	execute_process(COMMAND git -C ${DIR_ASIO} pull)
 endif()
 
-find_path(TEMP_DIR2 NAMES "asio.hpp" PATHS ${TEMP_DIR})
-if((NOT TEMP_DIR2) OR (NOT EXISTS ${TEMP_DIR2}))
-	message(FATAL_ERROR "Failed to clone asio")
-endif()
-unset(TEMP_DIR2)
 
 target_include_directories(ptpmonkey PUBLIC ${PROJECT_SOURCE_DIR}/include)
-include_directories(${DIR_LOG}/include)
+target_include_directories(ptpmonkey PUBLIC ${DIR_LOG}/include)
 target_include_directories(ptpmonkey PUBLIC ${DIR_ASIO}/asio/include)
 
 list(APPEND flags "-fPIC" "-Wall" "-fpermissive"  "-std=c++14")
