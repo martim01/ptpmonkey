@@ -28,6 +28,7 @@ add_library(ptpmonkey SHARED 	"source/loghander.cpp"
 #Get log
 message(STATUS "Find pml::log")
 find_path(PTP_TEMP_DIR NAMES "CMakeLists.txt" PATHS ${DIR_LOG})
+
 if((NOT PTP_TEMP_DIR) OR (NOT EXISTS ${PTP_TEMP_DIR}))
         message(STATUS "log not found - clone from GitHub")
         execute_process(COMMAND git clone https://github.com/martim01/log/ ${DIR_LOG})
@@ -99,17 +100,17 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 endif()
 
 
-project(ptpmonkeyexample LANGUAGES CXX)
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-include_directories("include")
-link_directories("lib")
-add_executable(ptpmonkeyexample examples/main.cpp)
-list(APPEND flags "-fPIC" "-Wall" "-fpermissive" "-O3" "-std=c++14")
-target_compile_options(ptpmonkeyexample PRIVATE ${flags})
-target_compile_definitions(ptpmonkeyexample PUBLIC NDEBUG DLL_EXPORTS)
+#project(ptpmonkeyexample LANGUAGES CXX)
+#set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+#include_directories("include")
+#link_directories("lib")
+#add_executable(ptpmonkeyexample examples/main.cpp)
+#list(APPEND flags "-fPIC" "-Wall" "-fpermissive" "-O3" "-std=c++14")
+#target_compile_options(ptpmonkeyexample PRIVATE ${flags})
+#target_compile_definitions(ptpmonkeyexample PUBLIC NDEBUG DLL_EXPORTS)
 
-target_link_libraries(ptpmonkeyexample ptpmonkey)
+#target_link_libraries(ptpmonkeyexample ptpmonkey)
 
-set_target_properties(ptpmonkeyexample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
+#set_target_properties(ptpmonkeyexample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 
 
