@@ -44,7 +44,7 @@ endif()
 
 
 if(${BUILD_LOG})
-	add_subdirectory(${DIR_LOG} ${DIR_LOG}/build)
+	add_subdirectory(${DIR_LOG} ${CMAKE_SOURCE_DIR}/log/build)
 else()
 	message(STATUS "Restgoose - pml::log being build elsewhere")
 endif()
