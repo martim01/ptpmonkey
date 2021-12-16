@@ -27,13 +27,13 @@ add_library(ptpmonkey SHARED 	"source/loghander.cpp"
 
 #Get log
 message(STATUS "Find pml::log")
-find_path(PTP_TEMP_DIR NAMES "CMakeLists.txt" PATHS ${DIR_LOG})
+find_path(PTP_TEMP_DIR NAMES "CMakeLists.txt" PATHS ${DIR_LOG} NO_CACHE)
 
 if((NOT PTP_TEMP_DIR) OR (NOT EXISTS ${PTP_TEMP_DIR}))
         message(STATUS "log not found - clone from GitHub")
         execute_process(COMMAND git clone https://github.com/martim01/log/ ${DIR_LOG})
 
-    find_path(PTP_TEMP_DIR2 NAMES "CMakeLists.txt" PATHS ${DIR_LOG})
+    find_path(PTP_TEMP_DIR2 NAMES "CMakeLists.txt" PATHS ${DIR_LOG} NO_CACHE)
     if((NOT PTP_TEMP_DIR2) OR (NOT EXISTS ${TEMP_DIR2}))
         message(FATAL_ERROR "Failed to clone pml::Log")
     endif()
@@ -51,12 +51,12 @@ endif()
 
 
 # ASIO
-find_path(PTP_TEMP_ASIO NAMES "asio.hpp" PATHS ${DIR_ASIO}/asio/include)
+find_path(PTP_TEMP_ASIO NAMES "asio.hpp" PATHS ${DIR_ASIO}/asio/include NO_CACHE)
 if((NOT PTP_TEMP_ASIO) OR (NOT EXISTS ${PTP_TEMP_ASIO}))
 	message("asio not found - clone from GitHub")
 	execute_process(COMMAND git clone https://github.com/chriskohlhoff/asio ${DIR_ASIO})
 
-	find_path(PTP_TEMP_ASIO2 NAMES "asio.hpp" PATHS ${DIR_ASIO}/asio/include)
+	find_path(PTP_TEMP_ASIO2 NAMES "asio.hpp" PATHS ${DIR_ASIO}/asio/include NO_CACHE)
 	if((NOT PTP_TEMP_ASIO2) OR (NOT EXISTS ${PTP_TEMP_ASIO2}))
         	message(FATAL_ERROR "Failed to clone asio")
 	endif()
