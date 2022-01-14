@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
-project(ptpmonkey LANGUAGES CXX)
+project(ptpmonkey LANGUAGES CXX VERSION 1.1.0)
+
+execute_process(COMMAND ${CMAKE_COMMAND} -DNAMESPACE=ptpmonkey -DMAJOR=${PROJECT_VERSION_MAJOR} -DMINOR=${PROJECT_VERSION_MINOR} -DPATCH=${PROJECT_VERSION_PATCH} -P ${CMAKE_CURRENT_SOURCE_DIR}/version.cmake)
 
 SET(DIR_BASE $ENV{HOME} CACHE STRING "base location for libraries")
 SET(DIR_LOG ${DIR_BASE}/log CACHE STRING "location of pml log")
@@ -22,10 +24,11 @@ add_library(ptpmonkey SHARED 	"source/loghander.cpp"
 				"source/ptpstructs.cpp" 
 		                "source/receiver.cpp" 
 				"source/sender.cpp" 
-				"source/timeutils.cpp" )
+				"source/timeutils.cpp" ${CMAKE_BINARY_DIR}/src/ptpmonkey_version.cpp)
 
 
 
+target_include_directories(ptpmonkey PUBLIC ${CMAKE_BINARY_DIR}/include)
 
 #Get log
 message(STATUS "Find pml::log")
