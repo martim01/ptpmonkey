@@ -25,7 +25,7 @@ class Sender
         void DoSend();
         void DoTimeout();
 
-        void GetTxTimestamp();
+        void GetTxTimestamp(const std::vector<unsigned char>& vBuffer);
 
         PtpMonkeyImplementation& m_manager;
         IpAddress m_outboundIpAddress;

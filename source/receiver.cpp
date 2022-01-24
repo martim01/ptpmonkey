@@ -99,7 +99,6 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
     iovec entry;
     sockaddr_in from_addr;
     char control[512];
-//    struct { cmsghdr cm; char control[512]; } control;
 
     memset(&msg, 0, sizeof(msg));
     msg.msg_iov = &entry;
@@ -111,12 +110,13 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
     msg.msg_control = &control;
     msg.msg_controllen = sizeof(control);
 
-    //nFlags |= MSG_DONTWAIT;
-
     int res = recvmsg(aSocket.native_handle(), &msg, nFlags);
     unsigned char* pData = (unsigned char*)msg.msg_iov->iov_base;
 
+
+
     int nOffset = (nFlags&MSG_ERRQUEUE) ? 42 : 0;       // @todo why 42 bytes for error queue?
+    //nOffset += 8;
 
     rawMessage theMessage;
     theMessage.timestamp = Now();
@@ -166,6 +166,7 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
 
 
         theMessage.vBuffer = std::vector<unsigned char>(pData+nOffset, pData+(res+1));
+
     }
     return theMessage;
 }

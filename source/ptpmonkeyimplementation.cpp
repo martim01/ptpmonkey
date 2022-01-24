@@ -116,8 +116,13 @@ std::map<std::string, std::shared_ptr<PtpV2Clock> >::iterator PtpMonkeyImplement
         itClock = m_mClocks.insert(std::make_pair(pHeader->source.sSourceId, std::make_shared<PtpV2Clock>(pHeader, pPayload))).first;
         if(pHeader->source.nSourceId == m_nLocalClockId)
         {
+            pmlLog() << "PtpMonkey\tLocal clock";
             m_pLocal = itClock->second;
             m_pLocal->SetSampleSize(m_nSampleSize);
+        }
+        else
+        {
+            pmlLog() << "Clock: " << std::hex << pHeader->source.nSourceId << "\tLocal " <<  m_nLocalClockId;
         }
 
         for(auto pHandler : m_lstEventHandler)

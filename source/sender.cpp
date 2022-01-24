@@ -36,6 +36,7 @@ Sender::Sender(PtpMonkeyImplementation& manager, asio::io_context& io_context, c
 
 void Sender::Run()
 {
+
     asio::ip::multicast::outbound_interface option(asio::ip::address_v4::from_string(m_outboundIpAddress.Get()));
     m_socket.set_option(option);
 
@@ -86,21 +87,22 @@ void Sender::DoSend()
 
     if(m_manager.GetSyncMasterClock() != nullptr || bDebug)
     {
-
-        m_socket.async_send_to(asio::buffer(CreateRequest()), m_endpoint,
-        [this](std::error_code ec, std::size_t /*length*/)
+        auto vBuffer = CreateRequest();
+        m_socket.async_send_to(asio::buffer(vBuffer), m_endpoint,
+        [this, vBuffer](std::error_code ec, std::size_t /*length*/)
         {
 
             if (!ec)
             {
                 if(m_bTimestampEnabled)
                 {
-                    GetTxTimestamp();
+                    GetTxTimestamp(vBuffer);
                 }
                 else
                 {
                     //approximate the timestamp.
-                    ptpV2Message pMessage = PtpParser::ParseV2(Now(), "", m_vBuffer);
+                    pmlLog() << "Parse sent";
+                    ptpV2Message pMessage = PtpParser::ParseV2(Now(), "", vBuffer);
                     //tell the local client we've sent a delay request message
                     m_manager.DelayRequestSent(pMessage.first, pMessage.second);
                 }
@@ -120,7 +122,6 @@ void Sender::DoSend()
 
 std::vector<unsigned char> Sender::CreateRequest()
 {
-    m_vBuffer.clear();
 
     ptpV2Header theHeader;
     ptpV2Payload thePayload;
@@ -141,14 +142,14 @@ std::vector<unsigned char> Sender::CreateRequest()
 
     thePayload.originTime = Now();
 
-    m_vBuffer = theHeader.CreateMessage();
+    auto vBuffer = theHeader.CreateMessage();
     std::vector<unsigned char> vPayload(thePayload.CreateMessage());
 
-    std::copy(vPayload.begin(), vPayload.end(), std::back_inserter(m_vBuffer));
+    std::copy(vPayload.begin(), vPayload.end(), std::back_inserter(vBuffer));
 
 
     m_nSequence++;
-    return m_vBuffer;
+    return vBuffer;
 }
 
 
@@ -166,14 +167,14 @@ void Sender::DoTimeout()
 }
 
 
-void Sender::GetTxTimestamp()
+void Sender::GetTxTimestamp(const std::vector<unsigned char>& vBuffer)
 {
     #ifdef __GNU__
     pmlLog(pml::LOG_TRACE) << "PtpMonkey\t" << "SENDER: ";
     rawMessage aMessage = Receiver::NativeReceive(m_socket, MSG_ERRQUEUE);
-    if(aMessage.vBuffer.size() >= 34)
+    if(vBuffer.size() >= 34)
     {
-        ptpV2Message pMessage = PtpParser::ParseV2(aMessage.timestamp, "", aMessage.vBuffer);
+        ptpV2Message pMessage = PtpParser::ParseV2(aMessage.timestamp, "", vBuffer);
         //tell the local client what the actual timestamp for this message a
         m_manager.DelayRequestSent(pMessage.first, pMessage.second);
     }

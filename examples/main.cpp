@@ -31,7 +31,7 @@ using namespace pml;
 int main(int argc, char* argv[])
 {
     pml::LogStream::AddOutput(std::unique_ptr<LogOutput>(new LogOutput()));
-    pml::LogStream::SetOutputLevel(pml::LOG_INFO);
+    pml::LogStream::SetOutputLevel(pml::LOG_DEBUG);
     pmlLog() << "Start" << std::endl;
 
 
