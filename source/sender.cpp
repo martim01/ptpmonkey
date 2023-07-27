@@ -21,28 +21,34 @@
 
 using namespace ptpmonkey;
 
-Sender::Sender(PtpMonkeyImplementation& manager, asio::io_context& io_context, const IpAddress& outboundIpAddress, const asio::ip::address& multicast_address,
-        unsigned short nPort, int nTimestampingSupported) : m_manager(manager),
+Sender::Sender(PtpMonkeyImplementation& manager, asio::io_context& io_context, const IpAddress& outboundIpAddress, const asio::ip::address& destination_address, unsigned short nPort, unsigned long nDomain, int nTimestampingSupported, bool bMulticast) : m_manager(manager),
           m_outboundIpAddress(outboundIpAddress),
-          m_endpoint(multicast_address, nPort),
+          m_endpoint(destination_address, nPort),
           m_socket(io_context, m_endpoint.protocol()),
           m_timer(io_context),
-          m_nSequence(0),
-          m_bTimestampEnabled(false),
-          m_nTimestampingSupported(nTimestampingSupported)
+          m_nDomain(nDomain),
+          m_nTimestampingSupported(nTimestampingSupported),
+          m_bMulticast(bMulticast)
 {
+}
 
+void Sender::Stop()
+{
+    m_timer.cancel();
+    m_bRun = false;
 }
 
 void Sender::Run()
 {
+    if(m_bMulticast)
+    {
+        asio::ip::multicast::outbound_interface option(asio::ip::address_v4::from_string(m_outboundIpAddress.Get()));
+        m_socket.set_option(option);
 
-    asio::ip::multicast::outbound_interface option(asio::ip::address_v4::from_string(m_outboundIpAddress.Get()));
-    m_socket.set_option(option);
-
-    //lets not loop the message back it gets confusing.
-    asio::ip::multicast::enable_loopback optionl(false);
-    m_socket.set_option(optionl);
+        //lets not loop the message back it gets confusing.
+        asio::ip::multicast::enable_loopback optionl(false);
+        m_socket.set_option(optionl);
+    }
 
     #ifdef __GNU__
     // @todo for some reason we get tx software timestamps even though pi says it doesn't suppport it. add this bodge for now to aid debugging
@@ -84,45 +90,44 @@ void Sender::Run()
 void Sender::DoSend()
 {
     bool bDebug = false;
-
-    if(m_manager.GetSyncMasterClock() != nullptr || bDebug)
+    if(m_bRun)
     {
-        auto vBuffer = CreateRequest();
-        m_socket.async_send_to(asio::buffer(vBuffer), m_endpoint,
-        [this, vBuffer](std::error_code ec, std::size_t /*length*/)
+        if(m_manager.GetSyncMasterClock() != nullptr || bDebug)
         {
-
-            if (!ec)
+            auto vBuffer = CreateRequest();
+            m_socket.async_send_to(asio::buffer(vBuffer), m_endpoint,
+            [this, vBuffer](std::error_code ec, std::size_t /*length*/)
             {
-                if(m_bTimestampEnabled)
+                if (!ec)
                 {
-                    GetTxTimestamp(vBuffer);
+                    if(m_bTimestampEnabled)
+                    {
+                        GetTxTimestamp(vBuffer);
+                    }
+                    else
+                    {
+                        //approximate the timestamp.
+                        ptpV2Message pMessage = PtpParser::ParseV2(Now(), IpAddress(""), vBuffer);
+                        //tell the local client we've sent a delay request message
+                        m_manager.DelayRequestSent(pMessage.first, pMessage.second);
+                    }
+                    DoTimeout();
                 }
                 else
                 {
-                    //approximate the timestamp.
-                    pmlLog() << "Parse sent";
-                    ptpV2Message pMessage = PtpParser::ParseV2(Now(), "", vBuffer);
-                    //tell the local client we've sent a delay request message
-                    m_manager.DelayRequestSent(pMessage.first, pMessage.second);
+                    pmlLog(pml::LOG_ERROR) << "PtpMonkey\t" << "Sender: Send failed: " << ec;
                 }
-                DoTimeout();
-            }
-            else
-            {
-                pmlLog(pml::LOG_ERROR) << "PtpMonkey\t" << "Sender: Send failed: " << ec;
-            }
-        });
-    }
-    else
-    {
-        DoTimeout();
+            });
+        }
+        else
+        {
+            DoTimeout();
+        }
     }
 }
 
 std::vector<unsigned char> Sender::CreateRequest()
 {
-
     ptpV2Header theHeader;
     ptpV2Payload thePayload;
 
@@ -131,14 +136,18 @@ std::vector<unsigned char> Sender::CreateRequest()
     theHeader.timestamp = Now();
 
     theHeader.nMessageLength = 44;
-    theHeader.nDomain = 0;  //@todo need to set the domain
+    theHeader.nDomain = m_nDomain; 
     theHeader.nFlags = 0;
+    if(!m_bMulticast)
+    {
+        theHeader.nFlags |= ptpV2Header::enumFlags::UNICAST;
+    }
     theHeader.nCorrection = 0;
     theHeader.source.nSourceId = GenerateClockIdentity(m_outboundIpAddress);
     theHeader.source.nSourcePort = 1;
     theHeader.nSequenceId = m_nSequence;
     theHeader.nControl = 1;
-    theHeader.nInterval = static_cast<unsigned char>(m_manager.GetDelayRate());
+    theHeader.nInterval = static_cast<char>(m_manager.GetDelayRate());
 
     thePayload.originTime = Now();
 
@@ -155,7 +164,8 @@ std::vector<unsigned char> Sender::CreateRequest()
 
 void Sender::DoTimeout()
 {
-    m_timer.expires_after(std::chrono::milliseconds(static_cast<unsigned long>(1000.0*std::pow(2, static_cast<float>(m_manager.GetDelayRate())))));
+    auto milli = std::chrono::milliseconds(static_cast<unsigned long>(1000.0*std::pow(2, static_cast<float>(m_manager.GetDelayRate()))));
+    m_timer.expires_after(milli);
     m_timer.async_wait(
     [this](std::error_code ec)
     {
@@ -170,13 +180,17 @@ void Sender::DoTimeout()
 void Sender::GetTxTimestamp(const std::vector<unsigned char>& vBuffer)
 {
     #ifdef __GNU__
-    pmlLog(pml::LOG_TRACE) << "PtpMonkey\t" << "SENDER: ";
     rawMessage aMessage = Receiver::NativeReceive(m_socket, MSG_ERRQUEUE);
     if(vBuffer.size() >= 34)
     {
-        ptpV2Message pMessage = PtpParser::ParseV2(aMessage.timestamp, "", vBuffer);
+        ptpV2Message pMessage = PtpParser::ParseV2(aMessage.timestamp, IpAddress(""), vBuffer);
         //tell the local client what the actual timestamp for this message a
         m_manager.DelayRequestSent(pMessage.first, pMessage.second);
     }
     #endif // __GNU__
+}
+
+void Sender::ChangeEndpoint(const asio::ip::address& destination)
+{
+    m_endpoint = asio::ip::udp::endpoint(destination, 319);
 }

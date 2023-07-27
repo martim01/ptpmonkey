@@ -3,7 +3,6 @@
 #include <chrono>
 #include "ptpdll.h"
 
-
 static const std::chrono::seconds LEAP_SECONDS(37);
 
 
@@ -20,6 +19,7 @@ extern PTP_IMPEXPORT std::chrono::nanoseconds DoubleToTime(double dSeconds);
 extern PTP_IMPEXPORT std::chrono::nanoseconds operator*(const std::chrono::nanoseconds& t1, const std::chrono::nanoseconds& t2);
 extern PTP_IMPEXPORT std::pair<std::chrono::seconds, std::chrono::nanoseconds> Split(const std::chrono::nanoseconds& t1);
 
+
 namespace ptpmonkey
 {
     enum class Rate : std::int8_t { PER_SEC_128 = -7, PER_SEC_64 = -6, PER_SEC_32 = -5, PER_SEC_16 = -4, PER_SEC_8 = -3, PER_SEC_4 = -2, PER_SEC_2 = -1,
@@ -28,5 +28,6 @@ namespace ptpmonkey
     static constexpr std::chrono::nanoseconds TIMEZERO = std::chrono::nanoseconds(0);
 
 
+    enum class Mode : std::int8_t {MULTICAST, UNICAST, HYBRID};
 
 };

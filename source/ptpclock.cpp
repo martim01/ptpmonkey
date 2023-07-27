@@ -129,7 +129,6 @@ void PtpV2Clock::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_
     else
     {
         m_mDelayRequest.insert(make_pair(pHeader->nSequenceId, pHeader->timestamp));
-        pmlLog(pml::LOG_TRACE) << "PtpMonkey\tDelayRequest: " << std::dec << pHeader->nSequenceId << " timed at: " << TimeToIsoString(pHeader->timestamp);
     }
 }
 

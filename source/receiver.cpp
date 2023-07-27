@@ -17,10 +17,9 @@ Receiver::Receiver(asio::io_context& io_context, std::shared_ptr<Parser> pParser
     m_pParser(pParser),
     m_nTimestampingSupported(nTimestampingSupported)
 {
-
 }
 
-void Receiver::Run(const asio::ip::address& listen_address, const asio::ip::address& multicast_address, unsigned int nPort)
+void Receiver::Run(const asio::ip::address& listen_address, unsigned int nPort, const asio::ip::address& multicast_address)
 {
     // Create the socket so that multiple may be bound to the same address.
     asio::ip::udp::endpoint listen_endpoint(listen_address, nPort);
@@ -63,9 +62,11 @@ void Receiver::Run(const asio::ip::address& listen_address, const asio::ip::addr
     }
     else
     {
-        // Join the multicast group.
-        m_socket.set_option(asio::ip::multicast::join_group(multicast_address));
-
+        if(multicast_address != asio::ip::make_address("0.0.0.0"))
+        {
+            // Join the multicast group.
+            m_socket.set_option(asio::ip::multicast::join_group(multicast_address));
+        }
         DoReceive();
     }
 }
@@ -77,8 +78,7 @@ void Receiver::DoReceive()
     {
         if (!ec)
         {
-            pmlLog(pml::LOG_TRACE) << "PtpMonkey\t" << "RECEIVE: ";
-            m_pParser->ParseMessage(m_sender_endpoint.address().to_string(), NativeReceive(m_socket, MSG_WAITALL));
+            m_pParser->ParseMessage(NativeReceive(m_socket, MSG_WAITALL));
             DoReceive();
         }
         else
@@ -92,8 +92,6 @@ void Receiver::DoReceive()
 
 rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
 {
-    pml::LogStream ls;
-
     unsigned char data[512];
     msghdr msg;
     iovec entry;
@@ -111,9 +109,7 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
     msg.msg_controllen = sizeof(control);
 
     int res = recvmsg(aSocket.native_handle(), &msg, nFlags);
-    unsigned char* pData = (unsigned char*)msg.msg_iov->iov_base;
-
-
+    auto pData = (unsigned char*)msg.msg_iov->iov_base;  
 
     int nOffset = (nFlags&MSG_ERRQUEUE) ? 42 : 0;       // @todo why 42 bytes for error queue?
     //nOffset += 8;
@@ -122,23 +118,21 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
     theMessage.timestamp = Now();
     if(res > 34+nOffset)        // @todo make 34 a constant referring to header size
     {
-
-        ls(pml::LOG_TRACE) << ((nFlags & MSG_ERRQUEUE)  ? "TX " : "RX ");
+        auto bHardware = false;
         //this should be the timestamp ,sg
         for(cmsghdr* cmsg = CMSG_FIRSTHDR(&msg); cmsg; cmsg = CMSG_NXTHDR(&msg, cmsg))
         {
             if(cmsg->cmsg_level == SOL_SOCKET)
             {
+                theMessage.ipSender = IpAddress(inet_ntoa(from_addr.sin_addr));
+
                 if(cmsg->cmsg_type == SO_TIMESTAMPING) //hardware tx timetamp
                 {
-                    ls(pml::LOG_TRACE) << " SO_TIMESTAMPING ";
-
-                    timespec *stamp = (timespec *)CMSG_DATA(cmsg);
+                    auto stamp = (timespec *)CMSG_DATA(cmsg);
                     //get the software timestamp
                     theMessage.timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(stamp->tv_sec));
                     theMessage.timestamp += std::chrono::nanoseconds(stamp->tv_nsec);
 
-                    ls(pml::LOG_TRACE) << "SW : " << TimeToIsoString(theMessage.timestamp) << "\t" << TimeToIsoString(Now());
                     stamp++;
                     stamp++;
 
@@ -146,27 +140,23 @@ rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
                     {
                         theMessage.timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(stamp->tv_sec));
                         theMessage.timestamp += std::chrono::nanoseconds(stamp->tv_nsec);
-                        ls(pml::LOG_TRACE) << "HW: " << TimeToIsoString(theMessage.timestamp);
                     }
 
-                    break;
+                    bHardware = true;
                 }
-                else if(cmsg->cmsg_type == SO_TIMESTAMPNS) //software timetamp got antother way
+                else if(!bHardware && cmsg->cmsg_type == SO_TIMESTAMPNS) //software timetamp got antother way
                 {
                     //Get the software timestamp
-                    timespec* ts = (timespec*)CMSG_DATA(cmsg);
+                    auto ts = (timespec*)CMSG_DATA(cmsg);
                     theMessage.timestamp = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(ts->tv_sec));
                     theMessage.timestamp += std::chrono::nanoseconds(ts->tv_nsec);
 
-                    ls(pml::LOG_TRACE) << "SO_TIMESTAMPNS: " << TimeToIsoString(theMessage.timestamp) << "\tNow: " << TimeToIsoString(Now());
                 }
             }
         }
-        ls(pml::LOG_TRACE) << "\tDelay: " << TimeToString(Now()-theMessage.timestamp);
 
 
         theMessage.vBuffer = std::vector<unsigned char>(pData+nOffset, pData+(res+1));
-
     }
     return theMessage;
 }

@@ -3,6 +3,7 @@
 #include <memory>
 #include <list>
 #include "timeutils.h"
+#include "namedtypes.h"
 
 namespace ptpmonkey
 {
@@ -13,6 +14,7 @@ namespace ptpmonkey
     **/
     struct rawMessage
     {
+        IpAddress ipSender;
         std::chrono::nanoseconds timestamp;
         std::vector<unsigned char> vBuffer;
     };
@@ -20,7 +22,7 @@ namespace ptpmonkey
     class Parser
     {
         public:
-            Parser(std::shared_ptr<Handler> pHandler)
+            explicit Parser(std::shared_ptr<Handler> pHandler)
             {
                 m_lstHandler.push_back(pHandler);
             }
@@ -30,7 +32,7 @@ namespace ptpmonkey
                 m_lstHandler.push_back(pHandler);
             }
 
-            virtual void ParseMessage(const std::string& sSenderIp, const rawMessage& aMessage)=0;
+            virtual void ParseMessage(const rawMessage& aMessage)=0;
 
         protected:
 

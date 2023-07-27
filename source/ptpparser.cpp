@@ -10,20 +10,20 @@ using namespace ptpmonkey;
 
 
 
-ptpV1Message PtpParser::ParseV1(const std::chrono::nanoseconds& socketTime, const std::string& sSenderIp, std::vector<unsigned char> vMessage)
+ptpV1Message PtpParser::ParseV1(const std::chrono::nanoseconds& socketTime,const IpAddress& ipSender, std::vector<unsigned char> vMessage)
 {
     return std::make_pair(nullptr, nullptr);
 }
 
 
 
-ptpV2Message PtpParser::ParseV2(const std::chrono::nanoseconds& socketTime, const std::string& sSenderIp, std::vector<unsigned char> vMessage)
+ptpV2Message PtpParser::ParseV2(const std::chrono::nanoseconds& socketTime, const IpAddress& ipSender, std::vector<unsigned char> vMessage)
 {
     //first byte is meesage type:
-    std::shared_ptr<ptpV2Header> pHeader = std::make_shared<ptpV2Header>(socketTime, vMessage);
+    auto pHeader = std::make_shared<ptpV2Header>(socketTime, vMessage);
     std::shared_ptr<ptpV2Payload> pPayload(nullptr);
 
-    pHeader->sIpAddress = sSenderIp;
+    pHeader->sIpAddress = ipSender.Get();
 
     switch(pHeader->nType)
     {
@@ -49,7 +49,7 @@ ptpV2Message PtpParser::ParseV2(const std::chrono::nanoseconds& socketTime, cons
 
 
 
-void PtpParser::ParseMessage(const std::string& sSenderIp, const rawMessage& aMessage)
+void PtpParser::ParseMessage(const rawMessage& aMessage)
 {
     if(aMessage.vBuffer.size() < 34)
         return;
@@ -59,11 +59,11 @@ void PtpParser::ParseMessage(const std::string& sSenderIp, const rawMessage& aMe
     switch(nVersion)
     {
     case 1:
-        ParseV1(aMessage.timestamp, sSenderIp, aMessage.vBuffer);
+        ParseV1(aMessage.timestamp, aMessage.ipSender, aMessage.vBuffer);
         break;
     case 2:
         {
-            ptpV2Message pMessage = ParseV2(aMessage.timestamp, sSenderIp, aMessage.vBuffer);
+            ptpV2Message pMessage = ParseV2(aMessage.timestamp, aMessage.ipSender, aMessage.vBuffer);
             for(auto pHandler : m_lstHandler)
             {
                 pHandler->HandleParsedMessage(pMessage.first, pMessage.second);
