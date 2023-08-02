@@ -51,15 +51,11 @@ void PtpMonkey::ResyncToMaster()
 }
 
 
-std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator PtpMonkey::GetClocksBegin() const
+const std::map<std::string, std::shared_ptr<PtpV2Clock> >& PtpMonkey::GetClocks() const
 {
-    return m_pImpl->GetClocksBegin();
+    return m_pImpl->GetClocks();
 }
 
-std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator PtpMonkey::GetClocksEnd() const
-{
-    return m_pImpl->GetClocksEnd();
-}
 
 std::shared_ptr<const PtpV2Clock> PtpMonkey::GetSyncMasterClock() const
 {
@@ -136,4 +132,14 @@ void PtpMonkey::ResetLocalClockStats()
 ptpmonkey::Mode PtpMonkey::GetMode() const
 {
     return m_pImpl->GetMode();
+}
+
+void PtpMonkey::SetDomain(unsigned char nDomain)
+{
+    m_pImpl->SetDomain(nDomain);
+}
+
+unsigned char PtpMonkey::GetDomain() const
+{
+    return m_pImpl->GetDomain();
 }

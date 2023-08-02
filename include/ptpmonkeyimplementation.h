@@ -11,11 +11,13 @@
 #include "ptpclock.h"
 #include "sender.h"
 #include <thread>
+#include <atomic>
 
 namespace ptpmonkey
 {
 
-class PtpEventHandler;
+    class PtpEventHandler;
+    class PtpParser;
 
 /** @class Main class for interfacing with the PTP code
 **/
@@ -66,12 +68,7 @@ class PtpMonkeyImplementation
         /** @brief Gets a const_iterator to the beginning of the map of clocks that exist in this domain
         *   @return <i>std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator</i>
         **/
-        std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator GetClocksBegin() const;
-
-        /** @brief Gets a const_iterator to the end of the map of clocks that exist in this domain
-        *   @return <i>std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator</i>
-        **/
-        std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator GetClocksEnd() const;
+        const std::map<std::string, std::shared_ptr<PtpV2Clock> >& GetClocks() const;
 
         /** @brief Gets a const pointer to the current sync master clock. May return nullptr if there is no current master.
         *   @return <i>std::shared_ptr<const PtpV2Clock></i>
@@ -130,6 +127,9 @@ class PtpMonkeyImplementation
 
         Mode GetMode() const;
 
+        void SetDomain(unsigned char nDomain);
+        unsigned char GetDomain() const { return m_nDomain;}
+
     protected:
         asio::io_context m_context;
 
@@ -162,8 +162,10 @@ class PtpMonkeyImplementation
 
 
         std::unique_ptr<std::thread> m_pThread = nullptr;
+        std::shared_ptr<PtpParser> m_pParser = nullptr;
 
-};
+        static const std::string MULTICAST;
+};  
 
 
 };

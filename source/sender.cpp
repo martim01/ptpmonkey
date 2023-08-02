@@ -21,7 +21,8 @@
 
 using namespace ptpmonkey;
 
-Sender::Sender(PtpMonkeyImplementation& manager, asio::io_context& io_context, const IpAddress& outboundIpAddress, const asio::ip::address& destination_address, unsigned short nPort, unsigned long nDomain, int nTimestampingSupported, bool bMulticast) : m_manager(manager),
+Sender::Sender(PtpMonkeyImplementation& manager, std::shared_ptr<PtpParser> pParser, asio::io_context& io_context, const IpAddress& outboundIpAddress, const asio::ip::address& destination_address, unsigned short nPort, unsigned long nDomain, int nTimestampingSupported, bool bMulticast) : m_manager(manager),
+          m_pParser(pParser),
           m_outboundIpAddress(outboundIpAddress),
           m_endpoint(destination_address, nPort),
           m_socket(io_context, m_endpoint.protocol()),
@@ -107,7 +108,7 @@ void Sender::DoSend()
                     else
                     {
                         //approximate the timestamp.
-                        ptpV2Message pMessage = PtpParser::ParseV2(Now(), IpAddress(""), vBuffer);
+                        ptpV2Message pMessage = m_pParser->ParseV2(Now(), IpAddress(""), vBuffer);
                         //tell the local client we've sent a delay request message
                         m_manager.DelayRequestSent(pMessage.first, pMessage.second);
                     }
@@ -183,7 +184,7 @@ void Sender::GetTxTimestamp(const std::vector<unsigned char>& vBuffer)
     rawMessage aMessage = Receiver::NativeReceive(m_socket, MSG_ERRQUEUE);
     if(vBuffer.size() >= 34)
     {
-        ptpV2Message pMessage = PtpParser::ParseV2(aMessage.timestamp, IpAddress(""), vBuffer);
+        ptpV2Message pMessage = m_pParser->ParseV2(aMessage.timestamp, IpAddress(""), vBuffer);
         //tell the local client what the actual timestamp for this message a
         m_manager.DelayRequestSent(pMessage.first, pMessage.second);
     }
@@ -193,4 +194,9 @@ void Sender::GetTxTimestamp(const std::vector<unsigned char>& vBuffer)
 void Sender::ChangeEndpoint(const asio::ip::address& destination)
 {
     m_endpoint = asio::ip::udp::endpoint(destination, 319);
+}
+
+void Sender::SetDomain(unsigned char nDomain)
+{
+    m_nDomain = nDomain;
 }

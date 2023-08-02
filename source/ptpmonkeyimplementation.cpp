@@ -28,6 +28,8 @@
 
 using namespace ptpmonkey;
 
+const std::string PtpMonkeyImplementation::MULTICAST = "224.0.1.129";
+
 PtpMonkeyImplementation::PtpMonkeyImplementation(const IpAddress& ipAddress, unsigned char nDomain,unsigned short nSampleSize, Mode mode, Rate enumDelayRequest)  :
     m_local(ipAddress),
     m_Interface(GetInterfaceOfIpAddress(m_local)),
@@ -67,21 +69,18 @@ bool PtpMonkeyImplementation::Run()
     {
         try
         {
-            std::stringstream ssMulticast;
-            ssMulticast << "224.0.1." << (static_cast<unsigned int>(m_nDomain)+129);
-
             std::shared_ptr<Handler> pHandler = std::make_shared<PtpMonkeyHandler>(*this);
 
-            std::shared_ptr<Parser> pParser = std::make_shared<PtpParser>(pHandler);
+            m_pParser = std::make_shared<PtpParser>(pHandler,m_nDomain);
 
             m_nTimestamping = GetTimestampingSupported(m_Interface);
         
-            Receiver mR319(m_context, pParser, m_nTimestamping);
-            Receiver mR320(m_context, pParser, m_nTimestamping);
-            mR319.Run(asio::ip::make_address("0.0.0.0"), 319,asio::ip::make_address(ssMulticast.str()));
-            mR320.Run(asio::ip::make_address("0.0.0.0"), 320,asio::ip::make_address(ssMulticast.str()));
+            Receiver mR319(m_context, m_pParser, m_nTimestamping);
+            Receiver mR320(m_context, m_pParser, m_nTimestamping);
+            mR319.Run(asio::ip::make_address("0.0.0.0"), 319,asio::ip::make_address(MULTICAST));
+            mR320.Run(asio::ip::make_address("0.0.0.0"), 320,asio::ip::make_address(MULTICAST));
 
-            m_pSender = std::make_unique<Sender>(*this, m_context, m_local, asio::ip::make_address(ssMulticast.str()), 319, m_nDomain, m_nTimestamping, m_mode == Mode::MULTICAST);
+            m_pSender = std::make_unique<Sender>(*this, m_pParser, m_context, m_local, asio::ip::make_address(MULTICAST), 319, m_nDomain, m_nTimestamping, m_mode == Mode::MULTICAST);
             m_pSender->Run();
 
             m_context.run();
@@ -315,14 +314,9 @@ void PtpMonkeyImplementation::ResyncToMaster()
 }
 
 
-std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator PtpMonkeyImplementation::GetClocksBegin() const
+const std::map<std::string, std::shared_ptr<PtpV2Clock> >& PtpMonkeyImplementation::GetClocks() const
 {
-    return m_mClocks.begin();
-}
-
-std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator PtpMonkeyImplementation::GetClocksEnd() const
-{
-    return m_mClocks.end();
+    return m_mClocks;
 }
 
 std::shared_ptr<const PtpV2Clock> PtpMonkeyImplementation::GetSyncMasterClock() const
@@ -506,4 +500,19 @@ void PtpMonkeyImplementation::ResetLocalClockStats()
 ptpmonkey::Mode PtpMonkeyImplementation::GetMode() const
 {
     return m_mode;
+}
+
+
+void PtpMonkeyImplementation::SetDomain(unsigned char nDomain)
+{
+    if(m_nDomain != nDomain)
+    {
+        std::lock_guard<std::mutex> lg(m_mutex);
+        m_mClocks.clear();
+        m_pLocal = nullptr;
+        m_pSyncMaster = nullptr;
+        m_nLocalClockId = 0;
+        m_pParser->SetDomain(nDomain);
+        m_pSender->SetDomain(nDomain);
+    }
 }

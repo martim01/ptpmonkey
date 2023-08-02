@@ -11,19 +11,20 @@ namespace ptpmonkey
 {
 
 constexpr int max_message_count = 10;
-
+class PtpParser;
 class PtpMonkeyImplementation;
 class Sender
 {
     public:
 
-        Sender(PtpMonkeyImplementation& manager, asio::io_context& io_context, const IpAddress& outboundIpAddress, const asio::ip::address& destination_address, unsigned short nPort, unsigned long nDomain, int nTimestampingSupported, bool bMulticast);
+        Sender(PtpMonkeyImplementation& manager, std::shared_ptr<PtpParser> pParser, asio::io_context& io_context, const IpAddress& outboundIpAddress, const asio::ip::address& destination_address, unsigned short nPort, unsigned long nDomain, int nTimestampingSupported, bool bMulticast);
         void Run();
         void Stop();
 
         void ChangeEndpoint(const asio::ip::address& destination);
         std::vector<unsigned char> CreateRequest();
-    protected:
+        void SetDomain(unsigned char nDomain);
+    
     private:
         void DoSend();
         void DoTimeout();
@@ -31,6 +32,7 @@ class Sender
         void GetTxTimestamp(const std::vector<unsigned char>& vBuffer);
 
         PtpMonkeyImplementation& m_manager;
+        std::shared_ptr<PtpParser> m_pParser;
         IpAddress m_outboundIpAddress;
         asio::ip::udp::endpoint m_endpoint;
         asio::ip::udp::socket m_socket;

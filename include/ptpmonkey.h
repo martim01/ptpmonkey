@@ -57,6 +57,12 @@ namespace ptpmonkey
             ///< @brief Stop PtpMonkey. This will stop the thread and remove all the clocks
             void Stop();
 
+
+            /** @brief Sets the ptp domain 
+             * @param nDomain the domain
+            **/
+           void SetDomain(unsigned char nDomain);
+
             ///< @brief Restart PtpMonkey. This will restart the PtpMonkey thread if it has been stopped.
             void Restart();
 
@@ -93,15 +99,10 @@ namespace ptpmonkey
             **/
             std::string GetMasterClockId() const;
 
-            /** @brief Gets a const_iterator to the beginning of the map of clocks that exist in this domain
-            *   @return <i>std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator</i>
+            /** @brief Gets a map of the clocks
+            *   @return <i>std::map<std::string, std::shared_ptr<PtpV2Clock> ></i>
             **/
-            std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator GetClocksBegin() const;
-
-            /** @brief Gets a const_iterator to the end of the map of clocks that exist in this domain
-            *   @return <i>std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator</i>
-            **/
-            std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator GetClocksEnd() const;
+            const std::map<std::string, std::shared_ptr<PtpV2Clock> >& GetClocks() const;
 
             /** @brief Gets a const pointer to the current master or boundary clock. May return nullptr if there is no current master.
             *   @return <i>std::shared_ptr<const PtpV2Clock></i>
@@ -126,6 +127,8 @@ namespace ptpmonkey
             void ResetLocalClockStats();
 
             Mode GetMode() const;
+
+            unsigned char GetDomain() const;
 
 
             static int GetTimestampingSupported(const IpInterface& interface);

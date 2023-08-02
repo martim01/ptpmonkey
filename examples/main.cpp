@@ -42,11 +42,8 @@ int main(int argc, char* argv[])
     do
     {
         getchar();
-        pmlLog() << "PAUSE" << std::endl;
-        ptp.Stop();
-        getchar();
-        pmlLog() << "RUN" << std::endl;
-        ptp.Restart();
+        pmlLog() << "Change Domain to 65" << std::endl;
+	ptp.SetDomain(65);
 
     }while(true);
 
