@@ -31,22 +31,19 @@ using namespace pml;
 int main(int argc, char* argv[])
 {
     pml::LogStream::AddOutput(std::unique_ptr<LogOutput>(new LogOutput()));
-    pml::LogStream::SetOutputLevel(pml::LOG_DEBUG);
+    pml::LogStream::SetOutputLevel(pml::LOG_TRACE);
     pmlLog() << "Start" << std::endl;
 
 
 
-    ptpmonkey::PtpMonkey ptp(IpInterface("eth0"), 0, 10, ptpmonkey::Rate::PER_SEC_2);
+    ptpmonkey::PtpMonkey ptp(IpInterface("eth0"), 0, 10, ptpmonkey::Mode::HYBRID, ptpmonkey::Rate::PER_SEC_2);
     ptp.AddEventHandler(std::make_shared<ptpmonkey::PtpEventLogHandler>(false));
     ptp.Run();
     do
     {
         getchar();
-        pmlLog() << "PAUSE" << std::endl;
-        ptp.Stop();
-        getchar();
-        pmlLog() << "RUN" << std::endl;
-        ptp.Restart();
+        pmlLog() << "Change Domain to 65" << std::endl;
+	ptp.SetDomain(65);
 
     }while(true);
 

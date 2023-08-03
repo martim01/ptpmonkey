@@ -78,7 +78,7 @@ ptpV2Header::ptpV2Header(const std::chrono::nanoseconds& socketTime, const std::
 
     nSequenceId = (vMessage[30] << 8) | vMessage[31];
     nControl = vMessage[32];
-    nInterval = vMessage[33];
+    nInterval = static_cast<char>(vMessage[33]);
 }
 
 std::vector<unsigned char> ptpV2Header::CreateMessage()

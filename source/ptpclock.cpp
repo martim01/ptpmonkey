@@ -129,7 +129,6 @@ void PtpV2Clock::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_
     else
     {
         m_mDelayRequest.insert(make_pair(pHeader->nSequenceId, pHeader->timestamp));
-        pmlLog(pml::LOG_TRACE) << "PtpMonkey\tDelayRequest: " << std::dec << pHeader->nSequenceId << " timed at: " << TimeToIsoString(pHeader->timestamp);
     }
 }
 
@@ -352,7 +351,8 @@ bool PtpV2Clock::UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::share
     if(m_sGrandmasterClockId != pAnnounce->sGrandmasterClockId)
     {
         m_sGrandmasterClockId = pAnnounce->sGrandmasterClockId;
-        m_bGrandMaster = (m_sGrandmasterClockId == m_sClockId);
+        auto nColon = m_sClockId.find(':');
+        m_bGrandMaster = (m_sGrandmasterClockId == m_sClockId.substr(0,nColon));
         bChanged = true;
     }
 

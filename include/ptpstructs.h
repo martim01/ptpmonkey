@@ -86,7 +86,7 @@ namespace ptpmonkey
         ptpSource source;
         unsigned short nSequenceId;
         unsigned char nControl;
-        unsigned char nInterval;
+        char nInterval;
 
         enum enumType{SYNC=0x0, DELAY_REQ=0x1, PEER_DLEAY_REQ = 0x2, PEER_DELAY_RESP = 0x3, FOLLOW_UP=0x8, DELAY_RESP=0x9, PEER_DELAY_RESP_FOLLOW_UP = 0xA,
                 ANNOUNCE=0xB, SIGNALLING=0xC, MANAGEMENT=0xD};

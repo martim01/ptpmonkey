@@ -7,23 +7,27 @@
 #include <string>
 #include "asio.hpp"
 #include <mutex>
-#include "namedtype.h"
+#include "namedtypes.h"
 #include "ptpclock.h"
+#include "sender.h"
+#include <thread>
+#include <atomic>
 
 namespace ptpmonkey
 {
 
-class PtpEventHandler;
+    class PtpEventHandler;
+    class PtpParser;
 
 /** @class Main class for interfacing with the PTP code
 **/
 class PtpMonkeyImplementation
 {
     public:
-        PtpMonkeyImplementation(const IpAddress& ipAddress, unsigned char nDomain, unsigned short nSampleSize,Rate enumDelayRequest);
-        PtpMonkeyImplementation(const IpInterface& IpInterface, unsigned char nDomain, unsigned short nSampleSize,Rate enumDelayRequest);
+        PtpMonkeyImplementation(const IpAddress& ipAddress, unsigned char nDomain, unsigned short nSampleSize, Mode mode, Rate enumDelayRequest);
+        PtpMonkeyImplementation(const IpInterface& IpInterface, unsigned char nDomain, unsigned short nSampleSize,Mode mode, Rate enumDelayRequest);
 
-        ~PtpMonkeyImplementation(){}
+        ~PtpMonkeyImplementation();
 
         /** @brief Add an object to handle PTP events
         *   @param pHandler a shared_ptr to an object of a class derived from PtpEventHandler
@@ -64,12 +68,7 @@ class PtpMonkeyImplementation
         /** @brief Gets a const_iterator to the beginning of the map of clocks that exist in this domain
         *   @return <i>std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator</i>
         **/
-        std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator GetClocksBegin() const;
-
-        /** @brief Gets a const_iterator to the end of the map of clocks that exist in this domain
-        *   @return <i>std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator</i>
-        **/
-        std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator GetClocksEnd() const;
+        const std::map<std::string, std::shared_ptr<PtpV2Clock> >& GetClocks() const;
 
         /** @brief Gets a const pointer to the current sync master clock. May return nullptr if there is no current master.
         *   @return <i>std::shared_ptr<const PtpV2Clock></i>
@@ -126,6 +125,11 @@ class PtpMonkeyImplementation
         static int GetTimestampingSupported(const IpInterface& interface);
         void ResetLocalClockStats();
 
+        Mode GetMode() const;
+
+        void SetDomain(unsigned char nDomain);
+        unsigned char GetDomain() const { return m_nDomain;}
+
     protected:
         asio::io_context m_context;
 
@@ -138,23 +142,30 @@ class PtpMonkeyImplementation
         IpInterface m_Interface;
         unsigned char m_nDomain;
         unsigned short m_nSampleSize;
+        Mode m_mode;
         Rate m_delayRequest;
 
         std::map<std::string, std::shared_ptr<PtpV2Clock> > m_mClocks;
 
-        std::shared_ptr<PtpV2Clock> m_pSyncMaster;
+        std::shared_ptr<PtpV2Clock> m_pSyncMaster = nullptr;
 
         std::list<std::shared_ptr<PtpEventHandler>> m_lstEventHandler;
 
-        bool m_bRunning;
-
-        unsigned long long int m_nLocalClockId;
-        std::shared_ptr<PtpV2Clock> m_pLocal;
+        unsigned long long int m_nLocalClockId = 0;
+        std::shared_ptr<PtpV2Clock> m_pLocal = nullptr;
         mutable std::mutex m_mutex;
+
+        std::unique_ptr<Sender> m_pSender = nullptr;
+        int m_nTimestamping = 0;
 
         enum {TIMESTAMP_TX_HARDWARE = 1, TIMESTAMP_TX_SOFTWARE = 2, TIMESTAMP_RX_HARDWARE = 4, TIMESTAMP_RX_SOFTWARE = 8 };
 
-};
+
+        std::unique_ptr<std::thread> m_pThread = nullptr;
+        std::shared_ptr<PtpParser> m_pParser = nullptr;
+
+        static const std::string MULTICAST;
+};  
 
 
 };

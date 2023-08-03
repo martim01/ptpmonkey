@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
-project(ptpmonkey LANGUAGES CXX VERSION 1.1.1)
-
+project(ptpmonkey LANGUAGES CXX VERSION 1.2.0)
+SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 execute_process(COMMAND ${CMAKE_COMMAND} -DNAMESPACE=ptpmonkey -DMAJOR=${PROJECT_VERSION_MAJOR} -DMINOR=${PROJECT_VERSION_MINOR} -DPATCH=${PROJECT_VERSION_PATCH} -P ${CMAKE_CURRENT_SOURCE_DIR}/version.cmake)
 
 SET(DIR_BASE $ENV{HOME} CACHE STRING "base location for libraries")
@@ -105,17 +105,17 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 endif()
 
 
-#project(ptpmonkeyexample LANGUAGES CXX)
-#set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-#include_directories("include")
-#link_directories("lib")
-#add_executable(ptpmonkeyexample examples/main.cpp)
-#list(APPEND flags "-fPIC" "-Wall" "-fpermissive" "-O3" "-std=c++14")
-#target_compile_options(ptpmonkeyexample PRIVATE ${flags})
-#target_compile_definitions(ptpmonkeyexample PUBLIC NDEBUG DLL_EXPORTS)
+project(ptpmonkeyexample LANGUAGES CXX)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+include_directories("include")
+link_directories("lib")
+add_executable(ptpmonkeyexample examples/main.cpp)
+list(APPEND flags "-fPIC" "-Wall" "-fpermissive" "-O3" "-std=c++14")
+target_compile_options(ptpmonkeyexample PRIVATE ${flags})
+target_compile_definitions(ptpmonkeyexample PUBLIC NDEBUG DLL_EXPORTS)
 
-#target_link_libraries(ptpmonkeyexample ptpmonkey)
+target_link_libraries(ptpmonkeyexample ptpmonkey)
 
-#set_target_properties(ptpmonkeyexample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
+set_target_properties(ptpmonkeyexample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 
 

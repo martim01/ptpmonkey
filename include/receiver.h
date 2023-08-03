@@ -1,3 +1,4 @@
+#pragma once
 #include "asio.hpp"
 #include <iostream>
 
@@ -12,7 +13,7 @@ namespace ptpmonkey
         public:
             Receiver(asio::io_context& io_context, std::shared_ptr<Parser> pParser, int nTimestampingSupported);
 
-            void Run(const asio::ip::address& listen_address, const asio::ip::address& multicast_address, unsigned int nPort);
+            void Run(const asio::ip::address& listen_address, unsigned int nPort, const asio::ip::address& multicast_address=asio::ip::make_address("0.0.0.0"));
 
             static rawMessage NativeReceive(asio::ip::udp::socket& aSocket, int nFlags);
         private:

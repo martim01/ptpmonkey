@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include "ptpstructs.h"
+#include <mutex>
 
 namespace ptpmonkey
 {
@@ -12,13 +13,16 @@ namespace ptpmonkey
     class PtpParser : public Parser
     {
         public:
-            PtpParser(std::shared_ptr<Handler> pHandler) : Parser(pHandler){};
-            void ParseMessage(const std::string& sSenderIp, const rawMessage& aMessage) override;
+            explicit PtpParser(std::shared_ptr<Handler> pHandler, unsigned char nDomain) : Parser(pHandler), m_nDomain(nDomain){};
+            void ParseMessage(const rawMessage& aMessage) override;
 
-            static ptpV1Message ParseV1(const std::chrono::nanoseconds& socketTime, const std::string& sSenderIp, std::vector<unsigned char> vMessage);
-            static ptpV2Message ParseV2(const std::chrono::nanoseconds& socketTime, const std::string& sSenderIp, std::vector<unsigned char> vMessage);
-        protected:
+            ptpV1Message ParseV1(const std::chrono::nanoseconds& socketTime, const IpAddress& ipSender, std::vector<unsigned char> vMessage);
+            ptpV2Message ParseV2(const std::chrono::nanoseconds& socketTime, const IpAddress& ipSender, std::vector<unsigned char> vMessage);
 
-
+            void SetDomain(unsigned char nDomain);
+        
+        private:
+            unsigned char m_nDomain;
+            std::mutex m_mutex;
     };
 };

@@ -1,5 +1,6 @@
 #pragma once
-#include "namedtype.h"
+#include "namedtypes.h"
+
 
 
 extern unsigned long long int GenerateClockIdentity(const IpAddress& sIpAddress);

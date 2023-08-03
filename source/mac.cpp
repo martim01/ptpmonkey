@@ -6,7 +6,7 @@
 
 #include <sstream>
 #include <iomanip>
-#include "namedtype.h"
+#include "namedtypes.h"
 
 #ifdef __GNU__
 #include <sys/socket.h>

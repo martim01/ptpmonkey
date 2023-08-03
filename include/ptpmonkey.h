@@ -3,7 +3,7 @@
 #include <memory>
 #include <map>
 #include <list>
-#include "namedtype.h"
+#include "namedtypes.h"
 #include "ptpdll.h"
 namespace ptpmonkey
 {
@@ -26,6 +26,7 @@ namespace ptpmonkey
     {
         public:
 
+            
 
             /** @brief Constructor
             *   @param ipAddress the ip address of the network interface you want to use to receive/send PTP messages
@@ -33,14 +34,14 @@ namespace ptpmonkey
             *   @param nSampleSize the number of delay req/resp to receive before assuming offset is calculated
             *   @param nDelayRequestPerSec the number of delayy request messages to send to the master clock each second
             **/
-            PtpMonkey(const IpAddress& ipAddress, unsigned char nDomain, unsigned short nSampleSize, Rate enumDelayRequest=Rate::PER_SEC_4);
+            PtpMonkey(const IpAddress& ipAddress, unsigned char nDomain, unsigned short nSampleSize, Mode mode, Rate enumDelayRequest=Rate::PER_SEC_4);
 
             /** @brief Constructor
             *   @param IpInterface the name of the network interface to use to send/receivee PTP messages
             *   @param nDomain the PTP domain to join
             *   @param nDelayRequestPerSec the number of delayy request messages to send to the master clock each second
             **/
-            PtpMonkey(const IpInterface& IpInterface, unsigned char nDomain,unsigned short nSampleSize, Rate enumDelayRequest=Rate::PER_SEC_4);
+            PtpMonkey(const IpInterface& IpInterface, unsigned char nDomain,unsigned short nSampleSize, Mode mode, Rate enumDelayRequest=Rate::PER_SEC_4);
 
             ~PtpMonkey(){}
 
@@ -55,6 +56,12 @@ namespace ptpmonkey
 
             ///< @brief Stop PtpMonkey. This will stop the thread and remove all the clocks
             void Stop();
+
+
+            /** @brief Sets the ptp domain 
+             * @param nDomain the domain
+            **/
+           void SetDomain(unsigned char nDomain);
 
             ///< @brief Restart PtpMonkey. This will restart the PtpMonkey thread if it has been stopped.
             void Restart();
@@ -92,15 +99,10 @@ namespace ptpmonkey
             **/
             std::string GetMasterClockId() const;
 
-            /** @brief Gets a const_iterator to the beginning of the map of clocks that exist in this domain
-            *   @return <i>std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator</i>
+            /** @brief Gets a map of the clocks
+            *   @return <i>std::map<std::string, std::shared_ptr<PtpV2Clock> ></i>
             **/
-            std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator GetClocksBegin() const;
-
-            /** @brief Gets a const_iterator to the end of the map of clocks that exist in this domain
-            *   @return <i>std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator</i>
-            **/
-            std::map<std::string, std::shared_ptr<PtpV2Clock> >::const_iterator GetClocksEnd() const;
+            const std::map<std::string, std::shared_ptr<PtpV2Clock> >& GetClocks() const;
 
             /** @brief Gets a const pointer to the current master or boundary clock. May return nullptr if there is no current master.
             *   @return <i>std::shared_ptr<const PtpV2Clock></i>
@@ -124,10 +126,16 @@ namespace ptpmonkey
 
             void ResetLocalClockStats();
 
+            Mode GetMode() const;
+
+            unsigned char GetDomain() const;
+
 
             static int GetTimestampingSupported(const IpInterface& interface);
 
             enum {TIMESTAMP_TX_HARDWARE = 1, TIMESTAMP_TX_SOFTWARE = 2, TIMESTAMP_RX_HARDWARE = 4, TIMESTAMP_RX_SOFTWARE = 8 };
+
+            
 
         protected:
             PtpMonkey(){}
