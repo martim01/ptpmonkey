@@ -23,6 +23,7 @@ void Receiver::Run(const asio::ip::address& listen_address, unsigned int nPort, 
 {
     // Create the socket so that multiple may be bound to the same address.
     asio::ip::udp::endpoint listen_endpoint(listen_address, nPort);
+
     m_socket.open(listen_endpoint.protocol());
     m_socket.set_option(asio::ip::udp::socket::reuse_address(true));
 
@@ -62,14 +63,12 @@ void Receiver::Run(const asio::ip::address& listen_address, unsigned int nPort, 
     }
     else
     {
-        if(multicast_address != asio::ip::make_address("0.0.0.0"))
-        {
-            // Join the multicast group.
-            m_socket.set_option(asio::ip::multicast::join_group(multicast_address));
-        }
+        // Join the multicast group.
+        m_socket.set_option(asio::ip::multicast::join_group(multicast_address));
         DoReceive();
     }
 }
+
 
 
 void Receiver::DoReceive()
