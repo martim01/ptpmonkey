@@ -22,7 +22,7 @@ Receiver::Receiver(asio::io_context& io_context, std::shared_ptr<Parser> pParser
 void Receiver::Run(const asio::ip::address& listen_address, unsigned int nPort, const asio::ip::address& multicast_address)
 {
     // Create the socket so that multiple may be bound to the same address.
-    asio::ip::udp::endpoint listen_endpoint(asio::ip::address_v4::any(), nPort);
+    asio::ip::udp::endpoint listen_endpoint(asio::ip::make_address("0.0.0.0"), nPort);
 
     m_socket.open(listen_endpoint.protocol());
     m_socket.set_option(asio::ip::udp::socket::reuse_address(true));
@@ -94,32 +94,7 @@ void Receiver::DoReceive()
             theMessage.timestamp = Now();
             theMessage.vBuffer = std::vector<unsigned char>(m_data.begin(), m_data.begin()+length);
 
-            unsigned short nMessageLength = (theMessage.vBuffer[2] << 8) | theMessage.vBuffer[3];
-            pmlLog() << "Length: " << theMessage.vBuffer.size() << " should be " << nMessageLength+2;
             m_pParser->ParseMessage(theMessage);
-            /*
-
-            //store time with bytes it points to
-            m_qReceived.push(Now());
-            //store bytes in buffer
-            m_vBuffer.insert(m_vBuffer.end(), m_data.begin(), m_data.begin()+length);
-            //now read the message type, version and length from first 4 bytes
-            unsigned char nType = m_vBuffer[0] & 0xF;
-            unsigned char nVersion = m_vBuffer[1] & 0xF;
-            unsigned short nMessageLength = (m_vBuffer[2] << 8) | m_vBuffer[3];
-            //create raw message from first 2 bytes + length of message and time stamp (if message long enough)
-            if(m_vBuffer.size() >= nMessageLength+2)
-            {
-                rawMessage theMessage;
-                theMessage.timestamp = m_qReceived.front();
-                theMessage.vBuffer = std::vector<unsigned char>(m_vBuffer.begin(), m_vBuffer.begin()+2+nMessageLength);
-                m_pParser->ParseMessage(theMessage);
-
-                //remove the bytes from the buffer
-                m_vBuffer.erase(m_vBuffer.begin(), m_vBuffer.begin()+2+nMessageLength);
-                m_qReceived.pop();
-            }
-            */
             DoReceive();
         }
         else

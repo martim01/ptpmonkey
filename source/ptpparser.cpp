@@ -33,23 +33,23 @@ ptpV2Message PtpParser::ParseV2(const std::chrono::nanoseconds& socketTime, cons
         switch(pHeader->nType)
         {
             case ptpV2Header::SYNC:
-                pmlLog() << "Sync";
+                pmlLog(pml::LOG_TRACE) << "PtpMonkey\t" << "Sync";
                 pPayload = std::make_shared<ptpV2Payload>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
             case ptpV2Header::DELAY_RESP:
-                pmlLog() << "Delay_resp";
+                pmlLog(pml::LOG_TRACE) << "PtpMonkey\t" << "Delay_resp";
                 pPayload = std::make_shared<ptpDelayResponse>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
             case ptpV2Header::DELAY_REQ:
-                pmlLog() << "Delay_req";
+                pmlLog(pml::LOG_TRACE) << "PtpMonkey\t" << "Delay_req";
                 pPayload = std::make_shared<ptpV2Payload>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
             case ptpV2Header::FOLLOW_UP:
-                pmlLog() << "Follow Up";
+                pmlLog(pml::LOG_TRACE) << "PtpMonkey\t" << "Follow Up";
                 pPayload = std::make_shared<ptpV2Payload>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
             case ptpV2Header::ANNOUNCE:
-                pmlLog() << "Announce";
+                pmlLog(pml::LOG_TRACE) << "PtpMonkey\t" << "Announce";
                 pPayload = std::make_shared<ptpAnnounce>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
         }
