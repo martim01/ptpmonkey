@@ -4,6 +4,7 @@
 #include <iostream>
 #include "ptpstructs.h"
 #include "handler.h"
+#include "log.h"
 
 using namespace ptpmonkey;
 
@@ -20,7 +21,7 @@ ptpV1Message PtpParser::ParseV1(const std::chrono::nanoseconds& socketTime,const
 ptpV2Message PtpParser::ParseV2(const std::chrono::nanoseconds& socketTime, const IpAddress& ipSender, std::vector<unsigned char> vMessage)
 {
     std::lock_guard<std::mutex> lg(m_mutex);
-    
+
     //first byte is meesage type:
     auto pHeader = std::make_shared<ptpV2Header>(socketTime, vMessage);
     std::shared_ptr<ptpV2Payload> pPayload = nullptr;
@@ -32,18 +33,23 @@ ptpV2Message PtpParser::ParseV2(const std::chrono::nanoseconds& socketTime, cons
         switch(pHeader->nType)
         {
             case ptpV2Header::SYNC:
+                pmlLog() << "Sync";
                 pPayload = std::make_shared<ptpV2Payload>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
             case ptpV2Header::DELAY_RESP:
+                pmlLog() << "Delay_resp";
                 pPayload = std::make_shared<ptpDelayResponse>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
             case ptpV2Header::DELAY_REQ:
+                pmlLog() << "Delay_req";
                 pPayload = std::make_shared<ptpV2Payload>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
             case ptpV2Header::FOLLOW_UP:
+                pmlLog() << "Follow Up";
                 pPayload = std::make_shared<ptpV2Payload>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
             case ptpV2Header::ANNOUNCE:
+                pmlLog() << "Announce";
                 pPayload = std::make_shared<ptpAnnounce>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
         }
@@ -76,11 +82,23 @@ void PtpParser::ParseMessage(const rawMessage& aMessage)
                 }
             }
         }
+        break;
+    default:
+        {
+            pml::LogStream ls(pml::LOG_WARN);
+            ls << "Ptpmonkey\tUnknown version\n" << std::hex << std::setfill('0') << std::setw(2);
+            for(const auto& byte : aMessage.vBuffer)
+            {
+                ls << std::hex << std::setfill('0') << std::setw(2) << static_cast<unsigned int>(byte) << " ";
+            }
+        }
+
     }
+
 }
 
 void PtpParser::SetDomain(unsigned char nDomain)
- { 
+ {
     std::lock_guard<std::mutex> lg(m_mutex);
     m_nDomain = nDomain;
 }

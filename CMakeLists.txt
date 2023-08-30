@@ -12,18 +12,18 @@ if(NOT DEFINED BUILD_LOG)
 endif()
 
 
-add_library(ptpmonkey SHARED 	"source/loghander.cpp" 
-				"source/mac.cpp" 
-				"source/ptpclock.cpp" 
-				"source/ptpeventloghandler.cpp" 
-				"source/ptploghandler.cpp" 
-				"source/ptpmonkey.cpp" 
-				"source/ptpmonkeyhandler.cpp" 
-				"source/ptpmonkeyimplementation.cpp" 
-				"source/ptpparser.cpp" 
-				"source/ptpstructs.cpp" 
-		                "source/receiver.cpp" 
-				"source/sender.cpp" 
+add_library(ptpmonkey SHARED 	"source/loghander.cpp"
+				"source/mac.cpp"
+				"source/ptpclock.cpp"
+				"source/ptpeventloghandler.cpp"
+				"source/ptploghandler.cpp"
+				"source/ptpmonkey.cpp"
+				"source/ptpmonkeyhandler.cpp"
+				"source/ptpmonkeyimplementation.cpp"
+				"source/ptpparser.cpp"
+				"source/ptpstructs.cpp"
+		                "source/receiver.cpp"
+				"source/sender.cpp"
 				"source/timeutils.cpp" ${CMAKE_BINARY_DIR}/src/ptpmonkey_version.cpp)
 
 
@@ -94,6 +94,9 @@ target_link_libraries(ptpmonkey optimized pml_log debug pml_logd)
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	target_compile_definitions(ptpmonkey PRIVATE __GNU__)
 	target_link_libraries(ptpmonkey pthread)
+else()
+    target_compile_definitions(ptpmonkey PRIVATE ASIO_DISABLE_IOCP)
+    target_link_libraries(ptpmonkey ws2_32 IPHLPAPI)
 endif()
 
 set_target_properties(ptpmonkey PROPERTIES DEBUG_POSTFIX "d")
@@ -113,6 +116,12 @@ add_executable(ptpmonkeyexample examples/main.cpp)
 list(APPEND flags "-fPIC" "-Wall" "-fpermissive" "-O3" "-std=c++14")
 target_compile_options(ptpmonkeyexample PRIVATE ${flags})
 target_compile_definitions(ptpmonkeyexample PUBLIC NDEBUG DLL_EXPORTS)
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+else()
+    target_compile_definitions(ptpmonkeyexample PRIVATE ASIO_DISABLE_IOCP)
+    target_link_libraries(ptpmonkeyexample ws2_32 IPHLPAPI)
+endif()
 
 target_link_libraries(ptpmonkeyexample ptpmonkey)
 

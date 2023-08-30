@@ -20,7 +20,7 @@ namespace ptpmonkey
             ptpV2Message ParseV2(const std::chrono::nanoseconds& socketTime, const IpAddress& ipSender, std::vector<unsigned char> vMessage);
 
             void SetDomain(unsigned char nDomain);
-        
+
         private:
             unsigned char m_nDomain;
             std::mutex m_mutex;

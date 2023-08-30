@@ -36,16 +36,11 @@ int main(int argc, char* argv[])
 
 
 
-    ptpmonkey::PtpMonkey ptp(IpInterface("eth0"), 0, 10, ptpmonkey::Mode::HYBRID, ptpmonkey::Rate::PER_SEC_2);
+    ptpmonkey::PtpMonkey ptp(IpAddress("172.31.176.1"), 0, 10, ptpmonkey::Mode::MULTICAST, ptpmonkey::Rate::PER_SEC_2);
+    //ptpmonkey::PtpMonkey ptp(IpAddress("192.168.0.75"), 127, 10, ptpmonkey::Mode::MULTICAST, ptpmonkey::Rate::PER_SEC_2);
     ptp.AddEventHandler(std::make_shared<ptpmonkey::PtpEventLogHandler>(false));
     ptp.Run();
-    do
-    {
-        getchar();
-        pmlLog() << "Change Domain to 65" << std::endl;
-	ptp.SetDomain(65);
-
-    }while(true);
+    getchar();
 
 //    do
 //    {

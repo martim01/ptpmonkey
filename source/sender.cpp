@@ -96,8 +96,7 @@ void Sender::DoSend()
         if(m_manager.GetSyncMasterClock() != nullptr || bDebug)
         {
             auto vBuffer = CreateRequest();
-            m_socket.async_send_to(asio::buffer(vBuffer), m_endpoint,
-            [this, vBuffer](std::error_code ec, std::size_t /*length*/)
+            m_socket.async_send_to(asio::buffer(vBuffer), m_endpoint, [this, vBuffer](std::error_code ec, std::size_t /*length*/)
             {
                 if (!ec)
                 {
@@ -137,7 +136,7 @@ std::vector<unsigned char> Sender::CreateRequest()
     theHeader.timestamp = Now();
 
     theHeader.nMessageLength = 44;
-    theHeader.nDomain = m_nDomain; 
+    theHeader.nDomain = m_nDomain;
     theHeader.nFlags = 0;
     if(!m_bMulticast)
     {

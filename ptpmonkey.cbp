@@ -13,13 +13,16 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-std=c++14" />
 					<Add option="-g" />
-					<Add option="-D_WIN32_WINNT=0x0601" />
+					<Add option="-DASIO_DISABLE_IOCP" />
 					<Add directory="$(#asio.INCLUDE)" />
 				</Compiler>
 				<Linker>
 					<Add library="ws2_32" />
 					<Add library="IPHLPAPI" />
+					<Add library="pml_logd" />
+					<Add directory="$(#log.LIB)" />
 				</Linker>
 			</Target>
 			<Target title="Windows Release">
@@ -31,7 +34,7 @@
 				<Compiler>
 					<Add option="-O3" />
 					<Add option="-std=c++14" />
-					<Add option="-D_WIN32_WINNT=0x0601" />
+					<Add option="-DASIO_DISABLE_IOCP" />
 					<Add directory="$(#asio.INCLUDE)" />
 					<Add directory="../log/include" />
 				</Compiler>
@@ -39,6 +42,8 @@
 					<Add option="-s" />
 					<Add library="ws2_32" />
 					<Add library="IPHLPAPI" />
+					<Add library="pml_log" />
+					<Add directory="$(#log.LIB)" />
 				</Linker>
 			</Target>
 			<Target title="Windows tests">
@@ -148,10 +153,10 @@
 		</Linker>
 		<Unit filename="examples/main.cpp">
 			<Option target="Windows Debug" />
-			<Option target="Windows Release" />
 			<Option target="Windows tests" />
 			<Option target="Linux Example Release" />
 			<Option target="Linux Debug" />
+			<Option target="Windows Release" />
 		</Unit>
 		<Unit filename="include/handler.h">
 			<Option target="Windows Debug" />
@@ -348,6 +353,8 @@
 		<Unit filename="source/receiver.cpp">
 			<Option target="Linux Shared Lib Release" />
 			<Option target="Linux Shared Lib Debug" />
+			<Option target="Windows Release" />
+			<Option target="Windows Debug" />
 		</Unit>
 		<Unit filename="source/sender.cpp">
 			<Option target="Windows Debug" />
