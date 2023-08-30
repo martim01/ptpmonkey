@@ -217,6 +217,7 @@ void PtpMonkeyImplementation::DelayRequest(std::shared_ptr<ptpV2Header> pHeader,
 
 void PtpMonkeyImplementation::DelayResponse(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload)
 {
+
     auto itClock = GetOrCreateClock(pHeader, pPayload);
 
     if(itClock != m_mClocks.end())
@@ -244,7 +245,6 @@ void PtpMonkeyImplementation::DelayResponse(std::shared_ptr<ptpV2Header> pHeader
             if(pHeader->nInterval >= -7 && pHeader->nInterval <=4 )
             {
                 m_delayRequest = static_cast<ptpmonkey::Rate>(pHeader->nInterval);
-                pmlLog(pml::LOG_DEBUG) << "Delay updated to " << static_cast<int>(m_delayRequest);
             }
             //if(bSync)
             {
