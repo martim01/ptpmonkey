@@ -5,7 +5,7 @@
 #include <ctime>
 #include "log.h"
 
-using namespace ptpmonkey;
+using namespace pml::ptpmonkey;
 
 
 std::chrono::nanoseconds Now()

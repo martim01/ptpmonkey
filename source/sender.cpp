@@ -19,7 +19,7 @@
 
 #define FORCE_SO 1
 
-using namespace ptpmonkey;
+using namespace pml::ptpmonkey;
 
 Sender::Sender(PtpMonkeyImplementation& manager, std::shared_ptr<PtpParser> pParser, asio::io_context& io_context, const IpAddress& outboundIpAddress, const asio::ip::address& destination_address, unsigned short nPort, unsigned long nDomain, int nTimestampingSupported, bool bMulticast) : m_manager(manager),
           m_pParser(pParser),

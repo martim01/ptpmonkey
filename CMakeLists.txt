@@ -113,18 +113,34 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 include_directories("include")
 link_directories("lib")
 add_executable(ptpmonkeyexample examples/main.cpp)
-list(APPEND flags "-fPIC" "-Wall" "-fpermissive" "-O3" "-std=c++14")
+list(APPEND flags "-fPIC" "-Wall" "-fpermissive" "-O3" "-std=c++17")
 target_compile_options(ptpmonkeyexample PRIVATE ${flags})
 target_compile_definitions(ptpmonkeyexample PUBLIC NDEBUG DLL_EXPORTS)
+
+
+project(ptpmonkeysync LANGUAGES CXX)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+include_directories("include")
+include_directories("sync/include")
+link_directories("lib")
+add_executable(ptpmonkeysync "sync/src/main.cpp" "sync/src/ptpsync.cpp" "sync/src/synceventhandler.cpp")
+list(APPEND flags "-fPIC" "-Wall" "-fpermissive" "-O3" "-std=c++14")
+target_compile_options(ptpmonkeysync PRIVATE ${flags})
+target_compile_definitions(ptpmonkeysync PUBLIC NDEBUG DLL_EXPORTS)
+
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 else()
     target_compile_definitions(ptpmonkeyexample PRIVATE ASIO_DISABLE_IOCP)
     target_link_libraries(ptpmonkeyexample ws2_32 IPHLPAPI)
+	target_compile_definitions(ptpmonkeysync PRIVATE ASIO_DISABLE_IOCP)
+    target_link_libraries(ptpmonkeysync ws2_32 IPHLPAPI)
 endif()
 
 target_link_libraries(ptpmonkeyexample ptpmonkey)
+target_link_libraries(ptpmonkeysync ptpmonkey)
 
 set_target_properties(ptpmonkeyexample PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
+set_target_properties(ptpmonkeysync PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
 
 

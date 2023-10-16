@@ -26,7 +26,7 @@
 #endif // __GNU__
 
 
-using namespace ptpmonkey;
+using namespace pml::ptpmonkey;
 
 const std::string PtpMonkeyImplementation::MULTICAST = "224.0.1.129";
 
@@ -497,7 +497,7 @@ void PtpMonkeyImplementation::ResetLocalClockStats()
 }
 
 
-ptpmonkey::Mode PtpMonkeyImplementation::GetMode() const
+Mode PtpMonkeyImplementation::GetMode() const
 {
     return m_mode;
 }

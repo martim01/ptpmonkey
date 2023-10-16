@@ -4,7 +4,7 @@
 #include "ptpparser.h"
 #include <iostream>
 #include <iomanip>
-using namespace ptpmonkey;
+using namespace pml::ptpmonkey;
 
 void PtpMonkeyHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std::shared_ptr<payload> pPayload)
 {

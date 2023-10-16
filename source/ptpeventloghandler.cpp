@@ -3,7 +3,7 @@
 #include <iomanip>
 #include "ptpclock.h"
 #include "log.h"
-using namespace ptpmonkey;
+using namespace pml::ptpmonkey;
 
 void PtpEventLogHandler::ClockAdded(std::shared_ptr<PtpV2Clock> pClock)
 {

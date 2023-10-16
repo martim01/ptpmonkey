@@ -6,7 +6,7 @@
 #include "handler.h"
 #include "log.h"
 
-using namespace ptpmonkey;
+using namespace pml::ptpmonkey;
 
 
 

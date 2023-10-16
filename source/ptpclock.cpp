@@ -3,7 +3,7 @@
 #include "log.h"
 #include "linearregression.h"
 #include <cmath>
-using namespace ptpmonkey;
+using namespace pml::ptpmonkey;
 
 PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce) :
     m_nDomain(pHeader->nDomain),
@@ -213,7 +213,7 @@ bool PtpV2Clock::DoStats(unsigned long long int nCurrent, std::chrono::nanosecon
     theStats.lstValuesLinReg.push_back(TimeToDouble(theStats.stat[CURRENT]));
 
 
-    if(theStats.lstValues.size() > 100)
+    if(theStats.lstValues.size() > STATS_HISTORY_SIZE)
     {
         theStats.dTotal -= TimeToDouble(theStats.lstValues.front());
         theStats.lstValues.pop_front();

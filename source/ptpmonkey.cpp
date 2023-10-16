@@ -6,7 +6,7 @@
 
 
 
-using namespace ptpmonkey;
+using namespace pml::ptpmonkey;
 void PtpMonkeyImplDeleter::operator()(PtpMonkeyImplementation* p)
 {
     delete p;
@@ -129,7 +129,7 @@ void PtpMonkey::ResetLocalClockStats()
     m_pImpl->ResetLocalClockStats();
 }
 
-ptpmonkey::Mode PtpMonkey::GetMode() const
+Mode PtpMonkey::GetMode() const
 {
     return m_pImpl->GetMode();
 }

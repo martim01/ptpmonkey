@@ -4,7 +4,7 @@
 #include <iostream>
 #include "timeutils.h"
 #include "log.h"
-using namespace ptpmonkey;
+using namespace pml::ptpmonkey;
 
 ptpSource::ptpSource(const std::vector<unsigned char>& vMessage)
 {

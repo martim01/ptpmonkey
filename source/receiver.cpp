@@ -10,7 +10,7 @@
 #endif // __GNU__
 
 
-using namespace ptpmonkey;
+using namespace pml::ptpmonkey;
 
 Receiver::Receiver(asio::io_context& io_context, std::shared_ptr<Parser> pParser, int nTimestampingSupported) :
     m_socket(io_context),
@@ -26,7 +26,6 @@ void Receiver::Run(const asio::ip::address& listen_address, unsigned int nPort, 
 
     m_socket.open(listen_endpoint.protocol());
     m_socket.set_option(asio::ip::udp::socket::reuse_address(true));
-//    m_socket.set_option(asio::ip::multicast::enable_loopback(false));
 
     //set the rx hardware software timestamping
     #ifdef __GNU__

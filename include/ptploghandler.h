@@ -1,14 +1,17 @@
 #pragma once
 #include "handler.h"
 
-namespace ptpmonkey
+namespace pml
 {
-
-    class PtpLogHandler : public Handler
+    namespace ptpmonkey
     {
-        public:
-            PtpLogHandler(){}
-            void HandleParsedMessage(std::shared_ptr<header> pHeader, std::shared_ptr<payload> pPayload) override;
-    };
 
-};
+        class PtpLogHandler : public Handler
+        {
+            public:
+                PtpLogHandler(){}
+                void HandleParsedMessage(std::shared_ptr<header> pHeader, std::shared_ptr<payload> pPayload) override;
+        };
+
+    };
+}
