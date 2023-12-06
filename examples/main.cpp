@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 {
     pml::LogStream::AddOutput(std::unique_ptr<LogOutput>(new LogOutput()));
     pml::LogStream::SetOutputLevel(pml::LOG_TRACE);
-    pmlLog() << "Start" << std::endl;
+    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Start" << std::endl;
 
 
 

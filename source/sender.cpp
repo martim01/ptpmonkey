@@ -55,7 +55,7 @@ void Sender::Run()
     // @todo for some reason we get tx software timestamps even though pi says it doesn't suppport it. add this bodge for now to aid debugging
     #if FORCE_SO==1
     m_nTimestampingSupported |= PtpMonkey::TIMESTAMP_TX_SOFTWARE;
-    pmlLog(pml::LOG_WARN) << "PtpMonkey\t" << "Sender: Attempt to set tx software timestamping anyway.";
+    pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "PtpMonkey\t" << "Sender: Attempt to set tx software timestamping anyway.";
     #endif // FORCE_SO
 
     int nFlags(0);
@@ -66,21 +66,21 @@ void Sender::Run()
     {
         if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPING, &nFlags, sizeof(nFlags)) < 0)
         {
-            pmlLog(pml::LOG_WARN) << "PtpMonkey\t" << "Sender: Failed to set SO_TIMESTAMPING";
+            pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "PtpMonkey\t" << "Sender: Failed to set SO_TIMESTAMPING";
             m_bTimestampEnabled = (setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPNS, &nFlags, sizeof(nFlags)) >= 0);
             if(!m_bTimestampEnabled)
             {
-                pmlLog(pml::LOG_WARN) << "PtpMonkey\t" << "Sender: Failed to set SO_TIMESTAMPNS";
+                pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "PtpMonkey\t" << "Sender: Failed to set SO_TIMESTAMPNS";
             }
             else
             {
-                pmlLog(pml::LOG_INFO) << "PtpMonkey\t" << "Sender: Set SO_TIMESTAMPNS timestamping";
+                pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PtpMonkey\t" << "Sender: Set SO_TIMESTAMPNS timestamping";
             }
         }
         else
         {
             m_bTimestampEnabled = true;
-            pmlLog(pml::LOG_INFO) << "PtpMonkey\t" << "Sender: Set SO_TIMESTAMPING timestamping";
+            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PtpMonkey\t" << "Sender: Set SO_TIMESTAMPING timestamping";
         }
     }
     #endif
@@ -115,7 +115,7 @@ void Sender::DoSend()
                 }
                 else
                 {
-                    pmlLog(pml::LOG_ERROR) << "PtpMonkey\t" << "Sender: Send failed: " << ec;
+                    pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "PtpMonkey\t" << "Sender: Send failed: " << ec;
                 }
             });
         }

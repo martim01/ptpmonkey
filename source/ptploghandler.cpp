@@ -15,16 +15,16 @@ void PtpLogHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std::sh
         switch(pPtpH->nType)
         {
         case ptpV2Header::SYNC:
-            pmlLog() << "PtpMonkey\tSync\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
+            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PtpMonkey\tSync\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
             break;
         case ptpV2Header::FOLLOW_UP:
-           pmlLog() << "PtpMonkey\tFollowUp\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
+           pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PtpMonkey\tFollowUp\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
         case ptpV2Header::DELAY_REQ:
-           pmlLog() << "PtpMonkey\tDelayReq\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
+           pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PtpMonkey\tDelayReq\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
         case ptpV2Header::DELAY_RESP:
-            pmlLog() << "PtpMonkey\tDelayRep\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
+            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PtpMonkey\tDelayRep\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
         case ptpV2Header::ANNOUNCE:
-            pmlLog() << "PtpMonkey\t" << (int)pPtpH->nType << "\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId;
+            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PtpMonkey\t" << (int)pPtpH->nType << "\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId;
             break;
         }
     }

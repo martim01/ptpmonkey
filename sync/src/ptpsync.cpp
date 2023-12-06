@@ -35,7 +35,7 @@ void Sync::ClockBecomeSlave(std::shared_ptr<PtpV2Clock>  pClock)
 
 void Sync::SaveGrandmasterDetails(std::shared_ptr<PtpV2Clock>  pClock)
 {
-    pmlLog() << "SaveGrandmaster " << pClock->GetId();
+    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "SaveGrandmaster " << pClock->GetId();
     std::ofstream ofs;
     ofs.open("/var/run/ptpmonkey");
     if(ofs.is_open())
@@ -147,12 +147,12 @@ std::optional<long> Sync::SetGetFrequency(std::optional<long> setFreq)
     {
         buf.freq = (*setFreq);
         buf.modes = ADJ_FREQUENCY;
-        pmlLog() << "Set frequency to: " << (*setFreq);
+        pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Set frequency to: " << (*setFreq);
     }
 
     if(adjtimex(&buf) == -1)
     {
-        pmlLog(pml::LOG_ERROR) << "Failed to read/write frequency " <<strerror(errno);
+        pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "Failed to read/write frequency " <<strerror(errno);
         return {};
     }
     return buf.freq;
@@ -164,7 +164,7 @@ bool Sync::TrySyncToPtp()
 
     if(auto pLocal = m_pMonkey->GetLocalClock(); pLocal)
     {
-        pmlLog() << "Try to sync";
+        pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Try to sync";
 
         auto pMaster = m_pMonkey->GetSyncMasterClock();
         auto offset = pLocal->GetOffset(PtpV2Clock::CURRENT);
@@ -184,7 +184,7 @@ bool Sync::TrySyncToPtp()
 
         if(!m_bPtpLock && m_nPtpSamples < m_nMinSamplSize)
         {   //waiting for more info
-            pmlLog() << "Try to sync - need more samples";
+            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Try to sync - need more samples";
             return true;
         }
 
@@ -198,14 +198,14 @@ bool Sync::TrySyncToPtp()
     }
     else
     {
-        pmlLog(pml::LOG_WARN) << "Not synced to PTP master";
+        pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "Not synced to PTP master";
     }
     return false;
 }
 
 bool Sync::HardCrash(const std::chrono::nanoseconds& offset)
 {
-    if(m_nPtpSamples > 1 && abs(std::chrono::duration_cast<std::chrono::milliseconds>(offset).count()) > 1)
+    if(m_nPtpSamples > 1 && abs(std::chrono::duration_cast<std::chrono::milliseconds>(offset).count()) > 100)
     {
         auto now = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch());
         auto hardSetM = now-offset;
@@ -217,13 +217,13 @@ bool Sync::HardCrash(const std::chrono::nanoseconds& offset)
 
         if(clock_settime(CLOCK_REALTIME, &tv) != 0)
         {
-            pmlLog(pml::LOG_ERROR) << "Failed to hard crash " <<strerror(errno);
+            pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "Failed to hard crash " <<strerror(errno);
         }
         else
         {
-            pmlLog() << "PTP: Hard crashed to " << TimeToIsoString(hardSetM);
+            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PTP: Hard crashed to " << TimeToIsoString(hardSetM);
             clock_gettime(CLOCK_REALTIME, &tv);
-            pmlLog() << "PTP: Current time now: " << ctime(&tv.tv_sec);
+            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PTP: Current time now: " << ctime(&tv.tv_sec);
         }
         m_pMonkey->ResetLocalClockStats();
 
@@ -257,7 +257,7 @@ bool Sync::AdjustFrequency(double slope)
 
         SetGetFrequency(nFrequency);
 
-        pmlLog() << "mean " << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::MEAN).count() 
+        pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "mean " << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::MEAN).count() 
                 << "ns\tsd " << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::SD).count() 
                 << "ns\tslope " << m_pMonkey->GetLocalClock()->GetOffsetSlope()
                 << "ppm\tintersection " << m_pMonkey->GetLocalClock()->GetOffsetIntersection();
@@ -282,7 +282,7 @@ bool Sync::AdjustTime(std::chrono::nanoseconds offset, const std::chrono::nanose
 
     offset = std::max(minBand, std::min(maxBand, offset));
 
-    pmlLog() << "mean " << std::chrono::duration_cast<std::chrono::microseconds>(mean).count() 
+    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "mean " << std::chrono::duration_cast<std::chrono::microseconds>(mean).count() 
              << "us\tsd " << std::chrono::duration_cast<std::chrono::microseconds>(sd).count() 
              << "us\tmax " << std::chrono::duration_cast<std::chrono::microseconds>(maxBand).count() 
              << "us\tmin " << std::chrono::duration_cast<std::chrono::microseconds>(minBand).count()
@@ -306,7 +306,7 @@ bool Sync::AdjustTime(std::chrono::nanoseconds offset, const std::chrono::nanose
 
     if(adjtime(&tv, nullptr) != 0)
     {
-        pmlLog(pml::LOG_ERROR) << "Could not set time: " <<strerror(errno);
+        pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "Could not set time: " <<strerror(errno);
         return false;
     }
     
