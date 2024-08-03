@@ -68,7 +68,8 @@ void Sync::SaveDetails() const
             ofs << "\"Utc_Offset\": "  << +pMaster->GetUtcOffset() << ", ";
 
 
-            auto flags = pMaster->GetFlags(ptpV2Header::ANNOUNCE);
+            auto flags = pMaster->GetFlags(ptpV2Header::SYNC);
+	    ofs << "\"Flags\": " << flags << ", ";
             ofs << "\"Alternate_Master\": " << ((flags & ptpV2Header::enumFlags::ALTERNATE_MASTER) != 0) << ", ";
             ofs << "\"Two_Step\": " << ((flags & ptpV2Header::enumFlags::TWO_STEP) != 0) << ", ";
             ofs << "\"Unicast\": " << ((flags & ptpV2Header::enumFlags::UNICAST) != 0) << ", ";
