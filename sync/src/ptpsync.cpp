@@ -59,7 +59,7 @@ void Sync::SaveDetails() const
             ofs << "\"Id\": \""        << pMaster->GetId() << "\", " ;
             ofs << "\"Ip\": \""        << pMaster->GetIpAddress() << "\", ";
             ofs << "\"Accuracy\": "  << (int)pMaster->GetAccuracy() << ", ";
-            ofs << "\"Variance\": "  << (int)pMaster->GetVariance() << ", ";
+            ofs << "\"Variance\": "  << pMaster->GetVariance() << ", ";
             ofs << "\"Class\": "     << (int)pMaster->GetClass() << ", ";
             ofs << "\"Priority1\": " << (int)pMaster->GetPriority1() << ", ";
             ofs << "\"Priority2\": " << (int)pMaster->GetPriority2() << ", ";
@@ -107,13 +107,13 @@ void Sync::SaveDetails() const
         ofs << "\"Interval\": { ";
         if(m_pMonkey->GetLocalClock())
         {
-            ofs << "\"Announce\": "   << m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::ANNOUNCE) << ", ";
-            ofs << "\"DelayReq\": "   << m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::DELAY_REQ) << ", ";
-            ofs << "\"DelayResp\": "  << m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::DELAY_RESP) << ", ";
-            ofs << "\"FollowUp\": "   << m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::FOLLOW_UP) << ", ";
-            ofs << "\"Signalling\": " << m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::SIGNALLING) << ", ";
-            ofs << "\"Management\": " << m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::MANAGEMENT);
-            ofs << "\"Sync\": "       << m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::SYNC) << ", ";
+            ofs << "\"Announce\": "   << +m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::ANNOUNCE) << ", ";
+            ofs << "\"Sync\": "       << (int)m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::SYNC) << ", ";
+            ofs << "\"DelayReq\": "   << (int)m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::DELAY_REQ) << ", ";
+            ofs << "\"DelayResp\": "  << (int)m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::DELAY_RESP) << ", ";
+            ofs << "\"FollowUp\": "   << (int)m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::FOLLOW_UP) << ", ";
+            ofs << "\"Signalling\": " << (int)m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::SIGNALLING) << ", ";
+            ofs << "\"Management\": " << (int)m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::MANAGEMENT);
         }
 
         ofs << " } }" << std::endl;
