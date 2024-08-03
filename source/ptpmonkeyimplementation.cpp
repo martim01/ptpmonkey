@@ -80,20 +80,30 @@ bool PtpMonkeyImplementation::Run()
 {
     try
     {
+	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create Handler";
         std::shared_ptr<Handler> pHandler = std::make_shared<PtpMonkeyHandler>(*this);
-
+	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create Parser";
         m_pParser = std::make_shared<PtpParser>(pHandler,m_nDomain);
 
+	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Get Timestamping support";
         m_nTimestamping = GetTimestampingSupported(m_Interface);
 
+	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create R319";
         Receiver mR319(m_context, m_pParser, m_nTimestamping);
+	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create R320";
         Receiver mR320(m_context, m_pParser, m_nTimestamping);
+	
+	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Run R319";
         mR319.Run(asio::ip::make_address(m_local.Get()), 319,asio::ip::make_address(MULTICAST));
+
+	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Run R320";
         mR320.Run(asio::ip::make_address(m_local.Get()), 320,asio::ip::make_address(MULTICAST));
 
+	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create and Run sender";
         m_pSender = std::make_unique<Sender>(*this, m_pParser, m_context, m_local, asio::ip::make_address(MULTICAST), 319, m_nDomain, m_nTimestamping, m_mode == Mode::MULTICAST);
         m_pSender->Run();
 
+	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Run context";
         m_context.run();
     }
     catch (const std::exception& e)
