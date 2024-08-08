@@ -253,16 +253,20 @@ void PtpMonkeyImplementation::DelayResponse(std::shared_ptr<ptpV2Header> pHeader
 
     //upddate the details of the clock the delay response is for
     itClock = m_mClocks.find(pPayload->source.sSourceId);
-    if(itClock != m_mClocks.end() && itClock->second == m_pLocal)
+    if(itClock != m_mClocks.end())
     {
-        //update the delay request to match what the master clock says
-        if(pHeader->nInterval >= -7 && pHeader->nInterval <=4 )
+        itClock->second->DelayResponseTo(pHeader, pPayload);
+        if(itClock->second == m_pLocal)
         {
-            m_delayRequest = static_cast<ptpmonkey::Rate>(pHeader->nInterval);
-        }
-        for(auto pHandler : m_lstEventHandler)
-        {
-            pHandler->ClockTimeCalculated(itClock->second);
+            //update the delay request to match what the master clock says
+            if(pHeader->nInterval >= -7 && pHeader->nInterval <=4 )
+            {
+                m_delayRequest = static_cast<ptpmonkey::Rate>(pHeader->nInterval);
+            }
+            for(auto pHandler : m_lstEventHandler)
+            {
+                pHandler->ClockTimeCalculated(itClock->second);
+            }
         }
     }
 }
@@ -531,3 +535,4 @@ void PtpMonkeyImplementation::SetDomain(unsigned char nDomain)
         m_pSender->SetDomain(nDomain);
     }
 }
+
