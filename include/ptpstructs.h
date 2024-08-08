@@ -88,7 +88,7 @@ namespace pml
             char nInterval;
 
             enum enumType{SYNC=0x0, DELAY_REQ=0x1, PEER_DLEAY_REQ = 0x2, PEER_DELAY_RESP = 0x3, FOLLOW_UP=0x8, DELAY_RESP=0x9, PEER_DELAY_RESP_FOLLOW_UP = 0xA,
-                    ANNOUNCE=0xB, SIGNALLING=0xC, MANAGEMENT=0xD};
+                    ANNOUNCE=0xB, SIGNALLING=0xC, MANAGEMENT=0xD, SYNC_RECV=0x10};
 
                 enum enumFlags{ ALTERNATE_MASTER = 0x0100,
                                 TWO_STEP         = 0x0200,

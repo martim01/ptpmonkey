@@ -151,7 +151,7 @@ namespace pml
                     std::list<double> lstTimesLinReg;
                     std::list<double> lstValuesLinReg;
                 };
-                bool DoStats(unsigned long long int nCurrent, std::chrono::nanoseconds calcAt, stats& theStats);
+                bool DoStats(unsigned long long int nCurrent, std::chrono::nanoseconds calcAt, stats& theStats) const;
 
                 static const size_t STATS_HISTORY_SIZE = 400;
                 

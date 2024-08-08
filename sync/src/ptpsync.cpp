@@ -56,51 +56,67 @@ void Sync::SaveDetails() const
         ofs << "\"Grandmaster\": {" ;
         if(auto pMaster = m_pMonkey->GetSyncMasterClock(); pMaster)
         {
-            ofs << "\"Id\": "        << pMaster->GetId() << ", " ;
-            ofs << "\"Ip\": "        << pMaster->GetId() << ", ";
+            ofs << "\"Id\": \""        << pMaster->GetId() << "\", " ;
+            ofs << "\"Ip\": \""        << pMaster->GetIpAddress() << "\", ";
             ofs << "\"Accuracy\": "  << (int)pMaster->GetAccuracy() << ", ";
+            ofs << "\"Variance\": "  << (int)pMaster->GetVariance() << ", ";
             ofs << "\"Class\": "     << (int)pMaster->GetClass() << ", ";
             ofs << "\"Priority1\": " << (int)pMaster->GetPriority1() << ", ";
-            ofs << "\"Priority2\": " << (int)pMaster->GetPriority2();
+            ofs << "\"Priority2\": " << (int)pMaster->GetPriority2() << ", ";
+            ofs << "\"Source\": "     << (int)pMaster->GetTimeSource() << ", ";
+            ofs << "\"Steps\": "     << (int)pMaster->GetStepsRemoved();
         }
-        ofs << "}, ";
+        ofs << " }, ";
 
 
         ofs << "\"Offset\": { ";
         if(m_pMonkey->GetLocalClock())
         {
-            ofs << "\"current\" :"      << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::CURRENT).count() << ", ";
-            ofs << "\"mean\" :"         << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::MEAN).count() << ", ";
-            ofs << "\"sd\" :"           << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::SD).count() << ", ";
-            ofs << "\"slope\" :"        << m_pMonkey->GetLocalClock()->GetOffsetSlope() << ", ";
-            ofs << "\"intersection\" :" << m_pMonkey->GetLocalClock()->GetOffsetIntersection();
+            ofs << "\"current\": "      << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::CURRENT).count() << ", ";
+            ofs << "\"mean\": "         << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::MEAN).count() << ", ";
+            ofs << "\"sd\": "           << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::SD).count() << ", ";
+            ofs << "\"slope\": "        << m_pMonkey->GetLocalClock()->GetOffsetSlope() << ", ";
+            ofs << "\"intersection\": " << m_pMonkey->GetLocalClock()->GetOffsetIntersection();
         }
-        ofs << "}, ";
+        ofs << " }, "; 
 
         ofs << "\"Delay\": { ";
         if(m_pMonkey->GetLocalClock())
         {
-            ofs << "\"current\" :"      << m_pMonkey->GetLocalClock()->GetDelay(PtpV2Clock::CURRENT).count() << ", ";
-            ofs << "\"mean\" :"         << m_pMonkey->GetLocalClock()->GetDelay(PtpV2Clock::MEAN).count() << ", ";
-            ofs << "\"sd\" :"           << m_pMonkey->GetLocalClock()->GetDelay(PtpV2Clock::SD).count() << ", ";
-            ofs << "\"slope\" :"        << m_pMonkey->GetLocalClock()->GetDelaySlope() << ", ";
-            ofs << "\"intersection\" :" << m_pMonkey->GetLocalClock()->GetDelayIntersection();
+            ofs << "\"current\": "      << m_pMonkey->GetLocalClock()->GetDelay(PtpV2Clock::CURRENT).count() << ", ";
+            ofs << "\"mean\": "         << m_pMonkey->GetLocalClock()->GetDelay(PtpV2Clock::MEAN).count() << ", ";
+            ofs << "\"sd\": "           << m_pMonkey->GetLocalClock()->GetDelay(PtpV2Clock::SD).count() << ", ";
+            ofs << "\"slope\": "        << m_pMonkey->GetLocalClock()->GetDelaySlope() << ", ";
+            ofs << "\"intersection\": " << m_pMonkey->GetLocalClock()->GetDelayIntersection();
         }
-        ofs << "}, ";
+        ofs << " }, ";
             
 
         ofs << "\"Received\": { ";
         if(m_pMonkey->GetLocalClock())
         {
-            ofs << "\"Announce\" :"   << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::ANNOUNCE) << ", ";
-            ofs << "\"Sync\" :"       << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::SYNC) << ", ";
-            ofs << "\"DelayReq\" :"   << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::DELAY_REQ) << ", ";
-            ofs << "\"DelayResp\" :"  << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::DELAY_RESP) << ", ";
-            ofs << "\"FollowUp\" :"   << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::FOLLOW_UP) << ", ";
-            ofs << "\"Signalling\" :" << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::SIGNALLING) << ", ";
-            ofs << "\"Management\" :" << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::MANAGEMENT) << ", ";
+            ofs << "\"Announce\": "   << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::ANNOUNCE) << ", ";
+            ofs << "\"Sync\": "       << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::SYNC) << ", ";
+            ofs << "\"DelayReq\": "   << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::DELAY_REQ) << ", ";
+            ofs << "\"DelayResp\": "  << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::DELAY_RESP) << ", ";
+            ofs << "\"FollowUp\": "   << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::FOLLOW_UP) << ", ";
+            ofs << "\"Signalling\": " << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::SIGNALLING) << ", ";
+            ofs << "\"Management\": " << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::MANAGEMENT);
         }
-        ofs << "} }" << std::endl;
+        ofs << " }, ";
+        ofs << "\"Interval\": { ";
+        if(m_pMonkey->GetLocalClock())
+        {
+            ofs << "\"Announce\": "   << m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::ANNOUNCE) << ", ";
+            ofs << "\"DelayReq\": "   << m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::DELAY_REQ) << ", ";
+            ofs << "\"DelayResp\": "  << m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::DELAY_RESP) << ", ";
+            ofs << "\"FollowUp\": "   << m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::FOLLOW_UP) << ", ";
+            ofs << "\"Signalling\": " << m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::SIGNALLING) << ", ";
+            ofs << "\"Management\": " << m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::MANAGEMENT);
+            ofs << "\"Sync\": "       << m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::SYNC) << ", ";
+        }
+
+        ofs << " } }" << std::endl;
     }
 
 }

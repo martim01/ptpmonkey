@@ -71,6 +71,7 @@ void PtpV2Clock::SyncFrom(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<
 void PtpV2Clock::SyncTo(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
 {
     m_bSyncMaster = false;
+    m_mCount[ptpV2Header::SYNC].value++;
     if((pHeader->nFlags & ptpV2Header::TWO_STEP) != 0)   //2-step
     {
         m_nt1r = TimeToNano(pHeader->timestamp);
@@ -107,6 +108,7 @@ void PtpV2Clock::FollowUpTo(std::shared_ptr<ptpV2Header> pHeader, std::shared_pt
     //check the follow up sequence is correct
     m_bT1Valid = (pHeader->nSequenceId == m_nFollowUpSequence);
 
+    m_mCount[ptpV2Header::FOLLOW_UP].value++;
 
 }
 
@@ -201,7 +203,7 @@ bool PtpV2Clock::DelayResponseTo(std::shared_ptr<ptpV2Header> pHeader, std::shar
     return bSyncChange;
 }
 
-bool PtpV2Clock::DoStats(unsigned long long int nCurrent, std::chrono::nanoseconds calcAt, stats& theStats)
+bool PtpV2Clock::DoStats(unsigned long long int nCurrent, std::chrono::nanoseconds calcAt, stats& theStats) const
 {
 
     theStats.stat[CURRENT] = NanoToTime(nCurrent);
