@@ -342,6 +342,7 @@ bool Sync::AdjustTime(std::chrono::nanoseconds offset, const std::chrono::nanose
         tv.tv_sec -= 1;
         tv.tv_usec += 1000000;
     }
+    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "AdjustTime: " << tv.tv_sec << ":" << tv.tv_usec;
 
     timeval tvOld;
     adjtime(nullptr, &tvOld);
