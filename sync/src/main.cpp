@@ -53,8 +53,6 @@ int main(int argc, char* argv[])
     else
     {
         sync.Run(IpAddress(ini.Get("ptp", "address", "0.0.0.0")), static_cast<unsigned char>(ini.Get("ptp", "domain", 0L)), static_cast<pml::ptpmonkey::Mode>(ini.Get("ptp", "mode", 0L)));
-
-        sync.Run(IpAddress("172.23.101.193"), 0, pml::ptpmonkey::Mode::MULTICAST);
     }
 
     getchar();

@@ -18,8 +18,8 @@ namespace pml
                 Sync();
                 ~Sync();
 
-                bool Run(const IpInterface& interface, unsigned char nDomain, Mode mode);
-                bool Run(const IpAddress& address, unsigned char nDomain, Mode mode);
+                bool Run(const IpInterface& interface, unsigned char nDomain, Mode mode, int nHwC=-1);
+                bool Run(const IpAddress& address, unsigned char nDomain, Mode mode, int nHwC=-1);
 
                 bool IsPtpFrequencyLocked() const {return m_bPtpLock;}
 
@@ -37,11 +37,13 @@ namespace pml
                 bool TrySyncToPtp();
                 
 
-                bool HardCrash(const std::chrono::nanoseconds& offset);
-                bool AdjustFrequency(double slope);
-                bool AdjustTime(std::chrono::nanoseconds offset, const std::chrono::nanoseconds& utc);
+                bool HardCrash(const std::chrono::nanoseconds& offset, int nClockId);
+                bool AdjustFrequency(double slope, int nClockId);
+                bool AdjustTime(std::chrono::nanoseconds offset, const std::chrono::nanoseconds& utc, int nClockId);
 
-                std::optional<long> SetGetFrequency(std::optional<long> setFreq);
+                std::optional<long> SetGetFrequency(std::optional<long> setFreq, int nClockId);
+
+                void OpenHwClock(int nHwC);
 
                 size_t m_nPtpDomain = 0;
                 bool m_bUseTai = false;
@@ -50,6 +52,7 @@ namespace pml
                 size_t m_nPtpSamples = 0;
                 size_t m_nMinSamplSize = 10;
 
+                int m_nHwC = -1;
                 long m_nFrequency;
 
                 IpInterface m_interface;
