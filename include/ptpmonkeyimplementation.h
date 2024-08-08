@@ -38,7 +38,7 @@ namespace pml
 
             /** @brief Run PtpMonkey. This will create a separate thread to run all the sockets in
             **/
-            bool Run();
+            bool Run(bool bThreaded);
 
             /** @brief Get the time of the master clock for this domain. If there is no master clock returns the system clock time
             *   @return <i>std::chrono::nanoseconds</i> the time in seconds and nanoseconds
@@ -117,7 +117,7 @@ namespace pml
 
             void Stop();
             void Restart();
-            bool IsStopped();
+            bool IsStopped() const;
 
             std::shared_ptr<const PtpV2Clock> GetClock(const std::string& sClockId) const;
 
@@ -139,6 +139,8 @@ namespace pml
 
             void ChangeSyncMaster(std::shared_ptr<PtpV2Clock> pNewMaster);
             void CheckForDeadClocks();
+
+            bool Run();
 
             IpAddress m_local;
             IpInterface m_Interface;

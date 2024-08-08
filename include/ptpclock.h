@@ -4,6 +4,7 @@
 #include <map>
 #include <list>
 #include "ptpdll.h"
+#include <array>
 
 namespace pml
 {
@@ -82,7 +83,7 @@ namespace pml
                 {
                     return m_lastMessageTime;
                 }
-                const std::string GetIpAddress() const
+                const std::string& GetIpAddress() const
                 {   return m_sIpAddress;    }
 
                 unsigned char GetInterval(ptpV2Header::enumType eType) const;
@@ -143,7 +144,7 @@ namespace pml
                     stats()=default;
 
                     double dTotal = 0.0;
-                    std::chrono::nanoseconds stat[8]{TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO};
+                    std::array<std::chrono::nanoseconds,8> stat{TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO,TIMEZERO};
                     bool bSet = false;
                     std::pair<double, double> m_c{0.0,0.0};
                     std::list<std::chrono::nanoseconds> lstValues;

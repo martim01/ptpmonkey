@@ -46,6 +46,56 @@ void Sync::SaveGrandmasterDetails(std::shared_ptr<PtpV2Clock>  pClock)
     }
 }
 
+void Sync::SaveDetails() const
+{
+    std::ofstream ofs;
+    ofs.open("/var/run/ptpmonkey");
+    if(ofs.is_open())
+    {
+        ofs << "{ ";
+        ofs << "\"Grandmaster\": {" ;
+        if(auto pMaster = m_pMonkey->GetSyncMasterClock(); pMaster)
+        {
+            ofs << "\"Id\": "        << pMaster->GetId() << ", " ;
+            ofs << "\"Ip\": "        << pMaster->GetId() << ", ";
+            ofs << "\"Accuracy\": "  << pMaster->GetAccuracy() << ", ";
+            ofs << "\"Class\": "     << pMaster->GetClass() << ", ";
+            ofs << "\"Priority1\": " << pMaster->GetPriority1() << ", ";
+            ofs << "\"Priority2\": " <<pMaster->GetPriority2();
+        }
+        ofs << "}, ";
+
+
+        ofs << "\"Offset\": { ";
+        ofs << "\"current\" :"      << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::CURRENT).count() << ", ";
+        ofs << "\"mean\" :"         << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::MEAN).count() << ", ";
+        ofs << "\"sd\" :"           << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::SD).count() << ", ";
+        ofs << "\"slope\" :"        << m_pMonkey->GetLocalClock()->GetOffsetSlope() << ", ";
+        ofs << "\"intersection\" :" << m_pMonkey->GetLocalClock()->GetOffsetIntersection();
+        ofs << "}, ";
+
+        ofs << "\"Delay\": { ";
+        ofs << "\"current\" :"      << m_pMonkey->GetLocalClock()->GetDelay(PtpV2Clock::CURRENT).count() << ", ";
+        ofs << "\"mean\" :"         << m_pMonkey->GetLocalClock()->GetDelay(PtpV2Clock::MEAN).count() << ", ";
+        ofs << "\"sd\" :"           << m_pMonkey->GetLocalClock()->GetDelay(PtpV2Clock::SD).count() << ", ";
+        ofs << "\"slope\" :"        << m_pMonkey->GetLocalClock()->GetDelaySlope() << ", ";
+        ofs << "\"intersection\" :" << m_pMonkey->GetLocalClock()->GetDelayIntersection();
+        ofs << "}, ";
+            
+
+        ofs << "\"Received\": { ";
+        ofs << "\"Announce\" :"   << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::ANNOUNCE) << ", ";
+        ofs << "\"Sync\" :"       << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::SYNC) << ", ";
+        ofs << "\"DelayReq\" :"   << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::DELAY_REQ) << ", ";
+        ofs << "\"DelayResp\" :"  << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::DELAY_RESP) << ", ";
+        ofs << "\"FollowUp\" :"   << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::FOLLOW_UP) << ", ";
+        ofs << "\"Signalling\" :" << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::SIGNALLING) << ", ";
+        ofs << "\"Management\" :" << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::MANAGEMENT) << ", ";
+        ofs << "} }" << std::endl;
+    }
+
+}
+
 bool Sync::Run(const IpInterface& interface, unsigned char nDomain, Mode mode)
 {
     if(m_pMonkey == nullptr || interface.Get() != m_interface.Get() || mode != m_pMonkey->GetMode())
@@ -54,7 +104,7 @@ bool Sync::Run(const IpInterface& interface, unsigned char nDomain, Mode mode)
 
         m_pMonkey = std::make_unique<PtpMonkey>(m_interface, nDomain, 2, mode, Rate::EVERY_1_SEC);
         m_pMonkey->AddEventHandler(std::make_shared<SyncEventHandler>(this));
-        m_pMonkey->Run();
+        m_pMonkey->Run(false);
     }
     else if(nDomain != m_pMonkey->GetDomain())
     {
@@ -74,7 +124,7 @@ bool Sync::Run(const IpAddress& address, unsigned char nDomain, Mode mode)
 
         m_pMonkey = std::make_unique<PtpMonkey>(m_address, nDomain, 2, mode, Rate::EVERY_1_SEC);
         m_pMonkey->AddEventHandler(std::make_shared<SyncEventHandler>(this));
-        m_pMonkey->Run();
+        m_pMonkey->Run(false);
     }
     else if(nDomain != m_pMonkey->GetDomain())
     {
@@ -87,57 +137,6 @@ bool Sync::Run(const IpAddress& address, unsigned char nDomain, Mode mode)
 }
 
 
-bool Sync::PtpSyncFrequency()
-{
-    m_nPtpSamples++;
-    if(auto pLocal = m_pMonkey->GetLocalClock(); pLocal)
-    {
-        auto pMaster = m_pMonkey->GetSyncMasterClock();
-        auto offset = pLocal->GetOffset(PtpV2Clock::CURRENT);
-        
-        if(!m_bUseTai)
-        {
-            auto utc = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(pMaster->GetUtcOffset()));
-            offset += utc;
-        }
-
-        if(HardCrash(offset))
-        {
-            return true;
-        }
-        
-
-        if(m_nPtpSamples > m_nMinSamplSize)
-        {
-            auto slope = pLocal->GetOffsetSlope()*1e6;   //slope in ppm
-            auto origin = pLocal->GetOffsetIntersection();
-
-            auto setFreq = SetGetFrequency({});
-            if(!setFreq)
-            {
-                return false;
-            }
-
-            double dOffsetFreq = slope*65535.0;
-            m_nFrequency =(*setFreq)-dOffsetFreq; //this is the frequency to keep the clock in sync
-
-            auto nOffsetPPM = std::chrono::duration_cast<std::chrono::microseconds>(offset).count();
-            auto nNewFreq = m_nFrequency - nOffsetPPM;
-
-            m_pMonkey->ResetLocalClockStats();
-            m_nPtpSamples = 0;
-
-            std::thread th([this, nNewFreq]{
-                            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                            SetGetFrequency(nNewFreq);
-                            });
-
-            th.detach();
-            return true;
-        }
-    }
-    return false;
-}
 
 std::optional<long> Sync::SetGetFrequency(std::optional<long> setFreq)
 {
@@ -205,7 +204,7 @@ bool Sync::TrySyncToPtp()
 
 bool Sync::HardCrash(const std::chrono::nanoseconds& offset)
 {
-    if(m_nPtpSamples > 1 && abs(std::chrono::duration_cast<std::chrono::milliseconds>(offset).count()) > 100)
+    if(m_nPtpSamples > 1 && std::abs(std::chrono::duration_cast<std::chrono::milliseconds>(offset).count()) > 100)
     {
         auto now = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch());
         auto hardSetM = now-offset;
@@ -247,7 +246,7 @@ bool Sync::AdjustFrequency(double slope)
         }
 
         double dOffsetFreq = slope*65535.0;
-        auto nFrequency =(*setFreq)-dOffsetFreq; //this is the frequency to keep the clock in sync
+        auto nFrequency = static_cast<long>((*setFreq)-dOffsetFreq); //this is the frequency to keep the clock in sync
 
         //auto nOffsetPPM = std::chrono::duration_cast<std::chrono::microseconds>(offset).count();
         //auto nNewFreq = m_nFrequency - nOffsetPPM;

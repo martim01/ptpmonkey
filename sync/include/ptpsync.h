@@ -31,10 +31,11 @@ namespace pml
         
             private:
 
+                void SaveDetails() const;
                 void SaveGrandmasterDetails(std::shared_ptr<PtpV2Clock>  pClock);
 
                 bool TrySyncToPtp();
-                bool PtpSyncFrequency();
+                
 
                 bool HardCrash(const std::chrono::nanoseconds& offset);
                 bool AdjustFrequency(double slope);

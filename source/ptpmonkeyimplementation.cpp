@@ -63,36 +63,44 @@ void PtpMonkeyImplementation::AddEventHandler(std::shared_ptr<PtpEventHandler> p
     m_lstEventHandler.push_back(pHandler);
 }
 
+bool PtpMonkeyImplementation::Run(bool bThreaded)
+{
+    if(bThreaded)
+    {
+        m_pThread = std::make_unique<std::thread>([this]() {  Run(); });
+        return true;
+    }
+    else
+    {
+        return Run();
+    }
+}
+
 bool PtpMonkeyImplementation::Run()
 {
-    m_pThread = std::make_unique<std::thread>([this]()
+    try
     {
-        try
-        {
-            std::shared_ptr<Handler> pHandler = std::make_shared<PtpMonkeyHandler>(*this);
+        std::shared_ptr<Handler> pHandler = std::make_shared<PtpMonkeyHandler>(*this);
 
-            m_pParser = std::make_shared<PtpParser>(pHandler,m_nDomain);
+        m_pParser = std::make_shared<PtpParser>(pHandler,m_nDomain);
 
-            m_nTimestamping = GetTimestampingSupported(m_Interface);
+        m_nTimestamping = GetTimestampingSupported(m_Interface);
 
-            Receiver mR319(m_context, m_pParser, m_nTimestamping);
-            Receiver mR320(m_context, m_pParser, m_nTimestamping);
-            mR319.Run(asio::ip::make_address(m_local.Get()), 319,asio::ip::make_address(MULTICAST));
-            mR320.Run(asio::ip::make_address(m_local.Get()), 320,asio::ip::make_address(MULTICAST));
+        Receiver mR319(m_context, m_pParser, m_nTimestamping);
+        Receiver mR320(m_context, m_pParser, m_nTimestamping);
+        mR319.Run(asio::ip::make_address(m_local.Get()), 319,asio::ip::make_address(MULTICAST));
+        mR320.Run(asio::ip::make_address(m_local.Get()), 320,asio::ip::make_address(MULTICAST));
 
-            m_pSender = std::make_unique<Sender>(*this, m_pParser, m_context, m_local, asio::ip::make_address(MULTICAST), 319, m_nDomain, m_nTimestamping, m_mode == Mode::MULTICAST);
-            m_pSender->Run();
+        m_pSender = std::make_unique<Sender>(*this, m_pParser, m_context, m_local, asio::ip::make_address(MULTICAST), 319, m_nDomain, m_nTimestamping, m_mode == Mode::MULTICAST);
+        m_pSender->Run();
 
-            m_context.run();
-        }
-        catch (const std::exception& e)
-        {
-            pmlLog(pml::LOG_CRITICAL, "pml::ptpmonkey") << "PtpMonkey\tRUN: " << e.what();
-        }
-    });
-
-
-    return true;
+        m_context.run();
+    }
+    catch (const std::exception& e)
+    {
+        pmlLog(pml::LOG_CRITICAL, "pml::ptpmonkey") << "PtpMonkey\tRUN: " << e.what();
+    }
+       return true;
 }
 
 void PtpMonkeyImplementation::DelayRequestSent(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
@@ -397,29 +405,35 @@ void PtpMonkeyImplementation::CheckForDeadClocks()
 
 void PtpMonkeyImplementation::Stop()
 {
+    m_context.stop();
+    m_pSyncMaster = nullptr;
+    m_mClocks.clear();
+
     if(m_pThread)
-    {
-        m_context.stop();
-        m_pSyncMaster = nullptr;
-        m_mClocks.clear();
+    {   
         m_pThread->join();
         m_pThread = nullptr;
     }
-    }
+}
 
 void PtpMonkeyImplementation::Restart()
 {
     if(m_context.stopped())
     {
-        m_pThread->join();
-        m_pThread = nullptr;
+        auto bThreaded = false;
+        if(m_pThread)
+        {
+            bThreaded = true;
+            m_pThread->join();
+            m_pThread = nullptr;
+        }
 
         m_context.restart();
-        Run();
+        Run(bThreaded);
     }
 }
 
-bool PtpMonkeyImplementation::IsStopped()
+bool PtpMonkeyImplementation::IsStopped() const
 {
     return m_context.stopped();
 }

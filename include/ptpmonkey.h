@@ -56,7 +56,7 @@ namespace pml
 
                 /** @brief Run PtpMonkey. This will create a separate thread to run all the sockets in
                 **/
-                bool Run();
+                bool Run(bool bThreaded=true);
 
                 ///< @brief Stop PtpMonkey. This will stop the thread and remove all the clocks
                 void Stop();
