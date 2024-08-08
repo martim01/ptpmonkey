@@ -9,25 +9,25 @@ using namespace pml::ptpmonkey;
 void PtpMonkeyHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std::shared_ptr<payload> pPayload)
 {
 
-    std::shared_ptr<ptpV2Header> pPtpH = std::dynamic_pointer_cast<ptpV2Header>(pHeader);
-    std::shared_ptr<ptpV2Payload> pPtpP = std::dynamic_pointer_cast<ptpV2Payload>(pPayload);
+    auto pPtpH = std::dynamic_pointer_cast<ptpV2Header>(pHeader);
+    auto pPtpP = std::dynamic_pointer_cast<ptpV2Payload>(pPayload);
     if(pPtpP && pPtpH)
     {
-        switch(pPtpH->nType)
+        switch(static_cast<ptpV2Header::enumType>(pPtpH->nType))
         {
-            case ptpV2Header::SYNC:
+            case ptpV2Header::enumType::SYNC:
                 m_manager.Sync(pPtpH, pPtpP);
                 break;
-            case ptpV2Header::FOLLOW_UP:
+            case ptpV2Header::enumType::FOLLOW_UP:
                 m_manager.FollowUp(pPtpH, pPtpP);
                 break;
-            case ptpV2Header::DELAY_RESP:
+            case ptpV2Header::enumType::DELAY_RESP:
                 m_manager.DelayResponse(pPtpH, std::dynamic_pointer_cast<ptpDelayResponse>(pPtpP));
                 break;
-            case ptpV2Header::ANNOUNCE:
+            case ptpV2Header::enumType::ANNOUNCE:
                 m_manager.Announce(pPtpH, std::dynamic_pointer_cast<ptpAnnounce>(pPtpP));
                 break;
-            case ptpV2Header::DELAY_REQ:
+            case ptpV2Header::enumType::DELAY_REQ:
                 m_manager.DelayRequest(pPtpH, pPtpP);
                 break;
 

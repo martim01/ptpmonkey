@@ -47,7 +47,7 @@ namespace pml
                 **/
                 PtpMonkey(const IpInterface& IpInterface, unsigned char nDomain,unsigned short nSampleSize, Mode mode, Rate enumDelayRequest=Rate::PER_SEC_4);
 
-                ~PtpMonkey(){}
+                ~PtpMonkey()=default;
 
                 /** @brief Add an object to handle PTP events
                 *   @param pHandler a shared_ptr to an object of a class derived from PtpEventHandler
@@ -71,7 +71,7 @@ namespace pml
                 void Restart();
 
                 ///< @brief Returns tru is the PtpMonkey thread has been run and is no longer running
-                bool IsStopped();
+                bool IsStopped() const;
 
                 /** @brief Get the time of the master clock for this domain. If there is no master clock returns the system clock time
                 *   @return <i>std::chrono::nanoseconds</i> the time in seconds and nanoseconds

@@ -75,7 +75,7 @@ target_include_directories(ptpmonkey PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(ptpmonkey PUBLIC ${DIR_LOG}/include)
 target_include_directories(ptpmonkey PUBLIC ${DIR_ASIO}/asio/include)
 
-list(APPEND flags "-fPIC" "-Wall" "-fpermissive"  "-std=c++14")
+list(APPEND flags "-fPIC" "-Wall" "-fpermissive"  "-std=c++17")
 
 if(CMAKE_BUILD_TYPE MATCHES Release)
    list(APPEND flags "-O3")
@@ -124,7 +124,7 @@ include_directories("include")
 include_directories("sync/include")
 link_directories("lib")
 add_executable(ptpmonkeysync "sync/src/main.cpp" "sync/src/ptpsync.cpp" "sync/src/synceventhandler.cpp" "sync/src/inimanager.cpp" "sync/src/inisection.cpp")
-list(APPEND flags "-fPIC" "-Wall" "-fpermissive" "-O3" "-std=c++14")
+list(APPEND flags "-fPIC" "-Wall" "-fpermissive" "-O3" "-std=c++17")
 target_compile_options(ptpmonkeysync PRIVATE ${flags})
 target_compile_definitions(ptpmonkeysync PUBLIC NDEBUG DLL_EXPORTS)
 

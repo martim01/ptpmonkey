@@ -163,14 +163,14 @@ namespace pml
 
                 bool m_bTimeSet;
 
-                std::map<unsigned char, unsigned char> m_mInterval;
+                std::map<ptpV2Header::enumType, unsigned char> m_mInterval;
 
                 struct counter
                 {
                     unsigned long long value = 0;
                 };
-                std::map<unsigned char, counter> m_mCount;
-                std::map<unsigned char, unsigned short> m_mFlags;
+                std::map<ptpV2Header::enumType, counter> m_mCount;
+                std::map<ptpV2Header::enumType, unsigned short> m_mFlags;
         };
     }
 }

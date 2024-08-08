@@ -12,18 +12,18 @@ void PtpLogHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std::sh
     std::shared_ptr<ptpV2Payload> pPtpP = std::dynamic_pointer_cast<ptpV2Payload>(pPayload);
     if(pPtpP && pPtpH)
     {
-        switch(pPtpH->nType)
+        switch(static_cast<ptpV2Header::enumType>(pPtpH->nType))
         {
-        case ptpV2Header::SYNC:
+        case ptpV2Header::enumType::SYNC:
             pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PtpMonkey\tSync\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
             break;
-        case ptpV2Header::FOLLOW_UP:
+        case ptpV2Header::enumType::FOLLOW_UP:
            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PtpMonkey\tFollowUp\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
-        case ptpV2Header::DELAY_REQ:
+        case ptpV2Header::enumType::DELAY_REQ:
            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PtpMonkey\tDelayReq\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
-        case ptpV2Header::DELAY_RESP:
+        case ptpV2Header::enumType::DELAY_RESP:
             pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PtpMonkey\tDelayRep\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
-        case ptpV2Header::ANNOUNCE:
+        case ptpV2Header::enumType::ANNOUNCE:
             pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PtpMonkey\t" << (int)pPtpH->nType << "\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId;
             break;
         }

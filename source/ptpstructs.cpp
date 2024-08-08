@@ -35,19 +35,19 @@ ptpSource::ptpSource(const std::vector<unsigned char>& vMessage)
 
 }
 
-void ptpSource::CreateMessage(std::vector<unsigned char>& vMessage, size_t nBegin)
+void ptpSource::CreateMessage(std::vector<unsigned char>& vMessage, size_t nBegin) const
 {
-    vMessage[nBegin+0] = (nSourceId >> 56);
-    vMessage[nBegin+1] = (nSourceId >> 48);
-    vMessage[nBegin+2] = (nSourceId >> 40);
-    vMessage[nBegin+3] = (nSourceId >> 32);
-    vMessage[nBegin+4] = (nSourceId >> 24);
-    vMessage[nBegin+5] = (nSourceId >> 16);
-    vMessage[nBegin+6] = (nSourceId >> 8);
-    vMessage[nBegin+7] =  nSourceId & 0xFF;
+    vMessage[nBegin+0] = static_cast<unsigned char>(nSourceId >> 56);
+    vMessage[nBegin+1] = static_cast<unsigned char>(nSourceId >> 48);
+    vMessage[nBegin+2] = static_cast<unsigned char>(nSourceId >> 40);
+    vMessage[nBegin+3] = static_cast<unsigned char>(nSourceId >> 32);
+    vMessage[nBegin+4] = static_cast<unsigned char>(nSourceId >> 24);
+    vMessage[nBegin+5] = static_cast<unsigned char>(nSourceId >> 16);
+    vMessage[nBegin+6] = static_cast<unsigned char>(nSourceId >> 8);
+    vMessage[nBegin+7] = static_cast<unsigned char>(nSourceId & 0xFF);
 
-    vMessage[nBegin+8] = (nSourcePort >> 8);
-    vMessage[nBegin+9] = nSourcePort & 0xFF;
+    vMessage[nBegin+8] = static_cast<unsigned char>(nSourcePort >> 8);
+    vMessage[nBegin+9] = static_cast<unsigned char>(nSourcePort & 0xFF);
 }
 
 
@@ -63,9 +63,9 @@ ptpV2Header::ptpV2Header(const std::chrono::nanoseconds& socketTime, const std::
     nVersion = 2;
     nType = vMessage[0] & 0xF;
 
-    nMessageLength = (vMessage[2] << 8) | vMessage[3];
+    nMessageLength = static_cast<unsigned short>((vMessage[2] << 8) | vMessage[3]);
     nDomain = vMessage[4];
-    nFlags = (vMessage[6] << 8) | vMessage[7];
+    nFlags = static_cast<unsigned short>((vMessage[6] << 8) | vMessage[7]);
     nCorrection = (static_cast<unsigned long long int>(vMessage[8]) << 56)  |
                   (static_cast<unsigned long long int>(vMessage[9]) << 48)  |
                   (static_cast<unsigned long long int>(vMessage[10]) << 40) |
@@ -76,12 +76,12 @@ ptpV2Header::ptpV2Header(const std::chrono::nanoseconds& socketTime, const std::
                   vMessage[15];
 
 
-    nSequenceId = (vMessage[30] << 8) | vMessage[31];
+    nSequenceId = static_cast<unsigned short>((vMessage[30] << 8) | vMessage[31]);
     nControl = vMessage[32];
     nInterval = static_cast<char>(vMessage[33]);
 }
 
-std::vector<unsigned char> ptpV2Header::CreateMessage()
+std::vector<unsigned char> ptpV2Header::CreateMessage() const
 {
     std::vector<unsigned char> vMessage(34,0);
     vMessage[0] = nType;
@@ -137,7 +137,7 @@ ptpV2Payload::ptpV2Payload(const std::vector<unsigned char>& vMessage)
     originTime = std::chrono::duration_cast<std::chrono::nanoseconds>(seconds)+nano;
 }
 
-std::vector<unsigned char> ptpV2Payload::CreateMessage()
+std::vector<unsigned char> ptpV2Payload::CreateMessage() const
 {
     auto split = Split(originTime);
 
@@ -179,11 +179,11 @@ void ptpDelayResponse::OutputValues()
 
 ptpAnnounce::ptpAnnounce(const std::vector<unsigned char>& vMessage) : ptpV2Payload(vMessage)
 {
-    nUtcOffset = (vMessage[10] << 8) | vMessage[11];
+    nUtcOffset = static_cast<unsigned short>((vMessage[10] << 8) | vMessage[11]);
     nGrandmasterPriority1 =  vMessage[13];
     nGrandmasterClass = vMessage[14];
     nGrandmasterAccuracy = vMessage[15];
-    nGrandmasterVariance = (vMessage[16] << 8) | vMessage[17];
+    nGrandmasterVariance = static_cast<unsigned short>((vMessage[16] << 8) | vMessage[17]);
     nGrandmasterPriority2  =  vMessage[18];
 
     std::stringstream ssId;
@@ -199,7 +199,7 @@ ptpAnnounce::ptpAnnounce(const std::vector<unsigned char>& vMessage) : ptpV2Payl
     }
     sGrandmasterClockId = ssId.str();
 
-    nStepsRemoved = (vMessage[27] << 8) | vMessage[28];
+    nStepsRemoved = static_cast<unsigned short>((vMessage[27] << 8) | vMessage[28]);
     nTimeSource = vMessage[29];
 }
 

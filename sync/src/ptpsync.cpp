@@ -68,19 +68,19 @@ void Sync::SaveDetails() const
             ofs << "\"Utc_Offset\": "  << +pMaster->GetUtcOffset() << ", ";
 
 
-            auto flags = pMaster->GetFlags(ptpV2Header::SYNC);
-	    ofs << "\"Flags\": " << flags << ", ";
-            ofs << "\"Alternate_Master\": " << ((flags & ptpV2Header::enumFlags::ALTERNATE_MASTER) != 0) << ", ";
-            ofs << "\"Two_Step\": " << ((flags & ptpV2Header::enumFlags::TWO_STEP) != 0) << ", ";
-            ofs << "\"Unicast\": " << ((flags & ptpV2Header::enumFlags::UNICAST) != 0) << ", ";
-            ofs << "\"Profile1\": " << ((flags & ptpV2Header::enumFlags::PROFILE1) != 0) << ", ";
-            ofs << "\"Profile2\": " << ((flags & ptpV2Header::enumFlags::PROFILE2) != 0) << ", ";
-            ofs << "\"LI_61\": " << ((flags & ptpV2Header::enumFlags::LI_61) != 0) << ", ";
-            ofs << "\"LI_59\": " << ((flags & ptpV2Header::enumFlags::LI_59) != 0) << ", ";
-            ofs << "\"UTC_Valid\": " << ((flags & ptpV2Header::enumFlags::UTC_OFFSET_VALID) != 0) << ", ";
-            ofs << "\"Timescale\": " << ((flags & ptpV2Header::enumFlags::TIMESCALE) != 0) << ", ";
-            ofs << "\"Time_Traceable\": " << ((flags & ptpV2Header::enumFlags::TIME_TRACEABLE) != 0) << ", ";
-            ofs << "\"Freq_Traceable\": " << ((flags & ptpV2Header::enumFlags::FREQ_TRACEABLE) != 0);
+            auto flags = pMaster->GetFlags(ptpV2Header::enumType::SYNC);
+	        ofs << "\"Flags\": " << flags << ", ";
+            ofs << "\"Alternate_Master\": " << ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::ALTERNATE_MASTER)) != 0) << ", ";
+            ofs << "\"Two_Step\": " <<         ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::TWO_STEP)) != 0) << ", ";
+            ofs << "\"Unicast\": " <<          ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::UNICAST)) != 0) << ", ";
+            ofs << "\"Profile1\": " <<         ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::PROFILE1)) != 0) << ", ";
+            ofs << "\"Profile2\": " <<         ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::PROFILE2)) != 0) << ", ";
+            ofs << "\"LI_61\": " <<            ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::LI_61)) != 0) << ", ";
+            ofs << "\"LI_59\": " <<            ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::LI_59)) != 0) << ", ";
+            ofs << "\"UTC_Valid\": " <<        ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::UTC_OFFSET_VALID)) != 0) << ", ";
+            ofs << "\"Timescale\": " <<        ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::TIMESCALE)) != 0) << ", ";
+            ofs << "\"Time_Traceable\": " <<   ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::TIME_TRACEABLE)) != 0) << ", ";
+            ofs << "\"Freq_Traceable\": " <<   ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::FREQ_TRACEABLE)) != 0);
             
         }
         ofs << " }, ";
@@ -89,9 +89,9 @@ void Sync::SaveDetails() const
         ofs << "\"Offset\": { ";
         if(m_pMonkey->GetLocalClock())
         {
-            ofs << "\"current\": "      << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::CURRENT).count() << ", ";
-            ofs << "\"mean\": "         << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::MEAN).count() << ", ";
-            ofs << "\"sd\": "           << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::SD).count() << ", ";
+            ofs << "\"current\": "      << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::enumCalc::CURRENT).count() << ", ";
+            ofs << "\"mean\": "         << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::enumCalc::MEAN).count() << ", ";
+            ofs << "\"sd\": "           << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::enumCalc::SD).count() << ", ";
             ofs << "\"slope\": "        << m_pMonkey->GetLocalClock()->GetOffsetSlope() << ", ";
             ofs << "\"intersection\": " << m_pMonkey->GetLocalClock()->GetOffsetIntersection();
         }
@@ -100,9 +100,9 @@ void Sync::SaveDetails() const
         ofs << "\"Delay\": { ";
         if(m_pMonkey->GetLocalClock())
         {
-            ofs << "\"current\": "      << m_pMonkey->GetLocalClock()->GetDelay(PtpV2Clock::CURRENT).count() << ", ";
-            ofs << "\"mean\": "         << m_pMonkey->GetLocalClock()->GetDelay(PtpV2Clock::MEAN).count() << ", ";
-            ofs << "\"sd\": "           << m_pMonkey->GetLocalClock()->GetDelay(PtpV2Clock::SD).count() << ", ";
+            ofs << "\"current\": "      << m_pMonkey->GetLocalClock()->GetDelay(PtpV2Clock::enumCalc::CURRENT).count() << ", ";
+            ofs << "\"mean\": "         << m_pMonkey->GetLocalClock()->GetDelay(PtpV2Clock::enumCalc::MEAN).count() << ", ";
+            ofs << "\"sd\": "           << m_pMonkey->GetLocalClock()->GetDelay(PtpV2Clock::enumCalc::SD).count() << ", ";
             ofs << "\"slope\": "        << m_pMonkey->GetLocalClock()->GetDelaySlope() << ", ";
             ofs << "\"intersection\": " << m_pMonkey->GetLocalClock()->GetDelayIntersection();
         }

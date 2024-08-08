@@ -253,32 +253,23 @@ void PtpMonkeyImplementation::DelayResponse(std::shared_ptr<ptpV2Header> pHeader
 
     //upddate the details of the clock the delay response is for
     itClock = m_mClocks.find(pPayload->source.sSourceId);
-    if(itClock != m_mClocks.end())
+    if(itClock != m_mClocks.end() && itClock->second == m_pLocal)
     {
-        bool bSync = itClock->second->DelayResponseTo(pHeader, pPayload);
-
-        if(itClock->second == m_pLocal)
+        //update the delay request to match what the master clock says
+        if(pHeader->nInterval >= -7 && pHeader->nInterval <=4 )
         {
-            //update the delay request to match what the master clock says
-            if(pHeader->nInterval >= -7 && pHeader->nInterval <=4 )
-            {
-                m_delayRequest = static_cast<ptpmonkey::Rate>(pHeader->nInterval);
-            }
-            //if(bSync)
-            {
-                for(auto pHandler : m_lstEventHandler)
-                {
-                    pHandler->ClockTimeCalculated(itClock->second);
-                }
-            }
+            m_delayRequest = static_cast<ptpmonkey::Rate>(pHeader->nInterval);
+        }
+        for(auto pHandler : m_lstEventHandler)
+        {
+            pHandler->ClockTimeCalculated(itClock->second);
         }
     }
 }
 
 void PtpMonkeyImplementation::Announce(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pPayload)
 {
-    auto itClock = m_mClocks.find(pHeader->source.sSourceId);
-    if(itClock != m_mClocks.end())
+    if(auto itClock = m_mClocks.find(pHeader->source.sSourceId); itClock != m_mClocks.end())
     {
         for(auto pHandler : m_lstEventHandler)
         {
@@ -323,7 +314,7 @@ bool PtpMonkeyImplementation::IsSyncedToMaster() const
 
 }
 
-void PtpMonkeyImplementation::ResyncToMaster()
+void PtpMonkeyImplementation::ResyncToMaster() const
 {
     if(m_pLocal)
     {
@@ -388,7 +379,7 @@ void PtpMonkeyImplementation::CheckForDeadClocks()
     auto now = Now();
     for(auto itClock  = m_mClocks.begin(); itClock != m_mClocks.end();)
     {
-        if((now.count() - (itClock->second->GetLastMessageTime()).count()) > 5*1e9)
+        if((now.count() - (itClock->second->GetLastMessageTime()).count()) > 5000000000)
         {
             for(auto pHandler : m_lstEventHandler)
             {
@@ -515,7 +506,7 @@ int PtpMonkeyImplementation::GetTimestampingSupported(const IpInterface& interfa
     return nSupports;
 }
 
-void PtpMonkeyImplementation::ResetLocalClockStats()
+void PtpMonkeyImplementation::ResetLocalClockStats() const
 {
     m_pLocal->ClearStats();
 }

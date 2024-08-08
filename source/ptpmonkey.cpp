@@ -106,7 +106,7 @@ void PtpMonkey::Restart()
     m_pImpl->Restart();
 }
 
-bool PtpMonkey::IsStopped()
+bool PtpMonkey::IsStopped() const
 {
     return m_pImpl->IsStopped();
 }

@@ -136,11 +136,11 @@ std::vector<unsigned char> Sender::CreateRequest()
     theHeader.timestamp = Now();
 
     theHeader.nMessageLength = 44;
-    theHeader.nDomain = m_nDomain;
+    theHeader.nDomain = static_cast<unsigned char>(m_nDomain);
     theHeader.nFlags = 0;
     if(!m_bMulticast)
     {
-        theHeader.nFlags |= ptpV2Header::enumFlags::UNICAST;
+        theHeader.nFlags |= static_cast<unsigned short>(ptpV2Header::enumFlags::UNICAST);
     }
     theHeader.nCorrection = 0;
     theHeader.source.nSourceId = GenerateClockIdentity(m_outboundIpAddress);

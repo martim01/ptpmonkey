@@ -47,7 +47,7 @@ namespace pml
 
             bool IsSyncedToMaster() const;
 
-            void ResyncToMaster();
+            void ResyncToMaster() const;
 
             /** @brief Gets the set offset between the system clock and the master clock for this domain. If there is no master clock returns <0,0>
             *   @return <i>std::chrono::nanoseconds</i> the time in seconds and nanoseconds
@@ -125,7 +125,7 @@ namespace pml
             {   return m_delayRequest;  }
 
             static int GetTimestampingSupported(const IpInterface& interface);
-            void ResetLocalClockStats();
+            void ResetLocalClockStats() const;
 
             Mode GetMode() const;
 

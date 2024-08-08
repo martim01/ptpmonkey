@@ -30,25 +30,25 @@ ptpV2Message PtpParser::ParseV2(const std::chrono::nanoseconds& socketTime, cons
     {
         pHeader->sIpAddress = ipSender.Get();
 
-        switch(pHeader->nType)
+        switch(static_cast<ptpV2Header::enumType>(pHeader->nType))
         {
-            case ptpV2Header::SYNC:
+            case ptpV2Header::enumType::SYNC:
                 pmlLog(pml::LOG_TRACE, "pml::ptpmonkey") << "PtpMonkey\t" << "Sync";
                 pPayload = std::make_shared<ptpV2Payload>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
-            case ptpV2Header::DELAY_RESP:
+            case ptpV2Header::enumType::DELAY_RESP:
                 pmlLog(pml::LOG_TRACE, "pml::ptpmonkey") << "PtpMonkey\t" << "Delay_resp";
                 pPayload = std::make_shared<ptpDelayResponse>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
-            case ptpV2Header::DELAY_REQ:
+            case ptpV2Header::enumType::DELAY_REQ:
                 pmlLog(pml::LOG_TRACE, "pml::ptpmonkey") << "PtpMonkey\t" << "Delay_req";
                 pPayload = std::make_shared<ptpV2Payload>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
-            case ptpV2Header::FOLLOW_UP:
+            case ptpV2Header::enumType::FOLLOW_UP:
                 pmlLog(pml::LOG_TRACE, "pml::ptpmonkey") << "PtpMonkey\t" << "Follow Up";
                 pPayload = std::make_shared<ptpV2Payload>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
-            case ptpV2Header::ANNOUNCE:
+            case ptpV2Header::enumType::ANNOUNCE:
                 pmlLog(pml::LOG_TRACE, "pml::ptpmonkey") << "PtpMonkey\t" << "Announce";
                 pPayload = std::make_shared<ptpAnnounce>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
