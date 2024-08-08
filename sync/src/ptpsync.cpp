@@ -207,7 +207,7 @@ bool Sync::TrySyncToPtp()
     {
         SaveDetails();
 
-        pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Try to sync";
+        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Try to sync";
 
         auto pMaster = m_pMonkey->GetSyncMasterClock();
         auto offset = pLocal->GetOffset(PtpV2Clock::CURRENT);
@@ -248,7 +248,7 @@ bool Sync::TrySyncToPtp()
 
 bool Sync::HardCrash(const std::chrono::nanoseconds& offset)
 {
-    if(m_nPtpSamples > 1 && std::abs(std::chrono::duration_cast<std::chrono::milliseconds>(offset).count()) > 5000)
+    if(m_nPtpSamples > 1 && std::abs(std::chrono::duration_cast<std::chrono::milliseconds>(offset).count()) > 1000)
     {
         auto now = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch());
         auto hardSetM = now-offset;
@@ -279,7 +279,7 @@ bool Sync::HardCrash(const std::chrono::nanoseconds& offset)
 
 bool Sync::AdjustFrequency(double slope)
 {
-    if(false && !m_bPtpLock && (slope > 0.2 || slope < -0.2))
+    if(!m_bPtpLock && (slope > 0.2 || slope < -0.2))
     {
         auto origin = m_pMonkey->GetLocalClock()->GetOffsetIntersection();
 
@@ -342,6 +342,7 @@ bool Sync::AdjustTime(std::chrono::nanoseconds offset, const std::chrono::nanose
         tv.tv_sec -= 1;
         tv.tv_usec += 1000000;
     }
+
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "AdjustTime: " << tv.tv_sec << ":" << tv.tv_usec;
 
     timeval tvOld;
