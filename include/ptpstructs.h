@@ -151,5 +151,264 @@ namespace pml
 
             ptpSource source;
         };
+
+
+        struct portAddress {    
+            uint16_t nProtocol;
+            std::string sAddress;   //uint16_t length followed by letters
+	    };
+
+        struct tlv
+        {
+            explicit tlv(uint16_t id) : nId(id){} 
+            virtual ~tlv()=default;
+
+            uint16_t nId;
+            size_t nPos = 0;
+        };
+ 
+        struct tlvBasic : public tlv
+        {
+            explicit tlvBasic(uint16_t id, const std::vector<unsigned char>& vMessage);
+
+            uint8_t nValue;
+            uint8_t nReserved;
+        };
+
+        struct tlvTraceable : public tlvBasic
+        {
+            explicit tlvTraceable(const std::vector<unsigned char>& vMessage);
+
+            bool bTimeTraceable;
+            bool bFrequencyTraceable;
+        };
+
+        struct tlvTimescale : public tlvBasic
+        {
+            explicit tlvTimescale(const std::vector<unsigned char>& vMessage);
+            bool bPtpTimescale;
+        };
+
+        struct tlvVersion : public tlvBasic
+        {
+            explicit tlvVersion(const std::vector<unsigned char>& vMessage);
+
+            uint8_t nVersion;
+        };
+
+        struct tlvClockDescription : public tlv
+        {
+
+            explicit tlvClockDescription(const std::vector<unsigned char>& vMessage);
+
+            bool bClockOrdinary;
+            bool bClockBoundary;
+            bool bClockTranparentP2P;
+            bool bClockTranparentE2E;
+            bool bClockManagement;
+            std::string sPhysicalLayerProtocol;  //length (byte) followed by letters
+            std::string sPhysicalAddress;  //length (byte) followed by letters
+            portAddress protocolAddress;
+            std::string sManufacturerIdentity;
+            std::string sProductDescription;
+            std::string sRevisionData;
+            std::string sUserDescription;
+            std::string sProfileIdentity;
+        };
+
+        struct clockQuality
+        {
+            uint8_t  nClass;
+            uint8_t  nAccuracy;
+            uint16_t  nOffsetScaledLogVariance;
+        };
+
+        struct tlvDefaultDataSet : public tlv
+        {
+            explicit tlvDefaultDataSet(const std::vector<unsigned char>& vMessage);
+            
+            uint8_t nFlags;
+            uint8_t nReserved1;
+            uint16_t nNumberPorts;
+            uint8_t  nPriority1;
+            clockQuality  quality;
+            uint8_t nPriority2;
+            std::string sClockIdentity;
+            uint8_t nDomain;
+            uint8_t nReserved2;
+
+            bool b2Step;
+            bool bSlaveOnly;
+        };
+
+        struct tlvCurrentDataSet  : public tlv
+        {
+            explicit tlvCurrentDataSet(const std::vector<unsigned char>& vMessage);
+	        uint16_t nStepsRemoved;
+            std::chrono::nanoseconds offsetFromMaster; //(uint64)
+	        std::chrono::nanoseconds meanPathDelay; //(uint64)
+        };
+
+        struct tlvParentDataSet : public tlv 
+        {
+            explicit tlvParentDataSet(const std::vector<unsigned char>& vMessage);
+            std::string  sParentPortIdentity;
+            uint8_t nParentStats;
+            uint8_t nReserved;
+            uint16_t nObservedParentOffsetScaledLogVariance;
+            uint32_t nObservedParentClockPhaseChangeRate;
+            uint8_t  nGrandmasterPriority1;
+            clockQuality grandmasterClockQuality;
+            uint8_t nGrandmasterPriority2;
+            std::string sGrandmasterIdentity;
+        };
+
+        struct tlvTimePropertiesDataSet : public tlv 
+        {
+            explicit tlvTimePropertiesDataSet(const std::vector<unsigned char>& vMessage);
+	        uint16_t nCurrentUtcOffset;
+	        uint8_t nFlags;
+	        uint8_t nTimeSource;
+
+            bool bLeap61;
+            bool bLeap59;
+            bool bUtcOffsetValid;
+            bool bPtpTimescale;
+            bool bTimeTraceable;
+            bool bFreqTraceable;
+        };
+
+        struct tlvPortDataSet : public tlv
+        { 
+            explicit tlvPortDataSet(const std::vector<unsigned char>& vMessage);
+            std::string sPortIdentity;      // 8 bytes;
+            uint8_t nPortState;
+            uint8_t nLogMinDelayReqInterval;
+            std::chrono::nanoseconds peerMeanPathDelay;
+            int8_t  nLogAnnounceInterval;
+            uint8_t nAnnounceReceiptTimeout;
+            int8_t  nLogSyncInterval;
+            uint8_t nDelayMechanism;
+            int8_t  nLogMinPdelayReqInterval;
+            uint8_t nVersionNumber;
+
+            static const std::array<std::string, 11> PORT_STATES; 
+        };
+
+
+        struct tlvAlternateTimeOffsetName  : public tlv
+        {
+            explicit tlvAlternateTimeOffsetName(const std::vector<unsigned char>& vMessage);
+	        uint8_t nKeyField;
+	        std::string sName;
+        };
+        struct tlvAlternateTimeOffsetProperties  : public tlv
+        {
+            explicit tlvAlternateTimeOffsetProperties(const std::vector<unsigned char>& vMessage);
+	        
+            uint8_t nKeyField;
+            int32_t nCurrentOffset;
+	        int32_t nJumpSeconds;
+            std::chrono::seconds nextJump;
+        };
+
+        struct tlvTimeStatusNP : public tlv
+        {
+            explicit tlvTimeStatusNP(const std::vector<unsigned char>& vMessage);
+
+            struct scaledNs 
+            {
+                uint16_t nanoseconds_msb;
+                uint64_t nanoseconds_lsb;
+                uint16_t fractional_nanoseconds;
+            };
+
+            std::chrono::nanoseconds masterOffset; /*nanoseconds*/
+            std::chrono::nanoseconds ingressTime;  /*nanoseconds*/
+            int32_t nCumulativeScaledRateOffset;
+            int32_t nScaledLastGmPhaseChange;
+            uint16_t nGmTimeBaseIndicator;
+            scaledNs lastGmPhaseChange;
+            bool bGmPresent;
+            std::string sGmIdentity;
+        };
+        
+        struct tlvGrandmasterSettingsNP : public tlv 
+        {
+            explicit tlvGrandmasterSettingsNP(const std::vector<unsigned char>& vMessage);
+
+	        clockQuality quality;
+	        int16_t nUtcOffset;
+	        uint8_t nTimeFlags;
+            uint8_t nTimeSource;
+
+            bool bLeap61;
+			bool bLeap59;
+			bool bCurrentUtcOffsetValid;
+			bool bPtpTimescale;
+			bool bTimeTraceable;
+			bool bFrequencyTraceable;
+        };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        struct PTP_IMPEXPORT managementTlv 
+        {
+            enum enumId {USER_DESCRIPTION = 0x0002, SAVE_IN_NON_VOLATILE_STORAGE = 0x0003, RESET_NON_VOLATILE_STORAGE = 0x0004, INITIALIZE = 0x0005, FAULT_LOG = 0x0006, FAULT_LOG_RESET = 0x0007, DEFAULT_DATA_SET = 0x2000, CURRENT_DATA_SET = 0x2001, PARENT_DATA_SET = 0x2002, TIME_PROPERTIES_DATA_SET = 0x2003, PRIORITY1 = 0x2005, PRIORITY2 = 0x2006, DOMAIN = 0x2007, SLAVE_ONLY = 0x2008, TIME = 0x200F, CLOCK_ACCURACY = 0x2010, UTC_PROPERTIES = 0x2011, TRACEABILITY_PROPERTIES = 0x2012, TIMESCALE_PROPERTIES = 0x2013, PATH_TRACE_LIST = 0x2015, PATH_TRACE_ENABLE = 0x2016, GRANDMASTER_CLUSTER_TABLE = 0x2017, ACCEPTABLE_MASTER_TABLE = 0x201A, ACCEPTABLE_MASTER_MAX_TABLE_SIZE = 0x201C, ALTERNATE_TIME_OFFSET_ENABLE = 0x201E, ALTERNATE_TIME_OFFSET_NAME = 0x201F, ALTERNATE_TIME_OFFSET_MAX_KEY = 0x2020, ALTERNATE_TIME_OFFSET_PROPERTIES = 0x2021, EXTERNAL_PORT_CONFIGURATION_ENABLED = 0x3000, HOLDOVER_UPGRADE_ENABLE = 0x3002, TRANSPARENT_CLOCK_DEFAULT_DATA_SET = 0x4000, PRIMARY_DOMAIN = 0x4002, TIME_STATUS_NP = 0xC000, GRANDMASTER_SETTINGS_NP = 0xC001, SUBSCRIBE_EVENTS_NP = 0xC003, SYNCHRONIZATION_UNCERTAIN_NP = 0xC006, NULL_MANAGEMENT = 0x0000, CLOCK_DESCRIPTION = 0x0001, PORT_DATA_SET = 0x2004, LOG_ANNOUNCE_INTERVAL = 0x2009, ANNOUNCE_RECEIPT_TIMEOUT = 0x200A, LOG_SYNC_INTERVAL = 0x200B, VERSION_NUMBER = 0x200C, ENABLE_PORT = 0x200D, DISABLE_PORT = 0x200E, UNICAST_NEGOTIATION_ENABLE = 0x2014, UNICAST_MASTER_TABLE = 0x2018, UNICAST_MASTER_MAX_TABLE_SIZE = 0x2019, ACCEPTABLE_MASTER_TABLE_ENABLED = 0x201B, ALTERNATE_MASTER = 0x201D, MASTER_ONLY = 0x3001, EXT_PORT_CONFIG_PORT_DATA_SET = 0x3003, TRANSPARENT_CLOCK_PORT_DATA_SET = 0x4001, DELAY_MECHANISM = 0x6000, LOG_MIN_PDELAY_REQ_INTERVAL = 0x6001, PORT_DATA_SET_NP = 0xC002, PORT_PROPERTIES_NP = 0xC004, PORT_STATS_NP = 0xC005, PORT_SERVICE_STATS_NP = 0xC007, UNICAST_MASTER_TABLE_NP = 0xC008, PORT_HWCLOCK_NP = 0xC009, POWER_PROFILE_SETTINGS_NP = 0xC00A, CMLDS_INFO_NP = 0xC00B };
+
+            explicit managementTlv(const std::vector<unsigned char>& vMessage);
+            ~managementTlv()=default;
+
+	        uint16_t nType;
+	        uint16_t nLength; /* must be even */
+            uint16_t nId;
+            std::unique_ptr<tlv> pData;
+        };
+
+        struct PTP_IMPEXPORT ptpMangement : public ptpV2Payload
+        {
+            explicit ptpMangement(const std::vector<unsigned char>& vMessage);
+            void OutputValues() final;
+
+            std::string sTargetPortIdentity;
+            uint16_t nTargetPortId;
+            uint8_t  nStartingBoundaryHops;
+            uint8_t  nBoundaryHops;
+            uint8_t  flags; /* reserved | actionField */
+            uint8_t  nAction;
+            uint8_t  nReserved;
+            std::unique_ptr<managementTlv> pTlv = nullptr;
+
+
+            enum enumAction {GET, SET, RESPONSE, COMMAND, ACKNOWLEDGE};
+            enum enumError{RESPONSE_TOO_BIG=1, NO_SUCH_ID, WRONG_LENGTH, WRONG_VALUE, NOT_SETABLE, NOT_SUPPORTED, GENERAL_ERROR	 = 0xFFFE };
+
+        }
+
+        
     }
 }

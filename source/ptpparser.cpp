@@ -52,6 +52,9 @@ ptpV2Message PtpParser::ParseV2(const std::chrono::nanoseconds& socketTime, cons
                 pmlLog(pml::LOG_TRACE, "pml::ptpmonkey") << "PtpMonkey\t" << "Announce";
                 pPayload = std::make_shared<ptpAnnounce>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
+            case ptpV2Header::enumType::MANAGEMENT:
+                pmlLog(pml::LOG_TRACE, "pml::ptpmonkey") << "PtpMonkey\t" << "Management";
+                pPayload = std::make_shared<ptpManagement>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
         }
     }
     return std::make_pair(pHeader, pPayload);
