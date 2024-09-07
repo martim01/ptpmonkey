@@ -10,12 +10,12 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
     m_nUtcOffset(pAnnounce->nUtcOffset),
     m_nGrandmasterPriority1(pAnnounce->nGrandmasterPriority1),
     m_nGrandmasterClass(pAnnounce->nGrandmasterClass),
-    m_nGrandmasterAccuracy(pAnnounce->nGrandmasterAccuracy),
+    m_eGrandmasterAccuracy(pAnnounce->eGrandmasterAccuracy),
     m_nGrandmasterVariance(pAnnounce->nGrandmasterVariance),
     m_nGrandmasterPriority2(pAnnounce->nGrandmasterPriority2),
     m_sClockId(pHeader->source.sSourceId),
     m_nStepsRemoved(pAnnounce->nStepsRemoved),
-    m_nTimeSource(pAnnounce->nTimeSource),
+    m_eTimeSource(pAnnounce->eTimeSource),
     m_bGrandMaster(false),
     m_bSyncMaster(false),
     m_nSampleSize(10),
@@ -26,9 +26,9 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
     m_bT1Valid(false),
     m_lastMessageTime(pHeader->timestamp)
 {
-    m_mFlags[ptpV2Header::enumType::ANNOUNCE] = pHeader->nFlags;
-    m_mInterval[ptpV2Header::enumType::ANNOUNCE] = pHeader->nInterval;
-    m_mCount[ptpV2Header::enumType::ANNOUNCE].value++;
+    m_mFlags[hdr::enumType::ANNOUNCE] = pHeader->nFlags;
+    m_mInterval[hdr::enumType::ANNOUNCE] = pHeader->nInterval;
+    m_mCount[hdr::enumType::ANNOUNCE].value++;
 
 }
 
@@ -37,12 +37,12 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
     m_nUtcOffset(0),
     m_nGrandmasterPriority1(0),
     m_nGrandmasterClass(0),
-    m_nGrandmasterAccuracy(0),
+    m_eGrandmasterAccuracy(clck::enumAccuracy::ACC_NA),
     m_nGrandmasterVariance(0),
     m_nGrandmasterPriority2(0),
     m_sClockId(pHeader->source.sSourceId),
     m_nStepsRemoved(0),
-    m_nTimeSource(0),
+    m_eTimeSource(clck::enumTimeSource::NA),
     m_bGrandMaster(false),
     m_bSyncMaster(false),
     m_nSampleSize(10),
@@ -53,17 +53,17 @@ PtpV2Clock::PtpV2Clock(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptp
     m_bT1Valid(false),
     m_lastMessageTime(pHeader->timestamp)
 {
-    m_mFlags[static_cast<ptpV2Header::enumType>(pHeader->nType)] = pHeader->nFlags;
+    m_mFlags[static_cast<hdr::enumType>(pHeader->nType)] = pHeader->nFlags;
 }
 
 void PtpV2Clock::SyncFrom(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
 {
     m_lastMessageTime = pHeader->timestamp;
 
-    m_mInterval[ptpV2Header::enumType::SYNC] = pHeader->nInterval;
-    m_mCount[ptpV2Header::enumType::SYNC].value++;
+    m_mInterval[hdr::enumType::SYNC] = pHeader->nInterval;
+    m_mCount[hdr::enumType::SYNC].value++;
 
-    m_mFlags[ptpV2Header::enumType::SYNC] = pHeader->nFlags;
+    m_mFlags[hdr::enumType::SYNC] = pHeader->nFlags;
     m_bSyncMaster = true;
 
 }
@@ -71,8 +71,8 @@ void PtpV2Clock::SyncFrom(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<
 void PtpV2Clock::SyncTo(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
 {
     m_bSyncMaster = false;
-    m_mCount[ptpV2Header::enumType::SYNC].value++;
-    if((pHeader->nFlags & static_cast<unsigned short>(ptpV2Header::enumFlags::TWO_STEP)) != 0)   //2-step
+    m_mCount[hdr::enumType::SYNC].value++;
+    if((pHeader->nFlags & static_cast<unsigned short>(hdr::enumFlags::TWO_STEP)) != 0)   //2-step
     {
         m_nt1r = TimeToNano(pHeader->timestamp);
         m_nFollowUpSequence = pHeader->nSequenceId;
@@ -91,9 +91,9 @@ void PtpV2Clock::SyncTo(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<pt
 void PtpV2Clock::FollowUpFrom(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
 {
     m_lastMessageTime = pHeader->timestamp;
-    m_mInterval[ptpV2Header::enumType::FOLLOW_UP] = pHeader->nInterval;
-    m_mCount[ptpV2Header::enumType::FOLLOW_UP].value++;
-    m_mFlags[ptpV2Header::enumType::FOLLOW_UP] = pHeader->nFlags;
+    m_mInterval[hdr::enumType::FOLLOW_UP] = pHeader->nInterval;
+    m_mCount[hdr::enumType::FOLLOW_UP].value++;
+    m_mFlags[hdr::enumType::FOLLOW_UP] = pHeader->nFlags;
 
     m_bSyncMaster = true;
 
@@ -108,7 +108,7 @@ void PtpV2Clock::FollowUpTo(std::shared_ptr<ptpV2Header> pHeader, std::shared_pt
     //check the follow up sequence is correct
     m_bT1Valid = (pHeader->nSequenceId == m_nFollowUpSequence);
 
-    m_mCount[ptpV2Header::enumType::FOLLOW_UP].value++;
+    m_mCount[hdr::enumType::FOLLOW_UP].value++;
 
 }
 
@@ -117,9 +117,9 @@ void PtpV2Clock::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_
 {
 
     m_lastMessageTime = pHeader->timestamp;
-    m_mInterval[ptpV2Header::enumType::DELAY_REQ] = pHeader->nInterval;
-    m_mCount[ptpV2Header::enumType::DELAY_REQ].value++;
-    m_mFlags[ptpV2Header::enumType::DELAY_REQ] = pHeader->nFlags;
+    m_mInterval[hdr::enumType::DELAY_REQ] = pHeader->nInterval;
+    m_mCount[hdr::enumType::DELAY_REQ].value++;
+    m_mFlags[hdr::enumType::DELAY_REQ] = pHeader->nFlags;
 
 
     // if we've already had a tx timestamp set for this message workout the os delay
@@ -137,18 +137,18 @@ void PtpV2Clock::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_
 void PtpV2Clock::DelayResponseFrom(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload)
 {
     m_lastMessageTime = pHeader->timestamp;
-    m_mInterval[ptpV2Header::enumType::DELAY_RESP] = pHeader->nInterval;
-    m_mCount[ptpV2Header::enumType::DELAY_RESP].value++;
-    m_mFlags[ptpV2Header::enumType::DELAY_RESP] = pHeader->nFlags;
+    m_mInterval[hdr::enumType::DELAY_RESP] = pHeader->nInterval;
+    m_mCount[hdr::enumType::DELAY_RESP].value++;
+    m_mFlags[hdr::enumType::DELAY_RESP] = pHeader->nFlags;
     m_bSyncMaster = true;
 
 }
 
 bool PtpV2Clock::DelayResponseTo(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload)
 {
-    m_mInterval[ptpV2Header::enumType::DELAY_RESP] = pHeader->nInterval;
-    m_mCount[ptpV2Header::enumType::DELAY_RESP].value++;
-    m_mFlags[ptpV2Header::enumType::DELAY_RESP] = pHeader->nFlags;
+    m_mInterval[hdr::enumType::DELAY_RESP] = pHeader->nInterval;
+    m_mCount[hdr::enumType::DELAY_RESP].value++;
+    m_mFlags[hdr::enumType::DELAY_RESP] = pHeader->nFlags;
 
     bool bSyncChange(false);
     auto request = m_mDelayRequest.find(pHeader->nSequenceId);
@@ -288,8 +288,8 @@ std::chrono::nanoseconds PtpV2Clock::GetDelay(enumCalc eCalc) const
 bool PtpV2Clock::UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pAnnounce)
 {
     m_lastMessageTime = pHeader->timestamp;
-    m_mInterval[ptpV2Header::enumType::ANNOUNCE] = pHeader->nInterval;
-    m_mCount[ptpV2Header::enumType::ANNOUNCE].value++;
+    m_mInterval[hdr::enumType::ANNOUNCE] = pHeader->nInterval;
+    m_mCount[hdr::enumType::ANNOUNCE].value++;
 
     bool bChanged(false);
     if(m_nDomain != pHeader->nDomain)
@@ -298,9 +298,9 @@ bool PtpV2Clock::UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::share
         bChanged = true;
     }
 
-    if(m_mFlags[ptpV2Header::enumType::ANNOUNCE] != pHeader->nFlags)
+    if(m_mFlags[hdr::enumType::ANNOUNCE] != pHeader->nFlags)
     {
-        m_mFlags[ptpV2Header::enumType::ANNOUNCE] = pHeader->nFlags;
+        m_mFlags[hdr::enumType::ANNOUNCE] = pHeader->nFlags;
         bChanged = true;
     }
 
@@ -322,9 +322,9 @@ bool PtpV2Clock::UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::share
         bChanged = true;
     }
 
-    if(m_nGrandmasterAccuracy != pAnnounce->nGrandmasterAccuracy)
+    if(m_eGrandmasterAccuracy != pAnnounce->eGrandmasterAccuracy)
     {
-        m_nGrandmasterAccuracy = pAnnounce->nGrandmasterAccuracy;
+        m_eGrandmasterAccuracy = pAnnounce->eGrandmasterAccuracy;
         bChanged = true;
     }
 
@@ -360,15 +360,15 @@ bool PtpV2Clock::UpdateAnnounce(std::shared_ptr<ptpV2Header> pHeader, std::share
         bChanged = true;
     }
 
-    if(m_nTimeSource != pAnnounce->nTimeSource)
+    if(m_eTimeSource != pAnnounce->eTimeSource)
     {
-        m_nTimeSource = pAnnounce->nTimeSource;
+        m_eTimeSource = pAnnounce->eTimeSource;
         bChanged = true;
     }
     return bChanged;
 }
 
-unsigned char PtpV2Clock::GetInterval(ptpV2Header::enumType eType) const
+unsigned char PtpV2Clock::GetInterval(hdr::enumType eType) const
 {
     auto itInterval = m_mInterval.find(eType);
     if(itInterval != m_mInterval.end())
@@ -378,7 +378,7 @@ unsigned char PtpV2Clock::GetInterval(ptpV2Header::enumType eType) const
     return 126;
 }
 
-unsigned long long int PtpV2Clock::GetCount(ptpV2Header::enumType eType) const
+unsigned long long int PtpV2Clock::GetCount(hdr::enumType eType) const
 {
     auto itCount = m_mCount.find(eType);
     if(itCount != m_mCount.end())
@@ -389,7 +389,7 @@ unsigned long long int PtpV2Clock::GetCount(ptpV2Header::enumType eType) const
 }
 
 
-unsigned short PtpV2Clock::GetFlags(ptpV2Header::enumType eType) const
+unsigned short PtpV2Clock::GetFlags(hdr::enumType eType) const
 {
     auto itReturn = m_mFlags.find(eType);
     if(itReturn != m_mFlags.end())

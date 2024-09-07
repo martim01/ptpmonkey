@@ -34,20 +34,81 @@ int main(int argc, char* argv[])
     pml::LogStream::SetOutputLevel(pml::LOG_TRACE);
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Start" << std::endl;
 
-
-
-    ptpmonkey::PtpMonkey ptp(IpAddress("172.31.183.27"), 0, 10, ptpmonkey::Mode::MULTICAST, ptpmonkey::Rate::PER_SEC_2);
-    //ptpmonkey::PtpMonkey ptp(IpAddress("192.168.0.75"), 127, 10, ptpmonkey::Mode::MULTICAST, ptpmonkey::Rate::PER_SEC_2);
-    ptp.AddEventHandler(std::make_shared<ptpmonkey::PtpEventLogHandler>(false));
+    ptpmonkey::PtpMonkey ptp(IpInterface("eth0"), 0, 10, ptpmonkey::Mode::MULTICAST, ptpmonkey::Rate::EVERY_2_SEC);
+    //ptp.AddEventHandler(std::make_shared<ptpmonkey::PtpEventLogHandler>(false));
+    
     ptp.Run();
     getchar();
-
-//    do
-//    {
-//        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-//        //std::cout << ptp.GetMasterClockId() << "\t\t" << TimeToString(ptp.GetPtpOffset()) << std::endl;
-//    }while(true);
+    ptp.Get(ptpmonkey::mngmnt::enumGet::TIME_PROPERTIES_DATA_SET);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::USER_DESCRIPTION);
+    getchar();
 
 
+    /*
+    ptp.Get(ptpmonkey::mngmnt::enumGet::PORT_STATS_NP);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::CLOCK_DESCRIPTION);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::USER_DESCRIPTION);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::DEFAULT_DATA_SET);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::CURRENT_DATA_SET);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::PORT_DATA_SET);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::PARENT_DATA_SET);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::TIME_PROPERTIES_DATA_SET);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::PRIORITY1);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::PRIORITY2);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::DOMAIN);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::SLAVE_ONLY);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::MASTER_ONLY);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::SYNCHRONIZATION_UNCERTAIN_NP);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::LOG_ANNOUNCE_INTERVAL);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::LOG_MIN_PDELAY_REQ_INTERVAL);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::DELAY_MECHANISM);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::LOG_SYNC_INTERVAL);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::ANNOUNCE_RECEIPT_TIMEOUT);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::ALTERNATE_TIME_OFFSET_ENABLE);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::CLOCK_ACCURACY);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::TRACEABILITY_PROPERTIES);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::TIMESCALE_PROPERTIES);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::VERSION_NUMBER);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::ALTERNATE_TIME_OFFSET_NAME);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::ALTERNATE_TIME_OFFSET_PROPERTIES);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::TIME_STATUS_NP);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::GRANDMASTER_SETTINGS_NP);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::PORT_PROPERTIES_NP);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::PORT_STATS_NP);
+    getchar();
+    ptp.Get(ptpmonkey::mngmnt::enumGet::PORT_SERVICE_STATS_NP);
+    getchar();
+
+    */
     return 0;
 }

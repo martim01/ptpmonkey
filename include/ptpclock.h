@@ -5,7 +5,7 @@
 #include <list>
 #include "ptpdll.h"
 #include <array>
-
+#include "enums.h"
 namespace pml
 {
     namespace ptpmonkey
@@ -58,8 +58,8 @@ namespace pml
                 {   return m_nGrandmasterPriority1; }
                 unsigned char GetClass() const
                 {   return m_nGrandmasterClass; }
-                unsigned char GetAccuracy() const
-                {   return m_nGrandmasterAccuracy;  }
+                clck::enumAccuracy GetAccuracy() const
+                {   return m_eGrandmasterAccuracy;  }
                 unsigned short GetVariance() const
                 {   return m_nGrandmasterVariance;  }
                 unsigned char GetPriority2() const
@@ -70,14 +70,14 @@ namespace pml
                 {   return m_sGrandmasterClockId;  }
                 unsigned short GetStepsRemoved() const
                 {   return m_nStepsRemoved; }
-                unsigned char GetTimeSource() const
-                {   return m_nTimeSource;   }
+                clck::enumTimeSource GetTimeSource() const
+                {   return m_eTimeSource;   }
                 bool IsGrandMaster() const
                 {   return m_bGrandMaster;   }
                 bool IsSyncMaster() const
                 {   return m_bSyncMaster;   }
 
-                unsigned short GetFlags(ptpV2Header::enumType eType) const;
+                unsigned short GetFlags(hdr::enumType eType) const;
 
                 std::chrono::nanoseconds GetLastMessageTime() const
                 {
@@ -86,8 +86,8 @@ namespace pml
                 const std::string& GetIpAddress() const
                 {   return m_sIpAddress;    }
 
-                unsigned char GetInterval(ptpV2Header::enumType eType) const;
-                unsigned long long int GetCount(ptpV2Header::enumType eType) const;
+                unsigned char GetInterval(hdr::enumType eType) const;
+                unsigned long long int GetCount(hdr::enumType eType) const;
 
                 void SetSampleSize(unsigned short nSampleSize)
                 {
@@ -111,13 +111,13 @@ namespace pml
                 unsigned short m_nUtcOffset;
                 unsigned char m_nGrandmasterPriority1;
                 unsigned char m_nGrandmasterClass;
-                unsigned char m_nGrandmasterAccuracy;
+                clck::enumAccuracy m_eGrandmasterAccuracy;
                 unsigned short m_nGrandmasterVariance;
                 unsigned char m_nGrandmasterPriority2;
                 std::string m_sGrandmasterClockId;
                 std::string m_sClockId;
                 unsigned short m_nStepsRemoved;
-                unsigned char m_nTimeSource;
+                clck::enumTimeSource m_eTimeSource;
                 bool m_bGrandMaster;
                 bool m_bSyncMaster;
                 unsigned short m_nFollowUpSequence;
@@ -163,14 +163,14 @@ namespace pml
 
                 bool m_bTimeSet;
 
-                std::map<ptpV2Header::enumType, unsigned char> m_mInterval;
+                std::map<hdr::enumType, unsigned char> m_mInterval;
 
                 struct counter
                 {
                     unsigned long long value = 0;
                 };
-                std::map<ptpV2Header::enumType, counter> m_mCount;
-                std::map<ptpV2Header::enumType, unsigned short> m_mFlags;
+                std::map<hdr::enumType, counter> m_mCount;
+                std::map<hdr::enumType, unsigned short> m_mFlags;
         };
     }
 }

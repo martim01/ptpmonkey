@@ -143,3 +143,8 @@ unsigned char PtpMonkey::GetDomain() const
 {
     return m_pImpl->GetDomain();
 }
+
+void PtpMonkey::Get(mngmnt::enumGet id, uint8_t nHops, const std::string& sTargetPortId, uint16_t nTargetPortNumber)
+{
+    m_pImpl->Get(id, nHops, sTargetPortId, nTargetPortNumber);
+}

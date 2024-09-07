@@ -13,21 +13,21 @@ void PtpMonkeyHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std:
     auto pPtpP = std::dynamic_pointer_cast<ptpV2Payload>(pPayload);
     if(pPtpP && pPtpH)
     {
-        switch(static_cast<ptpV2Header::enumType>(pPtpH->nType))
+        switch(static_cast<hdr::enumType>(pPtpH->nType))
         {
-            case ptpV2Header::enumType::SYNC:
+            case hdr::enumType::SYNC:
                 m_manager.Sync(pPtpH, pPtpP);
                 break;
-            case ptpV2Header::enumType::FOLLOW_UP:
+            case hdr::enumType::FOLLOW_UP:
                 m_manager.FollowUp(pPtpH, pPtpP);
                 break;
-            case ptpV2Header::enumType::DELAY_RESP:
+            case hdr::enumType::DELAY_RESP:
                 m_manager.DelayResponse(pPtpH, std::dynamic_pointer_cast<ptpDelayResponse>(pPtpP));
                 break;
-            case ptpV2Header::enumType::ANNOUNCE:
+            case hdr::enumType::ANNOUNCE:
                 m_manager.Announce(pPtpH, std::dynamic_pointer_cast<ptpAnnounce>(pPtpP));
                 break;
-            case ptpV2Header::enumType::DELAY_REQ:
+            case hdr::enumType::DELAY_REQ:
                 m_manager.DelayRequest(pPtpH, pPtpP);
                 break;
 

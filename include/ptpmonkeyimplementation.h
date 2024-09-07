@@ -12,6 +12,7 @@
 #include "sender.h"
 #include <thread>
 #include <atomic>
+#include "enums.h"
 
 namespace pml
 {
@@ -26,8 +27,8 @@ namespace pml
     class PtpMonkeyImplementation
     {
         public:
-            PtpMonkeyImplementation(const IpAddress& ipAddress, unsigned char nDomain, unsigned short nSampleSize, Mode mode, Rate enumDelayRequest);
-            PtpMonkeyImplementation(const IpInterface& IpInterface, unsigned char nDomain, unsigned short nSampleSize,Mode mode, Rate enumDelayRequest);
+            PtpMonkeyImplementation(const IpAddress& ipAddress, unsigned char nDomain, unsigned short nSampleSize, Mode mode, Rate eDelayRequest);
+            PtpMonkeyImplementation(const IpInterface& IpInterface, unsigned char nDomain, unsigned short nSampleSize,Mode mode, Rate eDelayRequest);
 
             ~PtpMonkeyImplementation();
 
@@ -124,6 +125,12 @@ namespace pml
             Rate GetDelayRate() const
             {   return m_delayRequest;  }
 
+            std::chrono::nanoseconds GetDelayReqGap() const
+            {
+                return m_delayRequestTime;
+            }
+            bool SendDelayRequests() const { return (m_delayRequest != Rate::NEVER); }
+
             static int GetTimestampingSupported(const IpInterface& interface);
             void ResetLocalClockStats() const;
 
@@ -131,6 +138,8 @@ namespace pml
 
             void SetDomain(unsigned char nDomain);
             unsigned char GetDomain() const { return m_nDomain;}
+
+            void Get(mngmnt::enumGet id, uint8_t nHops, const std::string& sTargetPortId, uint16_t nTargetPortNumber);
 
         protected:
             asio::io_context m_context;
@@ -148,6 +157,7 @@ namespace pml
             unsigned short m_nSampleSize;
             Mode m_mode;
             Rate m_delayRequest;
+            std::chrono::nanoseconds m_delayRequestTime;
 
             std::map<std::string, std::shared_ptr<PtpV2Clock> > m_mClocks;
 
@@ -161,9 +171,6 @@ namespace pml
 
             std::unique_ptr<Sender> m_pSender = nullptr;
             int m_nTimestamping = 0;
-
-            enum {TIMESTAMP_TX_HARDWARE = 1, TIMESTAMP_TX_SOFTWARE = 2, TIMESTAMP_RX_HARDWARE = 4, TIMESTAMP_RX_SOFTWARE = 8 };
-
 
             std::unique_ptr<std::thread> m_pThread = nullptr;
             std::shared_ptr<PtpParser> m_pParser = nullptr;

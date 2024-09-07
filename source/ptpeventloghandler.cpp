@@ -19,7 +19,7 @@ void PtpEventLogHandler::ClockAdded(std::shared_ptr<PtpV2Clock> pClock)
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Priority2:\t" << (int)pClock->GetPriority2() ;
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Steps:\t\t" << (int)pClock->GetStepsRemoved() ;
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Source:\t\t" << std::hex << "0x" << (int)pClock->GetTimeSource() ;
-    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Flags:\t\t" << std::hex << "0x" << (int)pClock->GetFlags(ptpV2Header::enumType::ANNOUNCE) ;
+    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Flags:\t\t" << std::hex << "0x" << (int)pClock->GetFlags(hdr::enumType::ANNOUNCE) ;
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << (pClock->IsGrandMaster() ? "Master" : "Slave");
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << (pClock->IsSyncMaster() ? "Sync Master" : "Slave");
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "---------------------------";
@@ -39,7 +39,7 @@ void PtpEventLogHandler::ClockUpdated(std::shared_ptr<PtpV2Clock> pClock)
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Priority2:\t" << (int)pClock->GetPriority2() ;
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Steps:\t\t" << (int)pClock->GetStepsRemoved() ;
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Source:\t\t" << std::hex << "0x" << (int)pClock->GetTimeSource() ;
-    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Flags:\t\t" << std::hex << "0x" << (int)pClock->GetFlags(ptpV2Header::enumType::ANNOUNCE) ;
+    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Flags:\t\t" << std::hex << "0x" << (int)pClock->GetFlags(hdr::enumType::ANNOUNCE) ;
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << (pClock->IsGrandMaster() ? "Master" : "Slave");
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << (pClock->IsSyncMaster() ? "Sync Master" : "Slave");
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "---------------------------";
@@ -71,8 +71,8 @@ void PtpEventLogHandler::ClockTimeCalculated(std::shared_ptr<PtpV2Clock> pClock)
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Time Calculated :\t\t" << pClock->GetId();
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << TimeToIsoString(pClock->GetLastPtpTime()) << "\tat " << TimeToIsoString(pClock->GetLastCalculatedTime()) << "\t" << TimeToString(pClock->GetOffset(PtpV2Clock::CURRENT));
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Sync: " << (pClock->IsSynced() ? "YES" : "NO");
-    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Requests: " << pClock->GetCount(ptpV2Header::enumType::DELAY_REQ) << " interval: " << std::hex << (int)pClock->GetInterval(ptpV2Header::enumType::DELAY_REQ) << std::dec;
-    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Responses: " << pClock->GetCount(ptpV2Header::enumType::DELAY_RESP) << " interval: " << std::hex << (int)pClock->GetInterval(ptpV2Header::enumType::DELAY_RESP) << std::dec;
+    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Requests: " << pClock->GetCount(hdr::enumType::DELAY_REQ) << " interval: " << std::hex << (int)pClock->GetInterval(hdr::enumType::DELAY_REQ) << std::dec;
+    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Responses: " << pClock->GetCount(hdr::enumType::DELAY_RESP) << " interval: " << std::hex << (int)pClock->GetInterval(hdr::enumType::DELAY_RESP) << std::dec;
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Delay_Mean:" << TimeToString(pClock->GetDelay(PtpV2Clock::MEAN));
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "DelayRange :" << TimeToString(pClock->GetDelay(PtpV2Clock::MIN)) << "-" << TimeToString(pClock->GetDelay(PtpV2Clock::MAX)) << "=" << TimeToString((pClock->GetDelay(PtpV2Clock::MAX)-pClock->GetDelay(PtpV2Clock::MIN)));
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Delay SD :" << TimeToString(pClock->GetDelay(PtpV2Clock::SD)) << " " << TimeToString(pClock->GetDelay(PtpV2Clock::SE));
