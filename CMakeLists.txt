@@ -14,6 +14,7 @@ endif()
 
 add_library(ptpmonkey SHARED 	"source/loghander.cpp"
 				"source/mac.cpp"
+				"source/management.cpp"
 				"source/ptpclock.cpp"
 				"source/ptpeventloghandler.cpp"
 				"source/ptploghandler.cpp"
@@ -22,7 +23,7 @@ add_library(ptpmonkey SHARED 	"source/loghander.cpp"
 				"source/ptpmonkeyimplementation.cpp"
 				"source/ptpparser.cpp"
 				"source/ptpstructs.cpp"
-		                "source/receiver.cpp"
+				"source/receiver.cpp"
 				"source/sender.cpp"
 				"source/timeutils.cpp" ${CMAKE_BINARY_DIR}/src/ptpmonkey_version.cpp)
 

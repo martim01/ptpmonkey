@@ -22,6 +22,7 @@ namespace pml
         class PtpEventHandler;
         class PtpParser;
 
+
     /** @class Main class for interfacing with the PTP code
     **/
     class PtpMonkeyImplementation
@@ -139,7 +140,7 @@ namespace pml
             void SetDomain(unsigned char nDomain);
             unsigned char GetDomain() const { return m_nDomain;}
 
-            void Get(mngmnt::enumGet id, uint8_t nHops, const std::string& sTargetPortId, uint16_t nTargetPortNumber);
+            bool Send(const ptpManagement& message);
 
         protected:
             asio::io_context m_context;

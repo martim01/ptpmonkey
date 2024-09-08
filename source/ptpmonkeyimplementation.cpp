@@ -538,10 +538,12 @@ void PtpMonkeyImplementation::SetDomain(unsigned char nDomain)
     }
 }
 
-void PtpMonkeyImplementation::Get(mngmnt::enumGet id, uint8_t nHops, const std::string& sTargetPortId, uint16_t nTargetPortNumber)
+bool PtpMonkeyImplementation::Send(const ptpManagement& message)
 {
     if(m_pSender)
     {
-        m_pSender->Get(id, nHops, sTargetPortId, nTargetPortNumber);
+        m_pSender->Queue(message);
+        return true;
     }
+    return false;
 }

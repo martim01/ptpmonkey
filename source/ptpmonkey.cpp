@@ -14,12 +14,14 @@ void PtpMonkeyImplDeleter::operator()(PtpMonkeyImplementation* p)
 
 
 PtpMonkey::PtpMonkey(const IpAddress& ipAddress, unsigned char nDomain, unsigned short nSampleSize,Mode mode, Rate enumDelayRequest) :
- m_pImpl(new PtpMonkeyImplementation(ipAddress, nDomain, nSampleSize, mode, enumDelayRequest))
+  m_pImpl(new PtpMonkeyImplementation(ipAddress, nDomain, nSampleSize, mode, enumDelayRequest)),
+  m_manager([this](const ptpManagement& message){ return m_pImpl->Send(message); })
 {
 }
 
 PtpMonkey::PtpMonkey(const IpInterface& ipInterface, unsigned char nDomain, unsigned short nSampleSize, Mode mode, Rate enumDelayRequest) :
- m_pImpl(new PtpMonkeyImplementation(ipInterface, nDomain, nSampleSize, mode, enumDelayRequest))
+  m_pImpl(new PtpMonkeyImplementation(ipInterface, nDomain, nSampleSize, mode, enumDelayRequest)),
+  m_manager([this](const ptpManagement& message){ return m_pImpl->Send(message); })
 {
 }
 
@@ -142,9 +144,4 @@ void PtpMonkey::SetDomain(unsigned char nDomain)
 unsigned char PtpMonkey::GetDomain() const
 {
     return m_pImpl->GetDomain();
-}
-
-void PtpMonkey::Get(mngmnt::enumGet id, uint8_t nHops, const std::string& sTargetPortId, uint16_t nTargetPortNumber)
-{
-    m_pImpl->Get(id, nHops, sTargetPortId, nTargetPortNumber);
 }

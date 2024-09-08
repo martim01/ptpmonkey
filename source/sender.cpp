@@ -137,9 +137,9 @@ void Sender::SendManagementMessage(std::shared_ptr<ptpManagement> pMessage)
     }
 }
 
-void Sender::Get(mngmnt::enumGet id, uint8_t nHops, const std::string& sTargetPortId, uint16_t nTargetPortNumber)
+void Sender::Queue(const ptpManagement& message)
 {
-    m_qManagement.push(ptpManagement(id, nHops, sTargetPortId, nTargetPortNumber));
+    m_qManagement.push(message);
 }
 
 std::vector<unsigned char> Sender::CreateManagement(std::shared_ptr<ptpManagement> pMessage)

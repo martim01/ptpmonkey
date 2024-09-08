@@ -31,7 +31,7 @@ namespace pml::ptpmonkey
             std::vector<unsigned char> CreateDelayRequest();
             void SetDomain(unsigned char nDomain);
 
-            void Get(mngmnt::enumGet id, uint8_t nHops, const std::string& sTargetPortId, uint16_t nTargetPortNumber);
+            void Queue(const ptpManagement& message);
         
         private:
             void SendDelayRequest();

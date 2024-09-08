@@ -646,7 +646,16 @@ ptpManagement::ptpManagement(mngmnt::enumGet id, uint8_t nHops, const std::strin
 	nStartingBoundaryHops = nHops;
 	nBoundaryHops = nHops;
 	eAction = mngmnt::enumAction::GET;
-	pTlv = std::make_shared<managementTlvResponse>(mngmnt::enumType::MANAGEMENT, static_cast<mngmnt::enumId>(id));
+	pTlv = std::make_shared<managementTlvResponse>(mngmnt::enumType::MANAGEMENT, id);
+}
+
+ptpManagement::ptpManagement(mngmnt::enumSet id, uint8_t nHops, const std::string& sTargetPortId, uint16_t nTargetPortNumber)
+{
+	sTargetPortIdentity = sTargetPortId+"-"+std::to_string(nTargetPortNumber);
+	nStartingBoundaryHops = nHops;
+	nBoundaryHops = nHops;
+	eAction = mngmnt::enumAction::SET;
+	pTlv = std::make_shared<managementTlvResponse>(mngmnt::enumType::MANAGEMENT, id);
 }
 
 std::vector<unsigned char> ptpManagement::CreateMessage() const
@@ -726,10 +735,16 @@ managementTlvResponse::managementTlvResponse(const std::vector<unsigned char>& v
 	}
 }
 
-managementTlvResponse::managementTlvResponse(mngmnt::enumType eT, mngmnt::enumId eI)
+managementTlvResponse::managementTlvResponse(mngmnt::enumType eT, mngmnt::enumSet eI)
 {
 	eType = eT;
-	eId = eI;
+	eId = static_cast<mngmnt::enumId>(eI);
+}
+
+managementTlvResponse::managementTlvResponse(mngmnt::enumType eT, mngmnt::enumGet eI)
+{
+	eType = eT;
+	eId = static_cast<mngmnt::enumId>(eI);
 	switch(eId)
 	{
 		case mngmnt::enumId::CLOCK_DESCRIPTION:
@@ -803,6 +818,8 @@ managementTlvResponse::managementTlvResponse(mngmnt::enumType eT, mngmnt::enumId
 		case mngmnt::enumId::PORT_SERVICE_STATS_NP:
 			pData = std::make_shared<tlvPortServiceStatsNP>();
 			break;
+		case mngmnt::enumId::PORT_DATA_SET_NP:
+			pData = std::make_shared<tlvPortDataSetNP>();
 		default:
 			pData = nullptr;
 	}
@@ -909,6 +926,8 @@ void managementTlvResponse::ParseTlv(const std::vector<unsigned char>& vMessage)
 		case mngmnt::enumId::PORT_SERVICE_STATS_NP:
 			pData = std::make_shared<tlvPortServiceStatsNP>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
+		case mngmnt::enumId::PORT_DATA_SET_NP:
+			pData = std::make_shared<tlvPortDataSetNP>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			
 		/*
 	case enumId::UNICAST_MASTER_TABLE_NP:
@@ -1707,5 +1726,23 @@ void tlvPortServiceStatsNP::OutputValues()
 	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Followup Mismatch       = " << nFollowupMismatch;
 }
 
+tlvPortDataSetNP::tlvPortDataSetNP(const std::vector<unsigned char>& vMessage)
+{
+	neighbourPropDelayThresh = std::chrono::nanoseconds(ToU32(vMessage, nPos));
+	bCapable = To32(vMessage, nPos)==1;
+}
 
+void tlvPortDataSetNP::OutputValues()
+{
+	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Neighbour PropDeley Threshold = " << neighbourPropDelayThresh.count();
+	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Capable                       = " << (bCapable ? "true" : "false");
+}
+
+std::vector<unsigned char> tlvPortDataSetNP::CreateMessage() const
+{
+	std::vector<unsigned char> vMessage;
+	FromU32(static_cast<uint32_t>(neighbourPropDelayThresh.count()), vMessage);
+	FromU32(bCapable, vMessage);
+	return vMessage;
+}
 

@@ -61,7 +61,16 @@ namespace pml::ptpmonkey
                                             PORT_STATS_NP                    = static_cast<uint16_t>(enumId::PORT_STATS_NP),
                                             PORT_SERVICE_STATS_NP            = static_cast<uint16_t>(enumId::PORT_SERVICE_STATS_NP)};
 
-
+        enum class enumSet : std::uint16_t { PRIORITY1                        = static_cast<uint16_t>(enumId::PRIORITY1),
+                                             PRIORITY2                        = static_cast<uint16_t>(enumId::PRIORITY2),
+                                             ALTERNATE_TIME_OFFSET_ENABLE     = static_cast<uint16_t>(enumId::ALTERNATE_TIME_OFFSET_ENABLE),
+                                             ALTERNATE_TIME_OFFSET_NAME       = static_cast<uint16_t>(enumId::ALTERNATE_TIME_OFFSET_NAME),
+                                             ALTERNATE_TIME_OFFSET_PROPERTIES = static_cast<uint16_t>(enumId::ALTERNATE_TIME_OFFSET_PROPERTIES),
+                                             GRANDMASTER_SETTINGS_NP          = static_cast<uint16_t>(enumId::GRANDMASTER_SETTINGS_NP),
+                                             SUBSCRIBE_EVENTS_NP              = static_cast<uint16_t>(enumId::SUBSCRIBE_EVENTS_NP),
+                                             SYNCHRONIZATION_UNCERTAIN_NP     = static_cast<uint16_t>(enumId::SYNCHRONIZATION_UNCERTAIN_NP),
+                                             PORT_DATA_SET_NP                 = static_cast<uint16_t>(enumId::PORT_DATA_SET_NP),
+                                             POWER_PROFILE_SETTINGS_NP        = static_cast<uint16_t>(enumId::POWER_PROFILE_SETTINGS_NP)};
 
         enum class enumAction {GET, SET, RESPONSE, COMMAND, ACKNOWLEDGE};
         enum class enumError{OKAY=0, RESPONSE_TOO_BIG=1, NO_SUCH_ID, WRONG_LENGTH, WRONG_VALUE, NOT_SETABLE, NOT_SUPPORTED, GENERAL_ERROR = 0xFFFE };
@@ -77,6 +86,8 @@ namespace pml::ptpmonkey
         enum class enumTimeSource: std::uint8_t  {NA = 0, ATOMIC = 0x10, GPS = 0x20, RADIO = 0x30, PTP = 0x40, NTP = 0x50, HANDSET = 0x60, OTHER = 0x90, INTERNAL = 0xA0};
 
         enum class enumType {ORDINARY = 0x8000, BOUNDARY = 0x4000, TRANSPARENT_P2P = 0x2000, TRANSPARENT_E2E = 0x1000, MANAGEMENT=0x800};
+
+        enum class enumSync { UNCERTAIN_DONTCARE = 0xff, UNCERTAIN_FALSE = 0, UNCERTAIN_TRUE = 1};
     }
 
     namespace port

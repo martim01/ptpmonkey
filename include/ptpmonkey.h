@@ -6,6 +6,7 @@
 #include "namedtypes.h"
 #include "ptpdll.h"
 #include "enums.h"
+#include "management.h"
 
 namespace pml::ptpmonkey
 {
@@ -132,13 +133,17 @@ namespace pml::ptpmonkey
 
             static int GetTimestampingSupported(const IpInterface& interface);
 
-
-
-            void Get(mngmnt::enumGet id, uint8_t nHops=1, const std::string& sTargetPortId="FF:FF:FF:FF:FF:FF:FF:FF", uint16_t nTargetPortNumber = 0xFFFF);
+            Manager& Manage() { return m_manager; }     
 
 
         protected:
             PtpMonkey()=default;
             std::unique_ptr<PtpMonkeyImplementation, PtpMonkeyImplDeleter> m_pImpl;
+
+
+            
+            Manager m_manager;
+
+                        
     };
 }

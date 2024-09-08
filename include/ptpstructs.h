@@ -452,6 +452,18 @@ namespace pml::ptpmonkey
         uint64_t nFollowupMismatch{0};
 
     };
+
+    struct PTP_IMPEXPORT tlvPortDataSetNP : public tlv
+    {
+        tlvPortDataSetNP() : tlv(mngmnt::enumId::PORT_DATA_SET_NP){};
+        explicit tlvPortDataSetNP(const std::vector<unsigned char>& vMessage);
+        void OutputValues() final;
+        std::vector<unsigned char> CreateMessage() const final;
+
+        std::chrono::nanoseconds neighbourPropDelayThresh{0}; /*uint32_t */
+	    bool bCapable{false}; //uint32_t
+        
+    };
     
     
     struct PTP_IMPEXPORT managementTlv 
@@ -472,7 +484,8 @@ namespace pml::ptpmonkey
     struct PTP_IMPEXPORT managementTlvResponse : public managementTlv
     {
         explicit managementTlvResponse(const std::vector<unsigned char>& vMessage);
-        managementTlvResponse(mngmnt::enumType eT, mngmnt::enumId eI);
+        managementTlvResponse(mngmnt::enumType eT, mngmnt::enumGet eI);
+        managementTlvResponse(mngmnt::enumType eT, mngmnt::enumSet eI);
 
         ~managementTlvResponse()=default;
 
@@ -489,6 +502,7 @@ namespace pml::ptpmonkey
     {
         explicit ptpManagement(const std::vector<unsigned char>& vMessage);
         ptpManagement(mngmnt::enumGet id, uint8_t nHops, const std::string& sTargetPortId, uint16_t nTargetPortNumber);
+        ptpManagement(mngmnt::enumSet id, uint8_t nHops, const std::string& sTargetPortId, uint16_t nTargetPortNumber);
         
 
         ~ptpManagement() final;
