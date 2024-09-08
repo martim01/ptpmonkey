@@ -29,6 +29,23 @@ namespace pml::ptpmonkey
             bool SetSynchonizationUncertain(clck::enumSync eState);
             bool SetPortDataSetNP(const std::chrono::nanoseconds& neighbourPropDelayThresh, bool bCapable);
 
+
+            bool SetUserDescription(const std::string& sName, const std::string& sLocation);   //max chars 128
+            bool SetDomain(uint8_t nDomain);
+            bool SetSlaveOnly(bool bSlaveOnly);
+            bool SetAnnounceInterval(Rate eInterval);
+            bool SetAnnounceReceiptTimeout(uint8_t nTimeout);   //2-255
+            bool SetSyncInterval(Rate eInterval);
+            bool SetVersionNumber(uint8_t nVersion);
+            bool SetTime(const std::chrono::nanoseconds& timestamp, uint16_t nSubNano);
+
+            bool TargetSet() const;
+//            bool EnablePort();
+//            bool DisablePort();
+
+
+            
+
             //MID_SUBSCRIBE_EVENTS_NP
             //MID_POWER_PROFILE_SETTINGS_NP
 

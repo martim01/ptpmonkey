@@ -59,6 +59,7 @@ namespace pml::ptpmonkey
                                             SUBSCRIBE_EVENTS_NP              = static_cast<uint16_t>(enumId::SUBSCRIBE_EVENTS_NP),
                                             PORT_PROPERTIES_NP               = static_cast<uint16_t>(enumId::PORT_PROPERTIES_NP),
                                             PORT_STATS_NP                    = static_cast<uint16_t>(enumId::PORT_STATS_NP),
+                                            TIME                             = static_cast<uint16_t>(enumId::TIME),
                                             PORT_SERVICE_STATS_NP            = static_cast<uint16_t>(enumId::PORT_SERVICE_STATS_NP)};
 
         enum class enumSet : std::uint16_t { PRIORITY1                        = static_cast<uint16_t>(enumId::PRIORITY1),
@@ -66,6 +67,14 @@ namespace pml::ptpmonkey
                                              ALTERNATE_TIME_OFFSET_ENABLE     = static_cast<uint16_t>(enumId::ALTERNATE_TIME_OFFSET_ENABLE),
                                              ALTERNATE_TIME_OFFSET_NAME       = static_cast<uint16_t>(enumId::ALTERNATE_TIME_OFFSET_NAME),
                                              ALTERNATE_TIME_OFFSET_PROPERTIES = static_cast<uint16_t>(enumId::ALTERNATE_TIME_OFFSET_PROPERTIES),
+                                             USER_DESCRIPTION                 = static_cast<uint16_t>(enumId::USER_DESCRIPTION),
+                                             DOMAIN                           = static_cast<uint16_t>(enumId::DOMAIN),
+                                             SLAVE_ONLY                       = static_cast<uint16_t>(enumId::SLAVE_ONLY),
+                                             ANNOUNCE_RECEIPT_TIMEOUT         = static_cast<uint16_t>(enumId::ANNOUNCE_RECEIPT_TIMEOUT),
+                                             LOG_ANNOUNCE_INTERVAL            = static_cast<uint16_t>(enumId::LOG_ANNOUNCE_INTERVAL),
+                                             LOG_SYNC_INTERVAL                = static_cast<uint16_t>(enumId::LOG_SYNC_INTERVAL),
+                                             VERSION_NUMBER                   = static_cast<uint16_t>(enumId::VERSION_NUMBER),
+                                             TIME                             = static_cast<uint16_t>(enumId::TIME),                                     
                                              GRANDMASTER_SETTINGS_NP          = static_cast<uint16_t>(enumId::GRANDMASTER_SETTINGS_NP),
                                              SUBSCRIBE_EVENTS_NP              = static_cast<uint16_t>(enumId::SUBSCRIBE_EVENTS_NP),
                                              SYNCHRONIZATION_UNCERTAIN_NP     = static_cast<uint16_t>(enumId::SYNCHRONIZATION_UNCERTAIN_NP),
@@ -88,6 +97,8 @@ namespace pml::ptpmonkey
         enum class enumType {ORDINARY = 0x8000, BOUNDARY = 0x4000, TRANSPARENT_P2P = 0x2000, TRANSPARENT_E2E = 0x1000, MANAGEMENT=0x800};
 
         enum class enumSync { UNCERTAIN_DONTCARE = 0xff, UNCERTAIN_FALSE = 0, UNCERTAIN_TRUE = 1};
+
+        enum class enumDelay {E2E = 0x01, P2P = 0x02, DISABLED = 0xFE};
     }
 
     namespace port

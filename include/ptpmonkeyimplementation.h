@@ -91,32 +91,6 @@ namespace pml
             std::shared_ptr<const PtpV2Clock> GetLocalClock() const;
 
 
-            /** @brief Called by PtpMonkeyHandler when a sync message is received.
-            *   @note Should not be called by the user
-            **/
-            void Sync(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
-            void FollowUp(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
-
-            /** @brief Called by PtpMonkeyHandler when a delay request message is received.
-            *   @note Should not be called by the user
-            **/
-            void DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
-
-            /** @brief Called by PtpMonkeyHandler when a delay response message is received.
-            *   @note Should not be called by the user
-            **/
-            void DelayResponse(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload);
-
-            /** @brief Called by PtpMonkeyHandler when an announce is received.
-            *   @note Should not be called by the user
-            **/
-            void Announce(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pPayload);
-
-            /** @brief Called by the Sender socket when it sends a delay request message and gets a tx timestamp message
-            *   @note Should not be called by the user
-            **/
-            void DelayRequestSent(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
-
             void Stop();
             void Restart();
             bool IsStopped() const;
@@ -142,6 +116,10 @@ namespace pml
 
             bool Send(const ptpManagement& message);
 
+
+            void DelayRequestSent(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
+
+            
         protected:
             asio::io_context m_context;
 
@@ -151,6 +129,16 @@ namespace pml
             void CheckForDeadClocks();
 
             bool Run();
+
+            void Sync(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
+            void FollowUp(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
+            void DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
+            void DelayResponse(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload);
+            void Announce(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pPayload);
+            void Management(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpManagement> pPayload);
+            
+
+
 
             IpAddress m_local;
             IpInterface m_Interface;

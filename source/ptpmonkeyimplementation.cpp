@@ -27,6 +27,7 @@
 
 
 using namespace pml::ptpmonkey;
+using namespace std::placeholders;
 
 const std::string PtpMonkeyImplementation::MULTICAST = "224.0.1.129";
 
@@ -82,12 +83,18 @@ bool PtpMonkeyImplementation::Run()
     try
     {
     	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create Handler";
+        auto pHandler = std::make_shared<PtpMonkeyHandler>();
+        pHandler->SetCallbacks(std::bind(&PtpMonkeyImplementation::Sync, this, _1, _2),
+                               std::bind(&PtpMonkeyImplementation::FollowUp, this, _1, _2),
+                               std::bind(&PtpMonkeyImplementation::DelayRequest, this, _1, _2),
+                               std::bind(&PtpMonkeyImplementation::DelayResponse, this, _1, _2),
+                               std::bind(&PtpMonkeyImplementation::Announce, this, _1, _2),
+                               std::bind(&PtpMonkeyImplementation::Management, this, _1, _2));
 
-        std::shared_ptr<Handler> pHandler = std::make_shared<PtpMonkeyHandler>(*this);
+        
         pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create Parser";
         m_pParser = std::make_shared<PtpParser>(pHandler,m_nDomain);
 
-        m_pParser->AddHandler(std::make_shared<PtpLogHandler>());
 
         pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Get Timestamping support";
         m_nTimestamping = GetTimestampingSupported(m_Interface);
@@ -302,6 +309,13 @@ void PtpMonkeyImplementation::Announce(std::shared_ptr<ptpV2Header> pHeader, std
     }
 }
 
+void PtpMonkeyImplementation::Management(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpManagement> pPayload)
+{
+    for(auto pHandler : m_lstEventHandler)
+    {
+        pHandler->ManagementMessageReceived(pHeader, pPayload);
+    }
+}
 
 std::chrono::nanoseconds PtpMonkeyImplementation::GetPtpTime() const
 {

@@ -124,3 +124,8 @@ void PtpEventLogHandler::DelayResponseSent(std::shared_ptr<PtpV2Clock> pClock)
         pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "DelayResponse :\t\t" << pClock->GetId() ;
     }
 }
+
+void PtpEventLogHandler::ManagementMessageReceived(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpManagement> pMessage)
+{
+    pMessage->OutputValues();
+}

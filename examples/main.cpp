@@ -30,21 +30,20 @@ using namespace pml;
 
 int main(int argc, char* argv[])
 {
-    pml::LogStream::AddOutput(std::unique_ptr<LogOutput>(new LogOutput()));
+    pml::LogStream::AddOutput(std::make_unique<LogOutput>());
     pml::LogStream::SetOutputLevel(pml::LOG_TRACE);
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Start" << std::endl;
 
     ptpmonkey::PtpMonkey ptp(IpInterface("eth0"), 0, 10, ptpmonkey::Mode::MULTICAST, ptpmonkey::Rate::EVERY_2_SEC);
-    //ptp.AddEventHandler(std::make_shared<ptpmonkey::PtpEventLogHandler>(false));
+    ptp.AddEventHandler(std::make_shared<ptpmonkey::PtpEventLogHandler>(false));
     
     ptp.Run();
     getchar();
-    ptp.Manage().Target("00:15:5d:ff:fe:01:88:0e", 1);
+    
     ptp.Manage().Get(ptpmonkey::mngmnt::enumGet::PRIORITY1);
     getchar();
-    ptp.Manage().SetPriority1(80);
     getchar();
-    ptp.Manage().Get(ptpmonkey::mngmnt::enumGet::PRIORITY1);
+    ptp.Manage().Get(ptpmonkey::mngmnt::enumGet::TIME);
     getchar();
     ptp.Manage().Get(ptpmonkey::mngmnt::enumGet::USER_DESCRIPTION);
     getchar();

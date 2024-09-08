@@ -5,27 +5,27 @@
 #include "ptpstructs.h"
 #include <mutex>
 
-namespace pml
+namespace pml::ptpmonkey
 {
-    namespace ptpmonkey
+    using ptpV1Message = std::pair<std::shared_ptr<ptpHeader>, std::shared_ptr<ptpPayload> >;
+    using ptpV2Message = std::pair<std::shared_ptr<ptpV2Header>, std::shared_ptr<ptpV2Payload> >;
+
+    class PtpParser : public Parser
     {
-        using ptpV1Message = std::pair<std::shared_ptr<ptpHeader>, std::shared_ptr<ptpPayload> >;
-        using ptpV2Message = std::pair<std::shared_ptr<ptpV2Header>, std::shared_ptr<ptpV2Payload> >;
+        public:
+            PtpParser()=default;
+            virtual ~PtpParser()=default;
+            explicit PtpParser(std::shared_ptr<Handler> pHandler, unsigned char nDomain) : Parser(pHandler), m_nDomain(nDomain){};
+            void ParseMessage(const rawMessage& aMessage) override;
 
-        class PtpParser : public Parser
-        {
-            public:
-                explicit PtpParser(std::shared_ptr<Handler> pHandler, unsigned char nDomain) : Parser(pHandler), m_nDomain(nDomain){};
-                void ParseMessage(const rawMessage& aMessage) override;
+            ptpV1Message ParseV1(const std::chrono::nanoseconds& socketTime, const IpAddress& ipSender, std::vector<unsigned char> vMessage);
+            ptpV2Message ParseV2(const std::chrono::nanoseconds& socketTime, const IpAddress& ipSender, std::vector<unsigned char> vMessage);
 
-                ptpV1Message ParseV1(const std::chrono::nanoseconds& socketTime, const IpAddress& ipSender, std::vector<unsigned char> vMessage);
-                ptpV2Message ParseV2(const std::chrono::nanoseconds& socketTime, const IpAddress& ipSender, std::vector<unsigned char> vMessage);
+            void SetDomain(unsigned char nDomain);
 
-                void SetDomain(unsigned char nDomain);
-
-            private:
-                unsigned char m_nDomain;
-                std::mutex m_mutex;
-        };
-    }
+        private:
+            unsigned char m_nDomain;
+            std::mutex m_mutex;
+    };
 }
+

@@ -5,7 +5,7 @@ namespace pml
 {
     namespace ptpmonkey
     {
-
+        
         /** @class A simple class that handles PTP events and outputs details to cout
         **/
         class PtpEventLogHandler : public PtpEventHandler
@@ -25,6 +25,8 @@ namespace pml
                 void FollowUpSent(std::shared_ptr<PtpV2Clock> pClock) override;
                 void DelayRequestSent(std::shared_ptr<PtpV2Clock> pClock) override;
                 void DelayResponseSent(std::shared_ptr<PtpV2Clock> pClock) override;
+
+                void ManagementMessageReceived(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpManagement> pMessage) override;
             private:
                 bool m_bVerbose;
         };

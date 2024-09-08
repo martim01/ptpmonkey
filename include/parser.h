@@ -22,6 +22,7 @@ namespace pml::ptpmonkey
     class Parser
     {
         public:
+            virtual ~Parser()=default;
             explicit Parser(std::shared_ptr<Handler> pHandler)
             {
                 m_lstHandler.push_back(pHandler);
