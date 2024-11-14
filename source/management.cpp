@@ -7,6 +7,45 @@ using namespace pml::ptpmonkey;
 const std::string Manager::TARGET_ID_ALL = "FF:FF:FF:FF:FF:FF:FF:FF";
 const uint16_t Manager::TARGET_NUMBER_ALL = 0xFFFF;
 
+ptpV2Header CreateHeader(hdr::enumType eType, uint16_t nSequence, uint16_t nLength, uint8_t nInterval, uint8_t nDomain)
+{
+    ptpV2Header theHeader;
+
+    theHeader.nVersion = 2;
+    theHeader.nType = static_cast<uint8_t>(eType);
+    theHeader.timestamp = Now();
+
+    theHeader.nMessageLength = nLength;
+    theHeader.nDomain = nDomain;
+    theHeader.nFlags = 0;
+    theHeader.nCorrection = 0;
+
+    auto proc_id = getpid();
+    theHeader.source.nSourceId = proc_id;
+    //theHeader.source.nSourceId += ((proc_id & 0xFF000000) >> 24);
+//	theHeader.source.nSourceId += ((proc_id & 0x00FF0000) >> 16);
+    theHeader.source.nSourcePort = proc_id & 0xFFFF;
+    theHeader.nSequenceId = nSequence;
+    theHeader.nControl = 1;
+    theHeader.nInterval = nInterval;
+    return theHeader;
+}
+
+
+std::vector<unsigned char> CreateManagement(const ptpManagement& message, uint16_t& nSequence, uint8_t nDomain)
+{
+    auto vPayload = message.CreateMessage();
+
+    auto theHeader = CreateHeader(hdr::enumType::MANAGEMENT, nSequence, 34+vPayload.size(), 0x7f, nDomain);
+
+    auto vBuffer = theHeader.CreateMessage();
+    std::copy(vPayload.begin(), vPayload.end(), std::back_inserter(vBuffer));
+
+    ++nSequence;
+    return vBuffer;
+}
+
+
 Manager& Manager::Hops(uint8_t nHops)
 {
     m_nHops = nHops;
@@ -21,9 +60,57 @@ Manager& Manager::Target(const std::string& sTargetPortId, uint16_t nTargetPortN
     return *this;
 }
 
+Manager& Manager::UsePtp4l(bool bPtp4l)
+{
+    m_bPtp4l = bPtp4l;
+    return *this;
+}
+
 bool Manager::Get(mngmnt::enumGet id)
 {
-    return m_pSender(ptpManagement(id, m_nHops, m_sTargetPortId, m_nTargetPortNumber));
+    if(!m_bPtp4l)
+    {
+        return m_pSender(ptpManagement(id, m_nHops, m_sTargetPortId, m_nTargetPortNumber));
+    }
+    else
+    {
+        
+        auto sock = socket(AF_UNIX, SOCK_DGRAM, 0);
+        sockaddr_un name;
+        name.sun_family = AF_UNIX;
+        strcpy(name.sun_path, ("/var/run/ptpmonkeyexample."+std::to_string(getpid())).c_str());
+        if(bind(sock, (sockaddr*)&name, sizeof(sockaddr_un)))
+        {
+            pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "Failed to bind " << strerror(errno);
+            return false;
+        }
+        
+        sockaddr_un server;
+        server.sun_family = AF_UNIX;
+        strcpy(name.sun_path, "/run/ptp4l");
+        
+        auto vBuffer = CreateManagement(ptpManagement(id, 0, "", 0xFFFF),m_nSequence, 0);
+        if(sendto(sock, vBuffer.data(), vBuffer.size(), 0, (sockaddr*)&name, sizeof(sockaddr_un)) < 0)
+        {
+            pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "Failed to send " << strerror(errno);
+            return false;
+        }
+        
+        
+        std::array<unsigned char, 1024> data;
+        if(auto nRead = read(sock, data.data(), data.size()); nRead < 0)
+        {
+            pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "Failed to read " << strerror(errno);
+            return false;
+        }    
+        else
+        {
+            auto str = std::string(data.begin(), data.begin()+nRead);
+            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Received: '" << str << "'";
+            return true;
+        }
+    }
+    return false;
 }
 
 bool Manager::SetPriority1(uint8_t nPriority)

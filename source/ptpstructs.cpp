@@ -310,6 +310,7 @@ std::string ToPidStr(const std::vector<unsigned char>& vMessage, size_t& nStart)
 
 void FromPidStr(const std::string& sPortId, std::vector<unsigned char>& vMessage)
 {
+	
 	auto vPortNumber = SplitString(sPortId, '-');
 	
 	auto vId = vPortNumber.empty() ? std::vector<std::string>(8) : SplitString(vPortNumber[0], ':');

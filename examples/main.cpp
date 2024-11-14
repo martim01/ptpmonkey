@@ -34,18 +34,13 @@ int main(int argc, char* argv[])
     pml::LogStream::SetOutputLevel(pml::LOG_TRACE);
     pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Start" << std::endl;
 
-    ptpmonkey::PtpMonkey ptp(IpInterface("eth0"), 0, 10, ptpmonkey::Mode::MULTICAST, ptpmonkey::Rate::EVERY_2_SEC);
-    ptp.AddEventHandler(std::make_shared<ptpmonkey::PtpEventLogHandler>(false));
+    ptpmonkey::PtpMonkey ptp(IpInterface("eth0"), 0, 10, ptpmonkey::Mode::MULTICAST, ptpmonkey::Rate::NEVER);
+//    ptp.AddEventHandler(std::make_shared<ptpmonkey::PtpEventLogHandler>(false));
     
     ptp.Run();
     getchar();
-    
+    //ptp.Manage().UsePtp4l(true);
     ptp.Manage().Get(ptpmonkey::mngmnt::enumGet::PRIORITY1);
-    getchar();
-    getchar();
-    ptp.Manage().Get(ptpmonkey::mngmnt::enumGet::TIME);
-    getchar();
-    ptp.Manage().Get(ptpmonkey::mngmnt::enumGet::USER_DESCRIPTION);
     getchar();
 
 

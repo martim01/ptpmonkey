@@ -4,6 +4,7 @@
 #include <chrono>
 #include "ptpdll.h"
 #include <functional>
+#include "asio.hpp"
 
 namespace pml::ptpmonkey
 {
@@ -15,6 +16,7 @@ namespace pml::ptpmonkey
         public:
             Manager& Hops(uint8_t nHops);
             Manager& Target(const std::string& sTargetPortId, uint16_t nTargetPortNumber);
+            Manager& UsePtp4l(bool bPtp4l);
             
             bool Get(mngmnt::enumGet id);
 
@@ -54,11 +56,17 @@ namespace pml::ptpmonkey
 
             Manager(const std::function<bool(const ptpManagement&)>& pSender) : m_pSender(pSender){}
 
+            bool m_bPtp4l{false};
             uint8_t m_nHops{1};
             std::string m_sTargetPortId{"FF:FF:FF:FF:FF:FF:FF:FF"};
             uint16_t m_nTargetPortNumber{0xFFFF};
 
             std::function<bool(const ptpManagement&)> m_pSender;
+
+
+            asio::io_context m_context;
+            std::shared_ptr<asio::local::datagram_protocol::socket> m_pSocket = nullptr;
+            uint16_t m_nSequence{0};
 
             static const std::string TARGET_ID_ALL;
             static const uint16_t TARGET_NUMBER_ALL;
