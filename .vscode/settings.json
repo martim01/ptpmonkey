@@ -72,7 +72,14 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "csetjmp": "cpp",
+        "strstream": "cpp",
+        "unordered_set": "cpp",
+        "span": "cpp",
+        "cfenv": "cpp",
+        "valarray": "cpp",
+        "*.ipp": "cpp"
     },
     "cmake.configureOnOpen": false
 }

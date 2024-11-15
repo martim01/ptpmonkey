@@ -6,6 +6,22 @@
 #include <iomanip>
 using namespace pml::ptpmonkey;
 
+
+void PtpMonkeyHandler::SetCallbacks(const std::function<void(std::shared_ptr<ptpV2Header>, std::shared_ptr<ptpV2Payload>)>& pSync,
+                              const std::function<void(std::shared_ptr<ptpV2Header>, std::shared_ptr<ptpV2Payload>)>& pFollowUp,
+                              const std::function<void(std::shared_ptr<ptpV2Header>, std::shared_ptr<ptpV2Payload>)>& pDelayRequest,
+                              const std::function<void(std::shared_ptr<ptpV2Header>, std::shared_ptr<ptpDelayResponse>)>& pDelayResponse,
+                              const std::function<void(std::shared_ptr<ptpV2Header>, std::shared_ptr<ptpAnnounce>)>& pAnnounce,
+                              const std::function<void(std::shared_ptr<ptpV2Header>, std::shared_ptr<ptpManagement>)>& pManagement)
+{
+    m_pSync = pSync;
+    m_pFollowUp = pFollowUp;
+    m_pDelayRequest = pDelayRequest;
+    m_pDelayResponse = pDelayResponse;
+    m_pAnnounce = pAnnounce;
+    m_pManagement = pManagement;
+}
+
 void PtpMonkeyHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std::shared_ptr<payload> pPayload)
 {
 
@@ -13,24 +29,46 @@ void PtpMonkeyHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std:
     auto pPtpP = std::dynamic_pointer_cast<ptpV2Payload>(pPayload);
     if(pPtpP && pPtpH)
     {
-        switch(static_cast<ptpV2Header::enumType>(pPtpH->nType))
+        switch(static_cast<hdr::enumType>(pPtpH->nType))
         {
-            case ptpV2Header::enumType::SYNC:
-                m_manager.Sync(pPtpH, pPtpP);
+            case hdr::enumType::SYNC:
+                if(m_pSync)
+                {
+                    m_pSync(pPtpH, pPtpP);
+                }
                 break;
-            case ptpV2Header::enumType::FOLLOW_UP:
-                m_manager.FollowUp(pPtpH, pPtpP);
+            case hdr::enumType::FOLLOW_UP:
+                if(m_pFollowUp)
+                {
+                    m_pFollowUp(pPtpH, pPtpP);
+                }
                 break;
-            case ptpV2Header::enumType::DELAY_RESP:
-                m_manager.DelayResponse(pPtpH, std::dynamic_pointer_cast<ptpDelayResponse>(pPtpP));
+            case hdr::enumType::DELAY_RESP:
+                if(m_pDelayResponse)
+                {
+                    m_pDelayResponse(pPtpH, std::dynamic_pointer_cast<ptpDelayResponse>(pPtpP));
+                }
                 break;
-            case ptpV2Header::enumType::ANNOUNCE:
-                m_manager.Announce(pPtpH, std::dynamic_pointer_cast<ptpAnnounce>(pPtpP));
+            case hdr::enumType::ANNOUNCE:
+                if(m_pAnnounce)
+                {
+                    m_pAnnounce(pPtpH, std::dynamic_pointer_cast<ptpAnnounce>(pPtpP));
+                }
                 break;
-            case ptpV2Header::enumType::DELAY_REQ:
-                m_manager.DelayRequest(pPtpH, pPtpP);
+            case hdr::enumType::DELAY_REQ:
+                if(m_pDelayRequest)
+                {
+                    m_pDelayRequest(pPtpH, pPtpP);
+                }
                 break;
-
+            case hdr::enumType::MANAGEMENT:
+                if(m_pManagement)
+                {
+                    m_pManagement(pPtpH, std::dynamic_pointer_cast<ptpManagement>(pPayload));
+                }
+                break;
+            default:
+                break;
         }
     }
 }

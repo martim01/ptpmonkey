@@ -64,29 +64,29 @@ void Sync::SaveDetails() const
         {
             ofs << "\"Id\": \""        << pMaster->GetId() << "\", " ;
             ofs << "\"Ip\": \""        << pMaster->GetIpAddress() << "\", ";
-            ofs << "\"Accuracy\": "    << +pMaster->GetAccuracy() << ", ";
+            //ofs << "\"Accuracy\": "    << +pMaster->GetAccuracy() << ", ";
             ofs << "\"Variance\": "    << pMaster->GetVariance() << ", ";
             ofs << "\"Class\": "       << +pMaster->GetClass() << ", ";
             ofs << "\"Priority1\": "   << +pMaster->GetPriority1() << ", ";
             ofs << "\"Priority2\": "   << +pMaster->GetPriority2() << ", ";
-            ofs << "\"Source\": "      << +pMaster->GetTimeSource() << ", ";
+            //ofs << "\"Source\": "      << +pMaster->GetTimeSource() << ", ";
             ofs << "\"Steps\": "       << +pMaster->GetStepsRemoved() << ", ";
             ofs << "\"Utc_Offset\": "  << +pMaster->GetUtcOffset() << ", ";
 
 
-            auto flags = pMaster->GetFlags(ptpV2Header::enumType::SYNC);
+            auto flags = pMaster->GetFlags(hdr::enumType::SYNC);
 	        ofs << "\"Flags\": " << flags << ", ";
-            ofs << "\"Alternate_Master\": " << ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::ALTERNATE_MASTER)) != 0) << ", ";
-            ofs << "\"Two_Step\": " <<         ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::TWO_STEP)) != 0) << ", ";
-            ofs << "\"Unicast\": " <<          ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::UNICAST)) != 0) << ", ";
-            ofs << "\"Profile1\": " <<         ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::PROFILE1)) != 0) << ", ";
-            ofs << "\"Profile2\": " <<         ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::PROFILE2)) != 0) << ", ";
-            ofs << "\"LI_61\": " <<            ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::LI_61)) != 0) << ", ";
-            ofs << "\"LI_59\": " <<            ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::LI_59)) != 0) << ", ";
-            ofs << "\"UTC_Valid\": " <<        ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::UTC_OFFSET_VALID)) != 0) << ", ";
-            ofs << "\"Timescale\": " <<        ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::TIMESCALE)) != 0) << ", ";
-            ofs << "\"Time_Traceable\": " <<   ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::TIME_TRACEABLE)) != 0) << ", ";
-            ofs << "\"Freq_Traceable\": " <<   ((flags & static_cast<unsigned short>(ptpV2Header::enumFlags::FREQ_TRACEABLE)) != 0);
+            ofs << "\"Alternate_Master\": " << ((flags & static_cast<unsigned short>(hdr::enumFlags::ALTERNATE_MASTER)) != 0) << ", ";
+            ofs << "\"Two_Step\": " <<         ((flags & static_cast<unsigned short>(hdr::enumFlags::TWO_STEP)) != 0) << ", ";
+            ofs << "\"Unicast\": " <<          ((flags & static_cast<unsigned short>(hdr::enumFlags::UNICAST)) != 0) << ", ";
+            ofs << "\"Profile1\": " <<         ((flags & static_cast<unsigned short>(hdr::enumFlags::PROFILE1)) != 0) << ", ";
+            ofs << "\"Profile2\": " <<         ((flags & static_cast<unsigned short>(hdr::enumFlags::PROFILE2)) != 0) << ", ";
+            ofs << "\"LI_61\": " <<            ((flags & static_cast<unsigned short>(hdr::enumFlags::LI_61)) != 0) << ", ";
+            ofs << "\"LI_59\": " <<            ((flags & static_cast<unsigned short>(hdr::enumFlags::LI_59)) != 0) << ", ";
+            ofs << "\"UTC_Valid\": " <<        ((flags & static_cast<unsigned short>(hdr::enumFlags::UTC_OFFSET_VALID)) != 0) << ", ";
+            ofs << "\"Timescale\": " <<        ((flags & static_cast<unsigned short>(hdr::enumFlags::TIMESCALE)) != 0) << ", ";
+            ofs << "\"Time_Traceable\": " <<   ((flags & static_cast<unsigned short>(hdr::enumFlags::TIME_TRACEABLE)) != 0) << ", ";
+            ofs << "\"Freq_Traceable\": " <<   ((flags & static_cast<unsigned short>(hdr::enumFlags::FREQ_TRACEABLE)) != 0);
             
         }
         ofs << " }, ";
@@ -118,25 +118,25 @@ void Sync::SaveDetails() const
         ofs << "\"Received\": { ";
         if(m_pMonkey->GetLocalClock())
         {
-            ofs << "\"Announce\": "   << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::ANNOUNCE) << ", ";
-            ofs << "\"Sync\": "       << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::SYNC) << ", ";
-            ofs << "\"DelayReq\": "   << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::DELAY_REQ) << ", ";
-            ofs << "\"DelayResp\": "  << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::DELAY_RESP) << ", ";
-            ofs << "\"FollowUp\": "   << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::FOLLOW_UP) << ", ";
-            ofs << "\"Signalling\": " << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::SIGNALLING) << ", ";
-            ofs << "\"Management\": " << m_pMonkey->GetLocalClock()->GetCount(ptpV2Header::enumType::MANAGEMENT);
+            ofs << "\"Announce\": "   << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::ANNOUNCE) << ", ";
+            ofs << "\"Sync\": "       << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::SYNC) << ", ";
+            ofs << "\"DelayReq\": "   << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::DELAY_REQ) << ", ";
+            ofs << "\"DelayResp\": "  << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::DELAY_RESP) << ", ";
+            ofs << "\"FollowUp\": "   << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::FOLLOW_UP) << ", ";
+            ofs << "\"Signalling\": " << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::SIGNALLING) << ", ";
+            ofs << "\"Management\": " << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::MANAGEMENT);
         }
         ofs << " }, ";
         ofs << "\"Interval\": { ";
         if(m_pMonkey->GetLocalClock())
         {
-            ofs << "\"Announce\": "   << +m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::ANNOUNCE) << ", ";
-            ofs << "\"Sync\": "       << +m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::SYNC) << ", ";
-            ofs << "\"DelayReq\": "   << +m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::DELAY_REQ) << ", ";
-            ofs << "\"DelayResp\": "  << +m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::DELAY_RESP) << ", ";
-            ofs << "\"FollowUp\": "   << +m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::FOLLOW_UP) << ", ";
-            ofs << "\"Signalling\": " << +m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::SIGNALLING) << ", ";
-            ofs << "\"Management\": " << +m_pMonkey->GetLocalClock()->GetInterval(ptpV2Header::enumType::MANAGEMENT);
+            ofs << "\"Announce\": "   << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::ANNOUNCE) << ", ";
+            ofs << "\"Sync\": "       << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::SYNC) << ", ";
+            ofs << "\"DelayReq\": "   << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::DELAY_REQ) << ", ";
+            ofs << "\"DelayResp\": "  << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::DELAY_RESP) << ", ";
+            ofs << "\"FollowUp\": "   << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::FOLLOW_UP) << ", ";
+            ofs << "\"Signalling\": " << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::SIGNALLING) << ", ";
+            ofs << "\"Management\": " << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::MANAGEMENT);
         }
 
         ofs << " } }" << std::endl;

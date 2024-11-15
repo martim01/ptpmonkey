@@ -17,42 +17,40 @@ std::chrono::nanoseconds Now()
 
 std::pair<std::chrono::seconds, std::chrono::nanoseconds> Split(const std::chrono::nanoseconds& ts)
 {
-    auto nSeconds = std::chrono::duration_cast<std::chrono::seconds>(ts).count();
-    auto rounded = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(nSeconds));
-    auto nano = ts - rounded;
-    if(nano < std::chrono::nanoseconds(0) && nSeconds != 0)
-    {
-        nano = -nano;
+    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(ts);
+    auto rounded = std::chrono::duration_cast<std::chrono::nanoseconds>(seconds);
+    auto nano =    std::chrono::nanoseconds(0);
+    if(ts.count() > 0)
+    {  
+        nano = ts - rounded;
+        
     }
-    return std::make_pair(std::chrono::seconds(nSeconds), nano);
+    else
+    {
+        nano = rounded - ts ;
+    }
+    return std::make_pair(seconds, nano);
 }
 
 std::string TimeToString(const std::chrono::nanoseconds& ts)
 {
     std::stringstream ss;
-    auto split =Split(ts);
+    auto [sec, nano] = Split(ts);
 
-    if(split.first.count() != 0 || split.second.count() >= 0)
-    {
-        ss << split.first.count() << "." << std::setw(9) << std::setfill('0') << split.second.count();
-    }
-    else
-    {
-        ss << "-" << split.first.count() << "." << std::setw(9) << std::setfill('0') << -split.second.count();
-    }
+    ss << sec.count() << "." << std::setw(9) << std::setfill('0') << nano.count();
     return ss.str();
 }
 
 std::string TimeToIsoString(const std::chrono::nanoseconds& ts)
 {
     std::stringstream ss;
-    auto split =Split(ts);
+    auto [sec, nano] = Split(ts);
 
-    std::time_t t(split.first.count());
+    std::time_t t(sec.count());
     if(t >= 0)
     {
         std::tm timetm = *std::localtime(&t);
-        ss << std::put_time(&timetm, "%Y-%m-%dT%H:%M:%S") << "." << std::setw(9) << std::setfill('0') << split.second.count();
+        ss << std::put_time(&timetm, "%Y-%m-%dT%H:%M:%S") << "." << std::setw(9) << std::setfill('0') << nano.count();
     }
     return ss.str();
 }

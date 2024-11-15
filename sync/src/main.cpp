@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
     
     if(auto sInterface = ini.Get("ptp", "interface", ""); sInterface.empty() == false)
     {   
-        sync.Run(IpInterface(sInterface), static_cast<unsigned char>(ini.Get("ptp", "domain", 0L)), static_cast<pml::ptpmonkey::Mode>(ini.Get("ptp", "mode", 0L))), ini.Get("ptp", "hwc", -1L));
+//        sync.Run(IpInterface(sInterface), static_cast<unsigned char>(ini.Get("ptp", "domain", 0L)), static_cast<pml::ptpmonkey::Mode>(ini.Get("ptp", "mode", 0L))), ini.Get("ptp", "hwc", -1L));
     }
     else
     {

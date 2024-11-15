@@ -12,6 +12,7 @@
 #include "sender.h"
 #include <thread>
 #include <atomic>
+#include "enums.h"
 
 namespace pml
 {
@@ -21,13 +22,14 @@ namespace pml
         class PtpEventHandler;
         class PtpParser;
 
+
     /** @class Main class for interfacing with the PTP code
     **/
     class PtpMonkeyImplementation
     {
         public:
-            PtpMonkeyImplementation(const IpAddress& ipAddress, unsigned char nDomain, unsigned short nSampleSize, Mode mode, Rate enumDelayRequest);
-            PtpMonkeyImplementation(const IpInterface& IpInterface, unsigned char nDomain, unsigned short nSampleSize,Mode mode, Rate enumDelayRequest);
+            PtpMonkeyImplementation(const IpAddress& ipAddress, unsigned char nDomain, unsigned short nSampleSize, Mode mode, Rate eDelayRequest);
+            PtpMonkeyImplementation(const IpInterface& IpInterface, unsigned char nDomain, unsigned short nSampleSize,Mode mode, Rate eDelayRequest);
 
             ~PtpMonkeyImplementation();
 
@@ -89,32 +91,6 @@ namespace pml
             std::shared_ptr<const PtpV2Clock> GetLocalClock() const;
 
 
-            /** @brief Called by PtpMonkeyHandler when a sync message is received.
-            *   @note Should not be called by the user
-            **/
-            void Sync(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
-            void FollowUp(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
-
-            /** @brief Called by PtpMonkeyHandler when a delay request message is received.
-            *   @note Should not be called by the user
-            **/
-            void DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
-
-            /** @brief Called by PtpMonkeyHandler when a delay response message is received.
-            *   @note Should not be called by the user
-            **/
-            void DelayResponse(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload);
-
-            /** @brief Called by PtpMonkeyHandler when an announce is received.
-            *   @note Should not be called by the user
-            **/
-            void Announce(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pPayload);
-
-            /** @brief Called by the Sender socket when it sends a delay request message and gets a tx timestamp message
-            *   @note Should not be called by the user
-            **/
-            void DelayRequestSent(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
-
             void Stop();
             void Restart();
             bool IsStopped() const;
@@ -124,6 +100,12 @@ namespace pml
             Rate GetDelayRate() const
             {   return m_delayRequest;  }
 
+            std::chrono::nanoseconds GetDelayReqGap() const
+            {
+                return m_delayRequestTime;
+            }
+            bool SendDelayRequests() const { return (m_delayRequest != Rate::NEVER); }
+
             static int GetTimestampingSupported(const IpInterface& interface);
             void ResetLocalClockStats() const;
 
@@ -132,6 +114,12 @@ namespace pml
             void SetDomain(unsigned char nDomain);
             unsigned char GetDomain() const { return m_nDomain;}
 
+            bool Send(const ptpManagement& message);
+
+
+            void DelayRequestSent(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
+
+            
         protected:
             asio::io_context m_context;
 
@@ -142,12 +130,23 @@ namespace pml
 
             bool Run();
 
+            void Sync(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
+            void FollowUp(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
+            void DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload);
+            void DelayResponse(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpDelayResponse> pPayload);
+            void Announce(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpAnnounce> pPayload);
+            void Management(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpManagement> pPayload);
+            
+
+
+
             IpAddress m_local;
             IpInterface m_Interface;
             unsigned char m_nDomain;
             unsigned short m_nSampleSize;
             Mode m_mode;
             Rate m_delayRequest;
+            std::chrono::nanoseconds m_delayRequestTime;
 
             std::map<std::string, std::shared_ptr<PtpV2Clock> > m_mClocks;
 
@@ -161,9 +160,6 @@ namespace pml
 
             std::unique_ptr<Sender> m_pSender = nullptr;
             int m_nTimestamping = 0;
-
-            enum {TIMESTAMP_TX_HARDWARE = 1, TIMESTAMP_TX_SOFTWARE = 2, TIMESTAMP_RX_HARDWARE = 4, TIMESTAMP_RX_SOFTWARE = 8 };
-
 
             std::unique_ptr<std::thread> m_pThread = nullptr;
             std::shared_ptr<PtpParser> m_pParser = nullptr;

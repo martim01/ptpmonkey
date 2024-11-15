@@ -43,7 +43,7 @@ void Sender::Run()
 {
     if(m_bMulticast)
     {
-        asio::ip::multicast::outbound_interface option(asio::ip::address_v4::from_string(m_outboundIpAddress.Get()));
+        asio::ip::multicast::outbound_interface option(asio::ip::make_address_v4(m_outboundIpAddress.Get()));
         m_socket.set_option(option);
 
         //lets not loop the message back it gets confusing.
@@ -54,49 +54,50 @@ void Sender::Run()
     #ifdef __GNU__
     // @todo for some reason we get tx software timestamps even though pi says it doesn't suppport it. add this bodge for now to aid debugging
     #if FORCE_SO==1
-    m_nTimestampingSupported |= PtpMonkey::TIMESTAMP_TX_SOFTWARE;
-    pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "PtpMonkey\t" << "Sender: Attempt to set tx software timestamping anyway.";
+    m_nTimestampingSupported |= port::enumTimestamping::TIMESTAMP_TX_SOFTWARE;
+    pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "" << "Sender: Attempt to set tx software timestamping anyway.";
     #endif // FORCE_SO
 
     int nFlags(0);
-    nFlags |= (m_nTimestampingSupported & PtpMonkey::TIMESTAMP_TX_HARDWARE) ? (SOF_TIMESTAMPING_TX_HARDWARE | SOF_TIMESTAMPING_RAW_HARDWARE) : 0;
-    nFlags |= (m_nTimestampingSupported & PtpMonkey::TIMESTAMP_TX_SOFTWARE) ? (SOF_TIMESTAMPING_TX_SOFTWARE | SOF_TIMESTAMPING_SOFTWARE) : 0;
+    nFlags |= (m_nTimestampingSupported & port::enumTimestamping::TIMESTAMP_TX_HARDWARE) ? (SOF_TIMESTAMPING_TX_HARDWARE | SOF_TIMESTAMPING_RAW_HARDWARE) : 0;
+    nFlags |= (m_nTimestampingSupported & port::enumTimestamping::TIMESTAMP_TX_SOFTWARE) ? (SOF_TIMESTAMPING_TX_SOFTWARE | SOF_TIMESTAMPING_SOFTWARE) : 0;
 
     if(nFlags != 0)
     {
         if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPING, &nFlags, sizeof(nFlags)) < 0)
         {
-            pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "PtpMonkey\t" << "Sender: Failed to set SO_TIMESTAMPING";
+            pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "" << "Sender: Failed to set SO_TIMESTAMPING";
             m_bTimestampEnabled = (setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPNS, &nFlags, sizeof(nFlags)) >= 0);
             if(!m_bTimestampEnabled)
             {
-                pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "PtpMonkey\t" << "Sender: Failed to set SO_TIMESTAMPNS";
+                pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "" << "Sender: Failed to set SO_TIMESTAMPNS";
             }
             else
             {
-                pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PtpMonkey\t" << "Sender: Set SO_TIMESTAMPNS timestamping";
+                pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "" << "Sender: Set SO_TIMESTAMPNS timestamping";
             }
         }
         else
         {
             m_bTimestampEnabled = true;
-            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PtpMonkey\t" << "Sender: Set SO_TIMESTAMPING timestamping";
+            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "" << "Sender: Set SO_TIMESTAMPING timestamping";
         }
     }
     #endif
-    DoSend();
+    SendDelayRequest();
+    DoTimeout();
 
 }
 
-void Sender::DoSend()
+void Sender::SendDelayRequest()
 {
-    bool bDebug = false;
     if(m_bRun)
     {
-        if(m_manager.GetSyncMasterClock() != nullptr || bDebug)
+        if(m_manager.GetSyncMasterClock() != nullptr)
         {
-            auto vBuffer = CreateRequest();
-            m_socket.async_send_to(asio::buffer(vBuffer), m_endpoint, [this, vBuffer](std::error_code ec, std::size_t /*length*/)
+            auto vBuffer = CreateDelayRequest();
+
+            m_socket.async_send_to(asio::buffer(vBuffer), m_endpoint, [this, vBuffer](std::error_code ec, std::size_t)
             {
                 if (!ec)
                 {
@@ -111,67 +112,112 @@ void Sender::DoSend()
                         //tell the local client we've sent a delay request message
                         m_manager.DelayRequestSent(pMessage.first, pMessage.second);
                     }
-                    DoTimeout();
                 }
                 else
                 {
-                    pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "PtpMonkey\t" << "Sender: Send failed: " << ec;
+                    pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "" << "Sender: Send failed: " << ec;
                 }
             });
-        }
-        else
-        {
-            DoTimeout();
         }
     }
 }
 
-std::vector<unsigned char> Sender::CreateRequest()
+void Sender::SendManagementMessage(std::shared_ptr<ptpManagement> pMessage)
+{
+    if(m_bRun)
+    {
+        auto vBuffer = CreateManagement(pMessage);
+        m_socket.async_send_to(asio::buffer(vBuffer), m_endpoint, [this, vBuffer](std::error_code ec, std::size_t)
+        {
+            if (ec)
+            {
+                pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "" << "Sender: Send failed: " << ec;
+            }
+        });
+    }
+}
+
+void Sender::Queue(const ptpManagement& message)
+{
+    m_qManagement.push(message);
+}
+
+std::vector<unsigned char> Sender::CreateManagement(std::shared_ptr<ptpManagement> pMessage)
+{
+    auto itSequence = m_mSequence.try_emplace(hdr::enumType::MANAGEMENT, 0).first;
+
+    auto vPayload = pMessage->CreateMessage();
+
+    auto theHeader = CreateHeader(hdr::enumType::MANAGEMENT, itSequence->second, 34+vPayload.size(), 0x7f);
+
+    auto vBuffer = theHeader.CreateMessage();
+    std::copy(vPayload.begin(), vPayload.end(), std::back_inserter(vBuffer));
+
+    itSequence->second++;
+    return vBuffer;
+}
+
+ptpV2Header Sender::CreateHeader(hdr::enumType eType, uint16_t nSequence, uint16_t nLength, uint8_t nInterval)
 {
     ptpV2Header theHeader;
-    ptpV2Payload thePayload;
 
     theHeader.nVersion = 2;
-    theHeader.nType = 1;
+    theHeader.nType = static_cast<uint8_t>(eType);
     theHeader.timestamp = Now();
 
-    theHeader.nMessageLength = 44;
+    theHeader.nMessageLength = nLength;
     theHeader.nDomain = static_cast<unsigned char>(m_nDomain);
     theHeader.nFlags = 0;
     if(!m_bMulticast)
     {
-        theHeader.nFlags |= static_cast<unsigned short>(ptpV2Header::enumFlags::UNICAST);
+        theHeader.nFlags |= static_cast<unsigned short>(hdr::enumFlags::UNICAST);
     }
     theHeader.nCorrection = 0;
     theHeader.source.nSourceId = GenerateClockIdentity(m_outboundIpAddress);
     theHeader.source.nSourcePort = 1;
-    theHeader.nSequenceId = m_nSequence;
+    theHeader.nSequenceId = nSequence;
     theHeader.nControl = 1;
-    theHeader.nInterval = static_cast<char>(m_manager.GetDelayRate());
+    theHeader.nInterval = nInterval;
+    return theHeader;
+}
 
-    thePayload.originTime = Now();
+std::vector<unsigned char> Sender::CreateDelayRequest()
+{
+    auto itSequence = m_mSequence.try_emplace(hdr::enumType::DELAY_REQ, 0).first;
+    auto theHeader = CreateHeader(hdr::enumType::DELAY_REQ, itSequence->second, 44, static_cast<char>(m_manager.GetDelayRate()));
+
+    ptpV2Payload thePayload;
+    m_lastDelayReq = Now();
+    thePayload.originTime = m_lastDelayReq;
 
     auto vBuffer = theHeader.CreateMessage();
-    std::vector<unsigned char> vPayload(thePayload.CreateMessage());
+    auto vPayload =  thePayload.CreateMessage();
 
     std::copy(vPayload.begin(), vPayload.end(), std::back_inserter(vBuffer));
 
-
-    m_nSequence++;
+    itSequence->second++;
     return vBuffer;
 }
 
 
 void Sender::DoTimeout()
 {
-    auto milli = std::chrono::milliseconds(static_cast<unsigned long>(1000.0*std::pow(2, static_cast<float>(m_manager.GetDelayRate()))));
-    m_timer.expires_after(milli);
-    m_timer.async_wait(
-    [this](std::error_code ec)
+    m_timer.expires_after(std::chrono::milliseconds(100));
+    m_timer.async_wait([this](std::error_code ec)
     {
         if (!ec)
         {
-            DoSend();
+            auto now = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch());
+            if(m_manager.SendDelayRequests() && now - m_lastDelayReq > m_manager.GetDelayReqGap())
+            {
+                SendDelayRequest();
+            }
+
+            while(auto pMessage = m_qManagement.pop())
+            {
+                SendManagementMessage(pMessage);
+            }
+            DoTimeout();
         }
     });
 }

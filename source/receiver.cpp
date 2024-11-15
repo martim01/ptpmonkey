@@ -30,26 +30,26 @@ void Receiver::Run(const asio::ip::address& listen_address, unsigned int nPort, 
     //set the rx hardware software timestamping
     #ifdef __GNU__
      int nFlags(0);
-    nFlags |= (m_nTimestampingSupported & PtpMonkey::TIMESTAMP_RX_HARDWARE) ? (SOF_TIMESTAMPING_RX_HARDWARE | SOF_TIMESTAMPING_RAW_HARDWARE) : 0;
-    nFlags |= (m_nTimestampingSupported & PtpMonkey::TIMESTAMP_RX_SOFTWARE) ? (SOF_TIMESTAMPING_RX_SOFTWARE | SOF_TIMESTAMPING_SOFTWARE) : 0;
+    nFlags |= (m_nTimestampingSupported & port::enumTimestamping::TIMESTAMP_RX_HARDWARE) ? (SOF_TIMESTAMPING_RX_HARDWARE | SOF_TIMESTAMPING_RAW_HARDWARE) : 0;
+    nFlags |= (m_nTimestampingSupported & port::enumTimestamping::TIMESTAMP_RX_SOFTWARE) ? (SOF_TIMESTAMPING_RX_SOFTWARE | SOF_TIMESTAMPING_SOFTWARE) : 0;
 
     if(nFlags != 0)
     {
         if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPING, &nFlags, sizeof(nFlags)) < 0)
         {
-            pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "PtpMonkey\t" << "Receiver [" << nPort << "]: Failed to set SO_TIMESTAMPING";
+            pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Failed to set SO_TIMESTAMPING";
             if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPNS, &nFlags, sizeof(nFlags)))
             {
-                pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "PtpMonkey\t" << "Receiver [" << nPort << "]: Failed to set SO_TIMESTAMPNS";
+                pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Failed to set SO_TIMESTAMPNS";
             }
             else
             {
-                pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PtpMonkey\t" << "Receiver [" << nPort << "]: Set SO_TIMESTAMPNS timestamping";
+                pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Set SO_TIMESTAMPNS timestamping";
             }
         }
         else
         {
-            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PtpMonkey\t" << "Receiver [" << nPort << "]: Set SO_TIMESTAMPING timestamping";
+            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Set SO_TIMESTAMPING timestamping";
         }
     }
     #endif // __GNU__
@@ -59,18 +59,18 @@ void Receiver::Run(const asio::ip::address& listen_address, unsigned int nPort, 
     m_socket.bind(listen_endpoint, ec);
     if(ec)
     {
-        pmlLog(pml::LOG_CRITICAL, "pml::ptpmonkey") << "PtpMonkey\t" << "Receiver [" << nPort << "]: Can't bind receiver to endpoint: " << ec;
+        pmlLog(pml::LOG_CRITICAL, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Can't bind receiver to endpoint: " << ec.message();
     }
     else
     {
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "PtpMonkey\t" << "Bound now join multicast group";
+        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "" << "Bound now join multicast group";
         // Join the multicast group.
         asio::ip::address_v4 addr = listen_address.to_v4();
         auto multiAddr = multicast_address.to_v4();
         m_socket.set_option(asio::ip::multicast::join_group(multiAddr, addr), ec);
         if(ec)
         {
-            pmlLog(pml::LOG_CRITICAL, "pml::ptpmonkey") << "PtpMonkey\t" << "Receiver [" << nPort << "]: Can't join group: " << ec;
+            pmlLog(pml::LOG_CRITICAL, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Can't join group: " << ec.message();
         }
         else
         {
@@ -98,7 +98,7 @@ void Receiver::DoReceive()
         }
         else
         {
-            std::cout << ec << std::endl;
+            std::cout << ec.message() << std::endl;
         }
     });
     #else
@@ -112,7 +112,7 @@ void Receiver::DoReceive()
         }
         else
         {
-            pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "PtpMonkey\t" << "Receiver: wait error: " << ec;
+            pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "" << "Receiver: wait error: " << ec.message();
         }
     });
     #endif

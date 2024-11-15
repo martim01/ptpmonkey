@@ -27,6 +27,7 @@
 
 
 using namespace pml::ptpmonkey;
+using namespace std::placeholders;
 
 const std::string PtpMonkeyImplementation::MULTICAST = "224.0.1.129";
 
@@ -39,6 +40,7 @@ PtpMonkeyImplementation::PtpMonkeyImplementation(const IpAddress& ipAddress, uns
     m_delayRequest(enumDelayRequest),
     m_nLocalClockId(GenerateClockIdentity(m_local))
 {
+    m_delayRequestTime = std::chrono::nanoseconds(static_cast<uint64_t>(std::pow(2, static_cast<float>(enumDelayRequest))*1000000000.0));    
 }
 
 PtpMonkeyImplementation::PtpMonkeyImplementation(const IpInterface& ipInterface, unsigned char nDomain,unsigned short nSampleSize, Mode mode, Rate enumDelayRequest)  :
@@ -50,8 +52,8 @@ PtpMonkeyImplementation::PtpMonkeyImplementation(const IpInterface& ipInterface,
     m_delayRequest(enumDelayRequest),
     m_nLocalClockId(GenerateClockIdentity(m_local))
 {
-
-}
+    m_delayRequestTime = std::chrono::nanoseconds(static_cast<uint64_t>(std::pow(2, static_cast<float>(enumDelayRequest))*1000000000.0));    
+    }
 
 PtpMonkeyImplementation::~PtpMonkeyImplementation()
 {
@@ -80,35 +82,45 @@ bool PtpMonkeyImplementation::Run()
 {
     try
     {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create Handler";
-        std::shared_ptr<Handler> pHandler = std::make_shared<PtpMonkeyHandler>(*this);
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create Parser";
+    	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create Handler";
+        auto pHandler = std::make_shared<PtpMonkeyHandler>();
+        pHandler->SetCallbacks(std::bind(&PtpMonkeyImplementation::Sync, this, _1, _2),
+                               std::bind(&PtpMonkeyImplementation::FollowUp, this, _1, _2),
+                               std::bind(&PtpMonkeyImplementation::DelayRequest, this, _1, _2),
+                               std::bind(&PtpMonkeyImplementation::DelayResponse, this, _1, _2),
+                               std::bind(&PtpMonkeyImplementation::Announce, this, _1, _2),
+                               std::bind(&PtpMonkeyImplementation::Management, this, _1, _2));
+
+        
+        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create Parser";
         m_pParser = std::make_shared<PtpParser>(pHandler,m_nDomain);
 
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Get Timestamping support";
+
+        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Get Timestamping support";
         m_nTimestamping = GetTimestampingSupported(m_Interface);
 
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create R319";
+        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create R319";
         Receiver mR319(m_context, m_pParser, m_nTimestamping);
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create R320";
+
+        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create R320";
         Receiver mR320(m_context, m_pParser, m_nTimestamping);
-	
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Run R319";
+        
+        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Run R319";
         mR319.Run(asio::ip::make_address(m_local.Get()), 319,asio::ip::make_address(MULTICAST));
 
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Run R320";
+        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Run R320";
         mR320.Run(asio::ip::make_address(m_local.Get()), 320,asio::ip::make_address(MULTICAST));
 
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create and Run sender";
+        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create and Run sender";
         m_pSender = std::make_unique<Sender>(*this, m_pParser, m_context, m_local, asio::ip::make_address(MULTICAST), 319, m_nDomain, m_nTimestamping, m_mode == Mode::MULTICAST);
         m_pSender->Run();
 
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Run context";
+        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Run context";
         m_context.run();
     }
     catch (const std::exception& e)
     {
-        pmlLog(pml::LOG_CRITICAL, "pml::ptpmonkey") << "PtpMonkey\tRUN: " << e.what();
+        pmlLog(pml::LOG_CRITICAL, "pml::ptpmonkey") << "RUN: " << e.what();
     }
        return true;
 }
@@ -128,10 +140,10 @@ std::map<std::string, std::shared_ptr<PtpV2Clock> >::iterator PtpMonkeyImplement
     auto itClock = m_mClocks.find(pHeader->source.sSourceId);
     if(itClock == m_mClocks.end())
     {
-        itClock = m_mClocks.insert(std::make_pair(pHeader->source.sSourceId, std::make_shared<PtpV2Clock>(pHeader, pPayload))).first;
+        itClock = m_mClocks.try_emplace(pHeader->source.sSourceId, std::make_shared<PtpV2Clock>(pHeader, pPayload)).first;
         if(pHeader->source.nSourceId == m_nLocalClockId)
         {
-            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "PtpMonkey\tLocal clock";
+            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Local clock";
             m_pLocal = itClock->second;
             m_pLocal->SetSampleSize(m_nSampleSize);
         }
@@ -151,8 +163,8 @@ std::map<std::string, std::shared_ptr<PtpV2Clock> >::iterator PtpMonkeyImplement
 void PtpMonkeyImplementation::Sync(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
 {
     //find the clock that sent the Sync Message
-    auto itClock = GetOrCreateClock(pHeader, pPayload);
-    if(itClock != m_mClocks.end())
+    
+    if(auto itClock = GetOrCreateClock(pHeader, pPayload); itClock != m_mClocks.end())
     {
         itClock->second->SyncFrom(pHeader, pPayload);
         for(auto pHandler : m_lstEventHandler)
@@ -185,7 +197,7 @@ void PtpMonkeyImplementation::ChangeSyncMaster(std::shared_ptr<PtpV2Clock> pNewM
             pHandler->ClockBecomeSlave(m_pSyncMaster);
         }
     }
-    std::lock_guard<std::mutex> lg(m_mutex);
+    std::scoped_lock lg(m_mutex);
     m_pSyncMaster = pNewMaster;
 
     if(m_mode != Mode::MULTICAST)
@@ -197,8 +209,8 @@ void PtpMonkeyImplementation::ChangeSyncMaster(std::shared_ptr<PtpV2Clock> pNewM
 void PtpMonkeyImplementation::FollowUp(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
 {
     //find the clock....
-    auto itClock = GetOrCreateClock(pHeader, pPayload);
-    if(itClock != m_mClocks.end())
+    
+    if(auto itClock = GetOrCreateClock(pHeader, pPayload); itClock != m_mClocks.end())
     {
         itClock->second->FollowUpFrom(pHeader, pPayload);
         for(auto pHandler : m_lstEventHandler)
@@ -220,9 +232,7 @@ void PtpMonkeyImplementation::FollowUp(std::shared_ptr<ptpV2Header> pHeader, std
 
 void PtpMonkeyImplementation::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpV2Payload> pPayload)
 {
-    auto itClock = GetOrCreateClock(pHeader, pPayload);
-
-    if(itClock != m_mClocks.end())
+    if(auto itClock = GetOrCreateClock(pHeader, pPayload); itClock != m_mClocks.end())
     {
         itClock->second->DelayRequest(pHeader, pPayload);
         for(auto pHandler : m_lstEventHandler)
@@ -290,7 +300,7 @@ void PtpMonkeyImplementation::Announce(std::shared_ptr<ptpV2Header> pHeader, std
     }
     else
     {
-        itClock = m_mClocks.insert(std::make_pair(pHeader->source.sSourceId, std::make_shared<PtpV2Clock>(pHeader, pPayload))).first;
+        itClock = m_mClocks.try_emplace(pHeader->source.sSourceId, std::make_shared<PtpV2Clock>(pHeader, pPayload)).first;
         for(auto pHandler : m_lstEventHandler)
         {
             pHandler->ClockAdded(itClock->second);
@@ -299,6 +309,13 @@ void PtpMonkeyImplementation::Announce(std::shared_ptr<ptpV2Header> pHeader, std
     }
 }
 
+void PtpMonkeyImplementation::Management(std::shared_ptr<ptpV2Header> pHeader, std::shared_ptr<ptpManagement> pPayload)
+{
+    for(auto pHandler : m_lstEventHandler)
+    {
+        pHandler->ManagementMessageReceived(pHeader, pPayload);
+    }
+}
 
 std::chrono::nanoseconds PtpMonkeyImplementation::GetPtpTime() const
 {
@@ -334,14 +351,14 @@ const std::map<std::string, std::shared_ptr<PtpV2Clock> >& PtpMonkeyImplementati
 
 std::shared_ptr<const PtpV2Clock> PtpMonkeyImplementation::GetSyncMasterClock() const
 {
-    std::lock_guard<std::mutex> lg(m_mutex);
+    std::scoped_lock lg(m_mutex);
 
     return m_pSyncMaster;
 }
 
 std::string PtpMonkeyImplementation::GetMasterClockId() const
 {
-    std::lock_guard<std::mutex> lg(m_mutex);
+    std::scoped_lock lg(m_mutex);
 
     if(m_pSyncMaster)
     {
@@ -353,7 +370,7 @@ std::string PtpMonkeyImplementation::GetMasterClockId() const
 
 std::chrono::nanoseconds PtpMonkeyImplementation::GetPtpOffset(PtpV2Clock::enumCalc eCalc) const
 {
-    std::lock_guard<std::mutex> lg(m_mutex);
+    std::scoped_lock lg(m_mutex);
     if(m_pLocal)
     {
         return m_pLocal->GetOffset(eCalc);
@@ -366,7 +383,7 @@ std::chrono::nanoseconds PtpMonkeyImplementation::GetPtpOffset(PtpV2Clock::enumC
 
 std::chrono::nanoseconds PtpMonkeyImplementation::GetPtpDelay(PtpV2Clock::enumCalc eCalc) const
 {
-    std::lock_guard<std::mutex> lg(m_mutex);
+    std::scoped_lock lg(m_mutex);
     if(m_pLocal)
     {
         return m_pLocal->GetDelay(eCalc);
@@ -446,8 +463,7 @@ bool PtpMonkeyImplementation::IsStopped() const
 
 std::shared_ptr<const PtpV2Clock> PtpMonkeyImplementation::GetClock(const std::string& sClockId) const
 {
-    auto itClock = m_mClocks.find(sClockId);
-    if(itClock != m_mClocks.end())
+    if(auto itClock = m_mClocks.find(sClockId); itClock != m_mClocks.end())
     {
         return itClock->second;
     }
@@ -484,27 +500,27 @@ int PtpMonkeyImplementation::GetTimestampingSupported(const IpInterface& interfa
     ioctl(fd, SIOCETHTOOL, & ifr);
 
 
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "PtpMonkey\t" << tsi.so_timestamping;
+    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "" << tsi.so_timestamping;
     if(tsi.so_timestamping & SOF_TIMESTAMPING_TX_HARDWARE)
     {
-        nSupports |= TIMESTAMP_TX_HARDWARE;
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "PtpMonkey\t"<< ifr.ifr_name << " supports harware tx";
+        nSupports |= port::enumTimestamping::TIMESTAMP_TX_HARDWARE;
+        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << ""<< ifr.ifr_name << " supports harware tx";
     }
     if(tsi.so_timestamping & SOF_TIMESTAMPING_TX_SOFTWARE)
     {
-        nSupports |= TIMESTAMP_TX_SOFTWARE;
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "PtpMonkey\t"<< ifr.ifr_name << " supports software tx";
+        nSupports |= port::enumTimestamping::TIMESTAMP_TX_SOFTWARE;
+        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << ""<< ifr.ifr_name << " supports software tx";
     }
 
     if(tsi.so_timestamping & SOF_TIMESTAMPING_RX_HARDWARE)
     {
-        nSupports |= TIMESTAMP_RX_HARDWARE;
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "PtpMonkey\t"<< ifr.ifr_name << " supports harware rx";
+        nSupports |= port::enumTimestamping::TIMESTAMP_RX_HARDWARE;
+        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << ""<< ifr.ifr_name << " supports harware rx";
     }
     if(tsi.so_timestamping & SOF_TIMESTAMPING_RX_SOFTWARE)
     {
-        nSupports |= TIMESTAMP_RX_SOFTWARE;
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "PtpMonkey\t"<< ifr.ifr_name << " supports software rx";
+        nSupports |= port::enumTimestamping::TIMESTAMP_RX_SOFTWARE;
+        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << ""<< ifr.ifr_name << " supports software rx";
     }
     #endif // __GNU__
     return nSupports;
@@ -526,7 +542,7 @@ void PtpMonkeyImplementation::SetDomain(unsigned char nDomain)
 {
     if(m_nDomain != nDomain)
     {
-        std::lock_guard<std::mutex> lg(m_mutex);
+        std::scoped_lock lg(m_mutex);
         m_mClocks.clear();
         m_pLocal = nullptr;
         m_pSyncMaster = nullptr;
@@ -536,3 +552,12 @@ void PtpMonkeyImplementation::SetDomain(unsigned char nDomain)
     }
 }
 
+bool PtpMonkeyImplementation::Send(const ptpManagement& message)
+{
+    if(m_pSender)
+    {
+        m_pSender->Queue(message);
+        return true;
+    }
+    return false;
+}

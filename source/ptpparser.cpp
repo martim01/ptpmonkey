@@ -30,28 +30,25 @@ ptpV2Message PtpParser::ParseV2(const std::chrono::nanoseconds& socketTime, cons
     {
         pHeader->sIpAddress = ipSender.Get();
 
-        switch(static_cast<ptpV2Header::enumType>(pHeader->nType))
+        switch(static_cast<hdr::enumType>(pHeader->nType))
         {
-            case ptpV2Header::enumType::SYNC:
-                pmlLog(pml::LOG_TRACE, "pml::ptpmonkey") << "PtpMonkey\t" << "Sync";
+            case hdr::enumType::SYNC:
                 pPayload = std::make_shared<ptpV2Payload>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
-            case ptpV2Header::enumType::DELAY_RESP:
-                pmlLog(pml::LOG_TRACE, "pml::ptpmonkey") << "PtpMonkey\t" << "Delay_resp";
+            case hdr::enumType::DELAY_RESP:
                 pPayload = std::make_shared<ptpDelayResponse>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
-            case ptpV2Header::enumType::DELAY_REQ:
-                pmlLog(pml::LOG_TRACE, "pml::ptpmonkey") << "PtpMonkey\t" << "Delay_req";
+            case hdr::enumType::DELAY_REQ:
                 pPayload = std::make_shared<ptpV2Payload>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
-            case ptpV2Header::enumType::FOLLOW_UP:
-                pmlLog(pml::LOG_TRACE, "pml::ptpmonkey") << "PtpMonkey\t" << "Follow Up";
+            case hdr::enumType::FOLLOW_UP:
                 pPayload = std::make_shared<ptpV2Payload>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
-            case ptpV2Header::enumType::ANNOUNCE:
-                pmlLog(pml::LOG_TRACE, "pml::ptpmonkey") << "PtpMonkey\t" << "Announce";
+            case hdr::enumType::ANNOUNCE:
                 pPayload = std::make_shared<ptpAnnounce>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
+            case hdr::enumType::MANAGEMENT:
+                pPayload = std::make_shared<ptpManagement>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
         }
     }
     return std::make_pair(pHeader, pPayload);
@@ -86,7 +83,7 @@ void PtpParser::ParseMessage(const rawMessage& aMessage)
     default:
         {
             pml::LogStream ls(pml::LOG_WARN);
-            ls << "Ptpmonkey\tUnknown version\n" << std::hex << std::setfill('0') << std::setw(2);
+            ls << "Unknown version\n" << std::hex << std::setfill('0') << std::setw(2);
             for(const auto& byte : aMessage.vBuffer)
             {
                 ls << std::hex << std::setfill('0') << std::setw(2) << static_cast<unsigned int>(byte) << " ";
