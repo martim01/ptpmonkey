@@ -17,22 +17,22 @@ void PtpLogHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std::sh
         switch(static_cast<hdr::enumType>(pPtpH->nType))
         {
             case hdr::enumType::SYNC:
-          //      pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Sync\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
+          //      pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Sync\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
                 break;
             case hdr::enumType::FOLLOW_UP:
-            //    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "FollowUp\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
+            //    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "FollowUp\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
             case hdr::enumType::DELAY_REQ:
-              //  pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "DelayReq\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
+              //  pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "DelayReq\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
             case hdr::enumType::DELAY_RESP:
-            //    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "DelayRep\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
+            //    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "DelayRep\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
             case hdr::enumType::ANNOUNCE:
-            ///    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Announce\t" <<  TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId;
+            ///    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Announce\t" <<  TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId;
                 break;
             case hdr::enumType::MANAGEMENT:
-            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "===============================================================================================";
-                pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Management\t" <<  TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId;
+            pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "===============================================================================================";
+                pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Management\t" <<  TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId;
                 pPtpP->OutputValues();
-                pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "===============================================================================================";
+                pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "===============================================================================================";
                 break;
         }
         

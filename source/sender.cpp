@@ -55,7 +55,7 @@ void Sender::Run()
     // @todo for some reason we get tx software timestamps even though pi says it doesn't suppport it. add this bodge for now to aid debugging
     #if FORCE_SO==1
     m_nTimestampingSupported |= port::enumTimestamping::TIMESTAMP_TX_SOFTWARE;
-    pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "" << "Sender: Attempt to set tx software timestamping anyway.";
+    pml::log::log(pml::log::Level::kWarning, "pml::ptpmonkey") << "" << "Sender: Attempt to set tx software timestamping anyway.";
     #endif // FORCE_SO
 
     int nFlags(0);
@@ -66,21 +66,21 @@ void Sender::Run()
     {
         if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPING, &nFlags, sizeof(nFlags)) < 0)
         {
-            pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "" << "Sender: Failed to set SO_TIMESTAMPING";
+            pml::log::log(pml::log::Level::kWarning, "pml::ptpmonkey") << "" << "Sender: Failed to set SO_TIMESTAMPING";
             m_bTimestampEnabled = (setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPNS, &nFlags, sizeof(nFlags)) >= 0);
             if(!m_bTimestampEnabled)
             {
-                pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "" << "Sender: Failed to set SO_TIMESTAMPNS";
+                pml::log::log(pml::log::Level::kWarning, "pml::ptpmonkey") << "" << "Sender: Failed to set SO_TIMESTAMPNS";
             }
             else
             {
-                pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "" << "Sender: Set SO_TIMESTAMPNS timestamping";
+                pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "" << "Sender: Set SO_TIMESTAMPNS timestamping";
             }
         }
         else
         {
             m_bTimestampEnabled = true;
-            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "" << "Sender: Set SO_TIMESTAMPING timestamping";
+            pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "" << "Sender: Set SO_TIMESTAMPING timestamping";
         }
     }
     #endif
@@ -115,7 +115,7 @@ void Sender::SendDelayRequest()
                 }
                 else
                 {
-                    pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "" << "Sender: Send failed: " << ec;
+                    pml::log::log(pml::log::Level::kError, "pml::ptpmonkey") << "" << "Sender: Send failed: " << ec;
                 }
             });
         }
@@ -131,7 +131,7 @@ void Sender::SendManagementMessage(std::shared_ptr<ptpManagement> pMessage)
         {
             if (ec)
             {
-                pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "" << "Sender: Send failed: " << ec;
+                pml::log::log(pml::log::Level::kError, "pml::ptpmonkey") << "" << "Sender: Send failed: " << ec;
             }
         });
     }

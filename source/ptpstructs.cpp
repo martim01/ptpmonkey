@@ -550,19 +550,19 @@ std::vector<unsigned char> ptpV2Header::CreateMessage() const
 
 void ptpV2Header::OutputValues() const
 {
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << std::dec;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Type = " << (int)nType;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Version = " << (int)nVersion;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Length = " << (int)nMessageLength ;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "SubDomain = " << (int)nDomain ;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Flags = 0x" << std::hex << nFlags << std::dec ;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Correction = " << nCorrection ;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "SourceId = " << source.sSourceId ;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "SourcePort = " << source.nSourcePort ;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Sequence = " << nSequenceId ;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Control = " << (int)nControl ;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Interval = " << (int)nInterval ;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "timestamp = " << TimeToIsoString(timestamp) ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << std::dec;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Type = " << (int)nType;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Version = " << (int)nVersion;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Length = " << (int)nMessageLength ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "SubDomain = " << (int)nDomain ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Flags = 0x" << std::hex << nFlags << std::dec ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Correction = " << nCorrection ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "SourceId = " << source.sSourceId ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "SourcePort = " << source.nSourcePort ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Sequence = " << nSequenceId ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Control = " << (int)nControl ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Interval = " << (int)nInterval ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "timestamp = " << TimeToIsoString(timestamp) ;
 }
 
 
@@ -597,7 +597,7 @@ std::vector<unsigned char> ptpV2Payload::CreateMessage() const
 
 void ptpV2Payload::OutputValues() const
 {
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Timestamp = " << originTime.count();
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Timestamp = " << originTime.count();
 }
 
 
@@ -610,8 +610,8 @@ source(std::vector<unsigned char>(vMessage.begin()+10, vMessage.end()))
 void ptpDelayResponse::OutputValues() const
 {
     ptpV2Payload::OutputValues();
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Source = " << source.sSourceId ;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "SourcePort = " << source.nSourcePort ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Source = " << source.sSourceId ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "SourcePort = " << source.nSourcePort ;
 }
 
 
@@ -642,17 +642,17 @@ void ptpAnnounce::OutputValues() const
 
 	auto itAccuracy = clockQuality::ACCURACY.find(eGrandmasterAccuracy);
 
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "UTC Offset = " << (int)nUtcOffset ;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "GrandmasterPriority1 = " << (int)nGrandmasterPriority1 ;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "GrandmasterClass = " << (int)nGrandmasterClass ;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "GrandmasterAccuracy = " << (itAccuracy != clockQuality::ACCURACY.end() ? itAccuracy->second : std::to_string(static_cast<int>(eGrandmasterAccuracy)));
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "GrandmasterVariance = " << (int)nGrandmasterVariance ;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "GrandmasterPriority2 = " << (int)nGrandmasterPriority2 ;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Grandmaster ClockId = " << sGrandmasterClockId ;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Steps = " << (int)nStepsRemoved ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "UTC Offset = " << (int)nUtcOffset ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "GrandmasterPriority1 = " << (int)nGrandmasterPriority1 ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "GrandmasterClass = " << (int)nGrandmasterClass ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "GrandmasterAccuracy = " << (itAccuracy != clockQuality::ACCURACY.end() ? itAccuracy->second : std::to_string(static_cast<int>(eGrandmasterAccuracy)));
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "GrandmasterVariance = " << (int)nGrandmasterVariance ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "GrandmasterPriority2 = " << (int)nGrandmasterPriority2 ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Grandmaster ClockId = " << sGrandmasterClockId ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Steps = " << (int)nStepsRemoved ;
 
 	auto itSource = clockQuality::SOURCE.find(eTimeSource);
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Time Source = " << (itSource != clockQuality::SOURCE.end() ? itSource->second : std::to_string(static_cast<int>(eTimeSource)));
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Time Source = " << (itSource != clockQuality::SOURCE.end() ? itSource->second : std::to_string(static_cast<int>(eTimeSource)));
 }
 
 
@@ -715,10 +715,10 @@ ptpManagement::~ptpManagement()=default;
 
 void ptpManagement::OutputValues() const
 {
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Target Port            = " << sTargetPortIdentity;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Starting Boundary Hops = " << (int)nStartingBoundaryHops;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Boundary Hops          = " << (int)nBoundaryHops;
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Action                 = " << MANAGEMENT_ACTION[static_cast<int>(eAction)];
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Target Port            = " << sTargetPortIdentity;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Starting Boundary Hops = " << (int)nStartingBoundaryHops;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Boundary Hops          = " << (int)nBoundaryHops;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Action                 = " << MANAGEMENT_ACTION[static_cast<int>(eAction)];
 
 	if(pTlv)
 	{
@@ -729,7 +729,7 @@ void ptpManagement::OutputValues() const
 void managementTlvResponse::OutputValues() const
 {
 	auto itId = TLV_ID.find(eId);
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "ID = " << (itId != TLV_ID.end() ? itId->second : std::to_string(static_cast<int>(eId)));
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "ID = " << (itId != TLV_ID.end() ? itId->second : std::to_string(static_cast<int>(eId)));
 
 	if(eType == mngmnt::enumType::MANAGEMENT)
 	{
@@ -739,22 +739,22 @@ void managementTlvResponse::OutputValues() const
 		}
 		else
 		{
-			pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "No Data";
+			pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "No Data";
 		}
 	}
 	else if(eType == mngmnt::enumType::MANAGEMENT_ERROR_STATUS)
 	{
 		auto itError = MNGMNT_ERROR.find(eError);
-		pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << (itError != MNGMNT_ERROR.end() ? itError->second : std::to_string(static_cast<uint16_t>(eError)));
+		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << (itError != MNGMNT_ERROR.end() ? itError->second : std::to_string(static_cast<uint16_t>(eError)));
 
 		if(sError.empty() == false)
 		{
-			pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << sError;
+			pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << sError;
 		}
 	}
 	else
 	{
-		pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Unknown TLV " << static_cast<int>(eType);
+		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Unknown TLV " << static_cast<int>(eType);
 	}
 }
 
@@ -1045,8 +1045,8 @@ tlvBasic::tlvBasic(mngmnt::enumId id, const std::vector<unsigned char>& vMessage
 
 void tlvBasic::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Value    = " << (int)nValue;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Reserved = " << (int)nReserved;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Value    = " << (int)nValue;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Reserved = " << (int)nReserved;
 
 }
 
@@ -1068,11 +1068,11 @@ void tlvClockAccuracy::OutputValues() const
 {
 	if(auto itAccuracy = clockQuality::ACCURACY.find(static_cast<clck::enumAccuracy>(nValue)); itAccuracy != clockQuality::ACCURACY.end())
 	{
-		pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock Accuracy =  " << itAccuracy->second;
+		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Accuracy =  " << itAccuracy->second;
 	}
 	else
 	{
-		pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock Accuracy =  " << std::to_string(nValue);
+		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Accuracy =  " << std::to_string(nValue);
 	}
 }
 
@@ -1095,8 +1095,8 @@ std::vector<unsigned char> tlvTraceable::CreateMessage() const
 
 void tlvTraceable::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Time Traceable = " << (bTimeTraceable ? "true" : "false");
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Freq Traceable = " << (bFrequencyTraceable ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Time Traceable = " << (bTimeTraceable ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Freq Traceable = " << (bFrequencyTraceable ? "true" : "false");
 }
 
 tlvTimescale::tlvTimescale(const std::vector<unsigned char>& vMessage) : tlvBasic(mngmnt::enumId::TIMESCALE_PROPERTIES, vMessage)
@@ -1115,7 +1115,7 @@ std::vector<unsigned char> tlvTimescale::CreateMessage() const
 
 void tlvTimescale::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "PTP Timescale = " << (bPtpTimescale ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "PTP Timescale = " << (bPtpTimescale ? "true" : "false");
 }
 
 tlvVersion::tlvVersion(const std::vector<unsigned char>& vMessage) : tlvBasic(mngmnt::enumId::VERSION_NUMBER, vMessage)
@@ -1125,7 +1125,7 @@ tlvVersion::tlvVersion(const std::vector<unsigned char>& vMessage) : tlvBasic(mn
 
 void tlvVersion::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Version = " << (int)nVersion;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Version = " << (int)nVersion;
 }
 
 std::vector<unsigned char> tlvVersion::CreateMessage() const
@@ -1152,8 +1152,8 @@ tlvUserDescription::tlvUserDescription(const std::vector<unsigned char>& vMessag
 
 void tlvUserDescription::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Name        = " << sName;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Location    = " << sLocation;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Name        = " << sName;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Location    = " << sLocation;
 }
 
 std::vector<unsigned char> tlvUserDescription::CreateMessage() const
@@ -1237,20 +1237,20 @@ std::vector<unsigned char> tlvClockDescription::CreateMessage() const
 
 void tlvClockDescription::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Physical Layer Protocol = " << sPhysicalLayerProtocol;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Physical Address        = " << sPhysicalAddress;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Protocol Address        = " << protocolAddress.sAddress;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Protocol                = " << (int)protocolAddress.nProtocol;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Manufacturer Id         = " << sManufacturerIdentity;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Product Description     = " << sProductDescription;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Revision                = " << sRevisionData;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "User Description        = " << sUserDescription;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Profile Id              = " << sProfileIdentity;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock: Ordinary         =  " << (bClockOrdinary ? "true" : "false");
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock: Boundary         =  " << (bClockBoundary ? "true" : "false");
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock: Transparant P2P  =  " << (bClockTranparentP2P ? "true" : "false");
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock: Transparant E2E  =  " << (bClockTranparentE2E ? "true" : "false");
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock: Managemenbt      =  " << (bClockManagement ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Physical Layer Protocol = " << sPhysicalLayerProtocol;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Physical Address        = " << sPhysicalAddress;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Protocol Address        = " << protocolAddress.sAddress;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Protocol                = " << (int)protocolAddress.nProtocol;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Manufacturer Id         = " << sManufacturerIdentity;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Product Description     = " << sProductDescription;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Revision                = " << sRevisionData;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "User Description        = " << sUserDescription;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Profile Id              = " << sProfileIdentity;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock: Ordinary         =  " << (bClockOrdinary ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock: Boundary         =  " << (bClockBoundary ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock: Transparant P2P  =  " << (bClockTranparentP2P ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock: Transparant E2E  =  " << (bClockTranparentE2E ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock: Managemenbt      =  " << (bClockManagement ? "true" : "false");
 }
 
 
@@ -1294,25 +1294,25 @@ std::vector<unsigned char> tlvDefaultDataSet::CreateMessage() const
 
 void tlvDefaultDataSet::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock ID                  =  " << sClockIdentity;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Domain                    =  " << (int)nDomain;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "2-Step                    = " << (b2Step ? "true" : "false");
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Slave Only                = " << (bSlaveOnly ? "true" : "false");
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Ports                     =  " << nNumberPorts;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Priority1                 =  " << (int)nPriority1;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Priority2                 =  " << (int)nPriority2;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock Class               =  " << (int)quality.nClass;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock Class               =  " << (int)quality.nClass;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock ID                  =  " << sClockIdentity;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Domain                    =  " << (int)nDomain;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "2-Step                    = " << (b2Step ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Slave Only                = " << (bSlaveOnly ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Ports                     =  " << nNumberPorts;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Priority1                 =  " << (int)nPriority1;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Priority2                 =  " << (int)nPriority2;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Class               =  " << (int)quality.nClass;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Class               =  " << (int)quality.nClass;
 	if(auto itAccuracy = clockQuality::ACCURACY.find(quality.eAccuracy); itAccuracy != clockQuality::ACCURACY.end())
 	{
-		pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock Accuracy            =  " << itAccuracy->second;
+		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Accuracy            =  " << itAccuracy->second;
 	}
 	else
 	{	
-		pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock Accuracy            =  " << std::to_string(static_cast<int>(quality.eAccuracy));
+		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Accuracy            =  " << std::to_string(static_cast<int>(quality.eAccuracy));
 	}
 	
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock Offset Log Variance =  " << std::hex << "0x" << quality.nOffsetScaledLogVariance;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Offset Log Variance =  " << std::hex << "0x" << quality.nOffsetScaledLogVariance;
 }
 
 tlvCurrentDataSet::tlvCurrentDataSet(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::CURRENT_DATA_SET)
@@ -1333,9 +1333,9 @@ std::vector<unsigned char> tlvCurrentDataSet::CreateMessage() const
 
 void tlvCurrentDataSet::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Steps Removed = " << nStepsRemoved;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Offset        = " << offsetFromMaster.nano.count() << "." << offsetFromMaster.sub;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Mean Delay    = " << meanPathDelay.nano.count() << "." << offsetFromMaster.sub;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Steps Removed = " << nStepsRemoved;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Offset        = " << offsetFromMaster.nano.count() << "." << offsetFromMaster.sub;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Mean Delay    = " << meanPathDelay.nano.count() << "." << offsetFromMaster.sub;
 }
 
 tlvParentDataSet::tlvParentDataSet(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::PARENT_DATA_SET)
@@ -1374,25 +1374,25 @@ std::vector<unsigned char> tlvParentDataSet::CreateMessage() const
 
 void tlvParentDataSet::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Parent Port Id                        = " << sParentPortIdentity;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Parent Stats                          = " << (int)nParentStats;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Observered Parent Offset Log Variance = " << nObservedParentOffsetScaledLogVariance;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Observered Parent Offset Log Variance = " << nObservedParentClockPhaseChangeRate;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Grandmaster Id                        = " << sGrandmasterIdentity;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Grandmaster Priority1                 = " << (int)nGrandmasterPriority1;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Grandmaster Priority2                 = " << (int)nGrandmasterPriority2;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Grandmaster Clock Class               = " << (int)grandmasterClockQuality.nClass;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Parent Port Id                        = " << sParentPortIdentity;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Parent Stats                          = " << (int)nParentStats;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Observered Parent Offset Log Variance = " << nObservedParentOffsetScaledLogVariance;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Observered Parent Offset Log Variance = " << nObservedParentClockPhaseChangeRate;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Grandmaster Id                        = " << sGrandmasterIdentity;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Grandmaster Priority1                 = " << (int)nGrandmasterPriority1;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Grandmaster Priority2                 = " << (int)nGrandmasterPriority2;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Grandmaster Clock Class               = " << (int)grandmasterClockQuality.nClass;
 	
 	if(auto itAccuracy = clockQuality::ACCURACY.find(grandmasterClockQuality.eAccuracy); itAccuracy != clockQuality::ACCURACY.end())
 	{
-		pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock Accuracy                        =  " << itAccuracy->second;	
+		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Accuracy                        =  " << itAccuracy->second;	
 	}
 	else
 	{
-		pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock Accuracy                        =  " << std::to_string(static_cast<int>(grandmasterClockQuality.eAccuracy));	
+		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Accuracy                        =  " << std::to_string(static_cast<int>(grandmasterClockQuality.eAccuracy));	
 	}
 	
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Grandmaster Offset Log Variance       = " << std::hex << "0x" << (int)grandmasterClockQuality.nOffsetScaledLogVariance;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Grandmaster Offset Log Variance       = " << std::hex << "0x" << (int)grandmasterClockQuality.nOffsetScaledLogVariance;
 }
 
 tlvTimePropertiesDataSet::tlvTimePropertiesDataSet(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::TIME_PROPERTIES_DATA_SET)
@@ -1428,22 +1428,22 @@ std::vector<unsigned char> tlvTimePropertiesDataSet::CreateMessage() const
 
 void tlvTimePropertiesDataSet::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Current UTC Offset  = " << nCurrentUtcOffset;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Current UTC Offset  = " << nCurrentUtcOffset;
 	if(auto itSource = clockQuality::SOURCE.find(eTimeSource); itSource != clockQuality::SOURCE.end())
 	{
-		pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Time Source               = " << itSource->second;
+		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Time Source               = " << itSource->second;
 	}
 	else
 	{
-		pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Time Source               = " << std::hex << "0x" << static_cast<int>(eTimeSource);
+		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Time Source               = " << std::hex << "0x" << static_cast<int>(eTimeSource);
 	}
 
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Leap 61             = " << (bLeap61 ? "true" : "false");
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Leap 59             = " << (bLeap59 ? "true" : "false");
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "UTC Offset Valid    = " << (bUtcOffsetValid ? "true" : "false");
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "PTP Timescale       = " << (bPtpTimescale ? "true" : "false");
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Time Traceable      = " << (bTimeTraceable ? "true" : "false");
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Freq Traceable      = " << (bFreqTraceable ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Leap 61             = " << (bLeap61 ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Leap 59             = " << (bLeap59 ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "UTC Offset Valid    = " << (bUtcOffsetValid ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "PTP Timescale       = " << (bPtpTimescale ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Time Traceable      = " << (bTimeTraceable ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Freq Traceable      = " << (bFreqTraceable ? "true" : "false");
 }
 
 
@@ -1481,16 +1481,16 @@ std::vector<unsigned char> tlvPortDataSet::CreateMessage() const
 
 void tlvPortDataSet::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Port Id                = " << sPortIdentity;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "State                  = " << PORT_STATES[nPortState];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Min Delay Req Interval =  " << (int)nLogMinDelayReqInterval;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Peer Mean Path Delay   =  " << peerMeanPathDelay.nano.count() << "." << peerMeanPathDelay.sub;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Announce Interval      =  " << (int)nLogAnnounceInterval;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Announce Timeout       =  " << (int)nAnnounceReceiptTimeout;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Sync Interval          =  " << (int)nLogSyncInterval;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Delay Mechanism        =  " << (int)eDelayMechanism;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "P-Delay_Req Interval   =  " << (int)nLogMinPdelayReqInterval;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Version =  " << (int)nVersionNumber;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Port Id                = " << sPortIdentity;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "State                  = " << PORT_STATES[nPortState];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Min Delay Req Interval =  " << (int)nLogMinDelayReqInterval;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Peer Mean Path Delay   =  " << peerMeanPathDelay.nano.count() << "." << peerMeanPathDelay.sub;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Announce Interval      =  " << (int)nLogAnnounceInterval;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Announce Timeout       =  " << (int)nAnnounceReceiptTimeout;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Sync Interval          =  " << (int)nLogSyncInterval;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Delay Mechanism        =  " << (int)eDelayMechanism;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "P-Delay_Req Interval   =  " << (int)nLogMinPdelayReqInterval;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Version =  " << (int)nVersionNumber;
 }
 
 tlvAlternateTimeOffsetName::tlvAlternateTimeOffsetName(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::ALTERNATE_TIME_OFFSET_NAME)
@@ -1510,8 +1510,8 @@ std::vector<unsigned char> tlvAlternateTimeOffsetName::CreateMessage() const
 
 void tlvAlternateTimeOffsetName::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Key Field = " << (int)nKeyField;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Name      = " << sName;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Key Field = " << (int)nKeyField;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Name      = " << sName;
 }
 
 
@@ -1537,10 +1537,10 @@ std::vector<unsigned char> tlvAlternateTimeOffsetProperties::CreateMessage() con
 
 void tlvAlternateTimeOffsetProperties::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Key Field      = " << (int)nKeyField;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Current Offset = " << nCurrentOffset;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Jump Seconds   = " << nJumpSeconds;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Next Jump      = " << nextJump.count();
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Key Field      = " << (int)nKeyField;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Current Offset = " << nCurrentOffset;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Jump Seconds   = " << nJumpSeconds;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Next Jump      = " << nextJump.count();
 }
 
 
@@ -1578,14 +1578,14 @@ std::vector<unsigned char> tlvTimeStatusNP::CreateMessage() const
 
 void tlvTimeStatusNP::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Master Offset        = " << masterOffset.count();
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Ingress Time         = " << ingressTime.count();
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Last GM Phase Change = " << nScaledLastGmPhaseChange;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "GM Time Base         = " << nGmTimeBaseIndicator;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Master Offset        = " << masterOffset.count();
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Ingress Time         = " << ingressTime.count();
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Last GM Phase Change = " << nScaledLastGmPhaseChange;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "GM Time Base         = " << nGmTimeBaseIndicator;
 	//@todo lastphasechange
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Rate Offset          = " << nCumulativeScaledRateOffset;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "GM Present           = " << (bGmPresent ? "true" : "false");
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "GM Id                = " << sGmIdentity;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Rate Offset          = " << nCumulativeScaledRateOffset;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "GM Present           = " << (bGmPresent ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "GM Id                = " << sGmIdentity;
 }
 
 tlvGrandmasterSettingsNP::tlvGrandmasterSettingsNP(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::GRANDMASTER_SETTINGS_NP)
@@ -1629,34 +1629,34 @@ std::vector<unsigned char> tlvGrandmasterSettingsNP::CreateMessage() const
 
 void tlvGrandmasterSettingsNP::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock Class               = " << (int)quality.nClass;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Class               = " << (int)quality.nClass;
 	
 	if(auto itAccuracy = clockQuality::ACCURACY.find(quality.eAccuracy); itAccuracy != clockQuality::ACCURACY.end())
 	{
-		pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock Accuracy            =  " << itAccuracy->second;	
+		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Accuracy            =  " << itAccuracy->second;	
 	}
 	else
 	{
-		pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock Accuracy            =  " << std::to_string(static_cast<int>(quality.eAccuracy));
+		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Accuracy            =  " << std::to_string(static_cast<int>(quality.eAccuracy));
 	}
 
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Clock Offset Log Variance = " << quality.nOffsetScaledLogVariance;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "UTC Offset                = " << nUtcOffset;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Offset Log Variance = " << quality.nOffsetScaledLogVariance;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "UTC Offset                = " << nUtcOffset;
 	if(auto itSource = clockQuality::SOURCE.find(eTimeSource); itSource != clockQuality::SOURCE.end())
 	{
-		pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Time Source               = " << itSource->second;
+		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Time Source               = " << itSource->second;
 	}
 	else
 	{
-		pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Time Source               = " << std::hex << "0x" << static_cast<int>(eTimeSource);
+		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Time Source               = " << std::hex << "0x" << static_cast<int>(eTimeSource);
 	}
 	
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Leap 61                   = " << (bLeap61 ? "true" : "false");
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Leap 59                   = " << (bLeap59 ? "true" : "false");
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "UTC Offset Valid          = " << (bCurrentUtcOffsetValid ? "true" : "false");
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "PTP Timescale             = " << (bPtpTimescale ? "true" : "false");
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Time Traceable            = " << (bTimeTraceable ? "true" : "false");
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Freq Traceable            = " << (bFrequencyTraceable ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Leap 61                   = " << (bLeap61 ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Leap 59                   = " << (bLeap59 ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "UTC Offset Valid          = " << (bCurrentUtcOffsetValid ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "PTP Timescale             = " << (bPtpTimescale ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Time Traceable            = " << (bTimeTraceable ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Freq Traceable            = " << (bFrequencyTraceable ? "true" : "false");
 }
 
 
@@ -1685,10 +1685,10 @@ std::vector<unsigned char> tlvPortPropertiesNP::CreateMessage() const
 
 void tlvPortPropertiesNP::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Port ID      = " << sPortIdentity;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Port State   = " << tlvPortDataSet::PORT_STATES[nPortState];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Timestamping = " << tlvPortDataSet::TIMESTAMPING[nTimestamping];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Interface    = " << sInterface;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Port ID      = " << sPortIdentity;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Port State   = " << tlvPortDataSet::PORT_STATES[nPortState];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Timestamping = " << tlvPortDataSet::TIMESTAMPING[nTimestamping];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Interface    = " << sInterface;
 }
 
 tlvPortStatsNP::tlvPortStatsNP(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::PORT_STATS_NP)
@@ -1714,25 +1714,25 @@ std::vector<unsigned char> tlvPortStatsNP::CreateMessage() const
 
 void tlvPortStatsNP::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Port ID                    = " << sPortIdentity;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "RX Delay_Req               = " << rx[static_cast<size_t>(hdr::enumType::DELAY_REQ)];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "RX Delay_Resp              = " << rx[static_cast<size_t>(hdr::enumType::DELAY_RESP)];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "RX Follow_Up               = " << rx[static_cast<size_t>(hdr::enumType::FOLLOW_UP)];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "RX Management              = " << rx[static_cast<size_t>(hdr::enumType::MANAGEMENT)];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "RX P_Delay_Resp            = " << rx[static_cast<size_t>(hdr::enumType::PEER_DELAY_RESP)];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "RX P_Delay_Resp_Follow_Up  = " << rx[static_cast<size_t>(hdr::enumType::PEER_DELAY_RESP_FOLLOW_UP)];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "RX P_Delay_Req             = " << rx[static_cast<size_t>(hdr::enumType::PEER_DLEAY_REQ)];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "RX Signalling              = " << rx[static_cast<size_t>(hdr::enumType::SIGNALLING)];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "RX Sync                    = " << rx[static_cast<size_t>(hdr::enumType::SYNC)];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "TX Delay_Req               = " << tx[static_cast<size_t>(hdr::enumType::DELAY_REQ)];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "TX Delay_Resp              = " << tx[static_cast<size_t>(hdr::enumType::DELAY_RESP)];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "TX Follow_Up               = " << tx[static_cast<size_t>(hdr::enumType::FOLLOW_UP)];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "TX Management              = " << tx[static_cast<size_t>(hdr::enumType::MANAGEMENT)];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "TX P_Delay_Resp            = " << tx[static_cast<size_t>(hdr::enumType::PEER_DELAY_RESP)];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "TX P_Delay_Resp_Follow_Up  = " << tx[static_cast<size_t>(hdr::enumType::PEER_DELAY_RESP_FOLLOW_UP)];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "TX P_Delay_Req             = " << tx[static_cast<size_t>(hdr::enumType::PEER_DLEAY_REQ)];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "TX Signalling              = " << tx[static_cast<size_t>(hdr::enumType::SIGNALLING)];
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "TX Sync                    = " << tx[static_cast<size_t>(hdr::enumType::SYNC)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Port ID                    = " << sPortIdentity;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX Delay_Req               = " << rx[static_cast<size_t>(hdr::enumType::DELAY_REQ)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX Delay_Resp              = " << rx[static_cast<size_t>(hdr::enumType::DELAY_RESP)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX Follow_Up               = " << rx[static_cast<size_t>(hdr::enumType::FOLLOW_UP)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX Management              = " << rx[static_cast<size_t>(hdr::enumType::MANAGEMENT)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX P_Delay_Resp            = " << rx[static_cast<size_t>(hdr::enumType::PEER_DELAY_RESP)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX P_Delay_Resp_Follow_Up  = " << rx[static_cast<size_t>(hdr::enumType::PEER_DELAY_RESP_FOLLOW_UP)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX P_Delay_Req             = " << rx[static_cast<size_t>(hdr::enumType::PEER_DLEAY_REQ)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX Signalling              = " << rx[static_cast<size_t>(hdr::enumType::SIGNALLING)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX Sync                    = " << rx[static_cast<size_t>(hdr::enumType::SYNC)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX Delay_Req               = " << tx[static_cast<size_t>(hdr::enumType::DELAY_REQ)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX Delay_Resp              = " << tx[static_cast<size_t>(hdr::enumType::DELAY_RESP)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX Follow_Up               = " << tx[static_cast<size_t>(hdr::enumType::FOLLOW_UP)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX Management              = " << tx[static_cast<size_t>(hdr::enumType::MANAGEMENT)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX P_Delay_Resp            = " << tx[static_cast<size_t>(hdr::enumType::PEER_DELAY_RESP)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX P_Delay_Resp_Follow_Up  = " << tx[static_cast<size_t>(hdr::enumType::PEER_DELAY_RESP_FOLLOW_UP)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX P_Delay_Req             = " << tx[static_cast<size_t>(hdr::enumType::PEER_DLEAY_REQ)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX Signalling              = " << tx[static_cast<size_t>(hdr::enumType::SIGNALLING)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX Sync                    = " << tx[static_cast<size_t>(hdr::enumType::SYNC)];
 }
 
 tlvPortServiceStatsNP::tlvPortServiceStatsNP(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::PORT_SERVICE_STATS_NP)
@@ -1773,17 +1773,17 @@ std::vector<unsigned char> tlvPortServiceStatsNP::CreateMessage() const
 
 void tlvPortServiceStatsNP::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Port ID                 = " << sPortIdentity; //8-2
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Announce Timeout        = " << nAnnounceTimeout;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Sync Timeout            = " << nSyncTimeout;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Delay Timeout           = " << nDelayTimeout;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Unicast Service Timeout = " << nUnicastServiceTimeout;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Unicast Request Timeout = " << nUnicastRequestTimeout;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Master Announce Timeout = " << nMasterAnnounceTimeout;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Master Sync Timeout     = " << nMasterSyncTimeout;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Qualification Timeout   = " << nQualificationTimeout;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Sync Mismatch           = " << nSyncMismatch;
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Followup Mismatch       = " << nFollowupMismatch;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Port ID                 = " << sPortIdentity; //8-2
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Announce Timeout        = " << nAnnounceTimeout;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Sync Timeout            = " << nSyncTimeout;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Delay Timeout           = " << nDelayTimeout;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Unicast Service Timeout = " << nUnicastServiceTimeout;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Unicast Request Timeout = " << nUnicastRequestTimeout;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Master Announce Timeout = " << nMasterAnnounceTimeout;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Master Sync Timeout     = " << nMasterSyncTimeout;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Qualification Timeout   = " << nQualificationTimeout;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Sync Mismatch           = " << nSyncMismatch;
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Followup Mismatch       = " << nFollowupMismatch;
 }
 
 tlvPortDataSetNP::tlvPortDataSetNP(const std::vector<unsigned char>& vMessage)
@@ -1794,8 +1794,8 @@ tlvPortDataSetNP::tlvPortDataSetNP(const std::vector<unsigned char>& vMessage)
 
 void tlvPortDataSetNP::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Neighbour PropDeley Threshold = " << neighbourPropDelayThresh.count();
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Capable                       = " << (bCapable ? "true" : "false");
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Neighbour PropDeley Threshold = " << neighbourPropDelayThresh.count();
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Capable                       = " << (bCapable ? "true" : "false");
 }
 
 std::vector<unsigned char> tlvPortDataSetNP::CreateMessage() const
@@ -1813,7 +1813,7 @@ tlvTime::tlvTime(const std::vector<unsigned char>& vMessage)
 
 void tlvTime::OutputValues() const
 {
-	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Time        = " << timestamp.count() << " " << TimeToIsoString(timestamp);
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Time        = " << timestamp.count() << " " << TimeToIsoString(timestamp);
 }
 
 std::vector<unsigned char> tlvTime::CreateMessage() const

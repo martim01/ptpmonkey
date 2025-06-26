@@ -61,13 +61,13 @@ void Offset::WorkoutLR()
             tv.tv_usec = static_cast<int>(dMicro);
             if(adjtime(&tv, &m_tvAdjusting) != 0)
             {
-                pmlLog(pml::LOG_ERROR, "pml::vam::ltc") << "Failed to adjtime " <<strerror(errno);
+                pml::log::log(pml::log::Level::kError, "pml::vam::ltc") << "Failed to adjtime " <<strerror(errno);
                 m_eAction = enumAction::ERROR;
                 return;
             }
             else
             {
-                pmlLog(pml::LOG_DEBUG, "pml::vam::ltc") << "Time adjusted by " << tv.tv_sec << "s and " << tv.tv_usec << "us" << "\tLeft " << m_tvAdjusting.tv_sec << "s and " << m_tvAdjusting.tv_usec << "us";
+                pml::log::log(pml::log::Level::kDebug, "pml::vam::ltc") << "Time adjusted by " << tv.tv_sec << "s and " << tv.tv_usec << "us" << "\tLeft " << m_tvAdjusting.tv_sec << "s and " << m_tvAdjusting.tv_usec << "us";
             }
             m_bSlewing = true;
             m_eAction = enumAction::CLOCK_ADJ;
@@ -80,7 +80,7 @@ void Offset::WorkoutLR()
         memset(&buf, 0,sizeof(buf));
         if(adjtimex(&buf) == -1)
         {
-            pmlLog(pml::LOG_ERROR, "pml::vam::ltc") << "Failed to read frequency " <<strerror(errno);
+            pml::log::log(pml::log::Level::kError, "pml::vam::ltc") << "Failed to read frequency " <<strerror(errno);
             m_eAction = enumAction::ERROR;
             return;
         }
@@ -93,7 +93,7 @@ void Offset::WorkoutLR()
 
         if(adjtimex(&buf) == -1)
         {
-            pmlLog(pml::LOG_ERROR, "pml::vam::ltc") << "Failed to set frequency " <<strerror(errno);
+            pml::log::log(pml::log::Level::kError, "pml::vam::ltc") << "Failed to set frequency " <<strerror(errno);
             m_eAction = enumAction::ERROR;
             return;
         }
@@ -101,11 +101,11 @@ void Offset::WorkoutLR()
     }
     else
     {
-        pmlLog(pml::LOG_DEBUG, "pml::vam::ltc") << "Slewing - ignore this data set";
+        pml::log::log(pml::log::Level::kDebug, "pml::vam::ltc") << "Slewing - ignore this data set";
 
         if(adjtime(nullptr, &m_tvAdjusting) != 0)
         {
-            pmlLog(pml::LOG_ERROR, "pml::vam::ltc") << "Failed to read offset " <<strerror(errno);
+            pml::log::log(pml::log::Level::kError, "pml::vam::ltc") << "Failed to read offset " <<strerror(errno);
             m_eAction = enumAction::ERROR;
             return;
         }
@@ -115,7 +115,7 @@ void Offset::WorkoutLR()
         }
         else
         {
-            pmlLog(pml::LOG_DEBUG, "pml::vam::ltc") << "Still adjusting "  << m_tvAdjusting.tv_sec << "s and " << m_tvAdjusting.tv_usec << "us";
+            pml::log::log(pml::log::Level::kDebug, "pml::vam::ltc") << "Still adjusting "  << m_tvAdjusting.tv_sec << "s and " << m_tvAdjusting.tv_usec << "us";
         }
         m_eAction = enumAction::SLEWING;
     }
@@ -141,11 +141,11 @@ void Offset::CrashTime(double dOffset) const
 
     if(clock_settime(CLOCK_REALTIME, &ts) != 0)
     {
-        pmlLog(pml::LOG_ERROR, "pml::vam::ltc") << "Failed to hard crash " <<strerror(errno);
+        pml::log::log(pml::log::Level::kError, "pml::vam::ltc") << "Failed to hard crash " <<strerror(errno);
         return;
     }
 
-    pmlLog(pml::LOG_DEBUG, "pml::vam::ltc") << "Hard crashed to " << ConvertTimeToIsoString(std::chrono::system_clock::now());
+    pml::log::log(pml::log::Level::kDebug, "pml::vam::ltc") << "Hard crashed to " << ConvertTimeToIsoString(std::chrono::system_clock::now());
 
 }
 

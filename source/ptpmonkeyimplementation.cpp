@@ -82,7 +82,7 @@ bool PtpMonkeyImplementation::Run()
 {
     try
     {
-    	pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create Handler";
+    	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Create Handler";
         auto pHandler = std::make_shared<PtpMonkeyHandler>();
         pHandler->SetCallbacks(std::bind(&PtpMonkeyImplementation::Sync, this, _1, _2),
                                std::bind(&PtpMonkeyImplementation::FollowUp, this, _1, _2),
@@ -92,35 +92,35 @@ bool PtpMonkeyImplementation::Run()
                                std::bind(&PtpMonkeyImplementation::Management, this, _1, _2));
 
         
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create Parser";
+        pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Create Parser";
         m_pParser = std::make_shared<PtpParser>(pHandler,m_nDomain);
 
 
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Get Timestamping support";
+        pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Get Timestamping support";
         m_nTimestamping = GetTimestampingSupported(m_Interface);
 
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create R319";
+        pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Create R319";
         Receiver mR319(m_context, m_pParser, m_nTimestamping);
 
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create R320";
+        pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Create R320";
         Receiver mR320(m_context, m_pParser, m_nTimestamping);
         
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Run R319";
+        pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Run R319";
         mR319.Run(asio::ip::make_address(m_local.Get()), 319,asio::ip::make_address(MULTICAST));
 
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Run R320";
+        pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Run R320";
         mR320.Run(asio::ip::make_address(m_local.Get()), 320,asio::ip::make_address(MULTICAST));
 
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Create and Run sender";
+        pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Create and Run sender";
         m_pSender = std::make_unique<Sender>(*this, m_pParser, m_context, m_local, asio::ip::make_address(MULTICAST), 319, m_nDomain, m_nTimestamping, m_mode == Mode::MULTICAST);
         m_pSender->Run();
 
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Run context";
+        pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Run context";
         m_context.run();
     }
     catch (const std::exception& e)
     {
-        pmlLog(pml::LOG_CRITICAL, "pml::ptpmonkey") << "RUN: " << e.what();
+        pml::log::log(pml::log::Level::kCritical, "pml::ptpmonkey") << "RUN: " << e.what();
     }
        return true;
 }
@@ -143,13 +143,13 @@ std::map<std::string, std::shared_ptr<PtpV2Clock> >::iterator PtpMonkeyImplement
         itClock = m_mClocks.try_emplace(pHeader->source.sSourceId, std::make_shared<PtpV2Clock>(pHeader, pPayload)).first;
         if(pHeader->source.nSourceId == m_nLocalClockId)
         {
-            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Local clock";
+            pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Local clock";
             m_pLocal = itClock->second;
             m_pLocal->SetSampleSize(m_nSampleSize);
         }
         else
         {
-            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Clock: " << std::hex << pHeader->source.nSourceId << "\tLocal " <<  m_nLocalClockId;
+            pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Clock: " << std::hex << pHeader->source.nSourceId << "\tLocal " <<  m_nLocalClockId;
         }
 
         for(auto pHandler : m_lstEventHandler)
@@ -500,27 +500,27 @@ int PtpMonkeyImplementation::GetTimestampingSupported(const IpInterface& interfa
     ioctl(fd, SIOCETHTOOL, & ifr);
 
 
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "" << tsi.so_timestamping;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "" << tsi.so_timestamping;
     if(tsi.so_timestamping & SOF_TIMESTAMPING_TX_HARDWARE)
     {
         nSupports |= port::enumTimestamping::TIMESTAMP_TX_HARDWARE;
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << ""<< ifr.ifr_name << " supports harware tx";
+        pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << ""<< ifr.ifr_name << " supports harware tx";
     }
     if(tsi.so_timestamping & SOF_TIMESTAMPING_TX_SOFTWARE)
     {
         nSupports |= port::enumTimestamping::TIMESTAMP_TX_SOFTWARE;
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << ""<< ifr.ifr_name << " supports software tx";
+        pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << ""<< ifr.ifr_name << " supports software tx";
     }
 
     if(tsi.so_timestamping & SOF_TIMESTAMPING_RX_HARDWARE)
     {
         nSupports |= port::enumTimestamping::TIMESTAMP_RX_HARDWARE;
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << ""<< ifr.ifr_name << " supports harware rx";
+        pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << ""<< ifr.ifr_name << " supports harware rx";
     }
     if(tsi.so_timestamping & SOF_TIMESTAMPING_RX_SOFTWARE)
     {
         nSupports |= port::enumTimestamping::TIMESTAMP_RX_SOFTWARE;
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << ""<< ifr.ifr_name << " supports software rx";
+        pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << ""<< ifr.ifr_name << " supports software rx";
     }
     #endif // __GNU__
     return nSupports;

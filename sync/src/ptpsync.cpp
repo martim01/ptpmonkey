@@ -41,7 +41,7 @@ void Sync::ClockBecomeSlave(std::shared_ptr<PtpV2Clock>  pClock)
 
 void Sync::SaveGrandmasterDetails(std::shared_ptr<PtpV2Clock>  pClock)
 {
-    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "SaveGrandmaster " << pClock->GetId();
+    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "SaveGrandmaster " << pClock->GetId();
     std::ofstream ofs;
     ofs.open("/var/run/ptpmonkey");
     if(ofs.is_open())
@@ -194,12 +194,12 @@ std::optional<long> Sync::SetGetFrequency(std::optional<long> setFreq, int nCloc
     {
         buf.freq = (*setFreq);
         buf.modes = ADJ_FREQUENCY;
-        pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Set frequency to: " << (*setFreq);
+        pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Set frequency to: " << (*setFreq);
     }
 
     if(clock_adjtime(nClockId, &buf) == -1)
     {
-        pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "Failed to read/write frequency " <<strerror(errno);
+        pml::log::log(pml::log::Level::kError, "pml::ptpmonkey") << "Failed to read/write frequency " <<strerror(errno);
         return {};
     }
     return buf.freq;
@@ -213,7 +213,7 @@ bool Sync::TrySyncToPtp()
     {
         SaveDetails();
 
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Try to sync";
+        pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Try to sync";
 
         auto pMaster = m_pMonkey->GetSyncMasterClock();
         auto offset = pLocal->GetOffset(PtpV2Clock::CURRENT);
@@ -233,7 +233,7 @@ bool Sync::TrySyncToPtp()
 
         if(!m_bPtpLock && m_nPtpSamples < m_nMinSamplSize)
         {   //waiting for more info
-            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Try to sync - need more samples";
+            pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Try to sync - need more samples";
             return true;
         }
 
@@ -247,7 +247,7 @@ bool Sync::TrySyncToPtp()
     }
     else
     {
-        pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "Not synced to PTP master";
+        pml::log::log(pml::log::Level::kWarning, "pml::ptpmonkey") << "Not synced to PTP master";
     }
     return false;
 }
@@ -266,13 +266,13 @@ bool Sync::HardCrash(const std::chrono::nanoseconds& offset, int nClockId)
 
         if(clock_settime(nClockId, &tv) != 0)
         {
-            pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "Clock: " << nClockId << ". Failed to hard crash " <<strerror(errno);
+            pml::log::log(pml::log::Level::kError, "pml::ptpmonkey") << "Clock: " << nClockId << ". Failed to hard crash " <<strerror(errno);
         }
         else
         {
-            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Clock: " << nClockId << ". Hard crashed to " << TimeToIsoString(hardSetM);
+            pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Clock: " << nClockId << ". Hard crashed to " << TimeToIsoString(hardSetM);
             clock_gettime(nClockId, &tv);
-            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Clock: " << nClockId << ". Current time now: " << ctime(&tv.tv_sec);
+            pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Clock: " << nClockId << ". Current time now: " << ctime(&tv.tv_sec);
         }
         m_pMonkey->ResetLocalClockStats();
 
@@ -306,7 +306,7 @@ bool Sync::AdjustFrequency(double slope, int nClockId)
 
         SetGetFrequency(nFrequency, nClockId);
 
-        pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "mean " << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::MEAN).count() 
+        pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "mean " << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::MEAN).count() 
                 << "ns\tsd " << m_pMonkey->GetLocalClock()->GetOffset(PtpV2Clock::SD).count() 
                 << "ns\tslope " << m_pMonkey->GetLocalClock()->GetOffsetSlope()
                 << "ppm\tintersection " << m_pMonkey->GetLocalClock()->GetOffsetIntersection();
@@ -331,7 +331,7 @@ bool Sync::AdjustTime(std::chrono::nanoseconds offset, const std::chrono::nanose
 
     offset = std::max(minBand, std::min(maxBand, offset));
 
-    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "mean " << std::chrono::duration_cast<std::chrono::microseconds>(mean).count() 
+    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "mean " << std::chrono::duration_cast<std::chrono::microseconds>(mean).count() 
              << "us\tsd " << std::chrono::duration_cast<std::chrono::microseconds>(sd).count() 
              << "us\tmax " << std::chrono::duration_cast<std::chrono::microseconds>(maxBand).count() 
              << "us\tmin " << std::chrono::duration_cast<std::chrono::microseconds>(minBand).count()
@@ -356,11 +356,11 @@ bool Sync::AdjustTime(std::chrono::nanoseconds offset, const std::chrono::nanose
 		tx.time.tv_usec += 1000000000;
 	}
 
-    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") <<  "Clock: " << nClockId << ". AdjustTime: " << tx.time.tv_sec << ":" << tx.time.tv_usec;
+    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") <<  "Clock: " << nClockId << ". AdjustTime: " << tx.time.tv_sec << ":" << tx.time.tv_usec;
 
 	if (clock_adjtime(nClockId, &tx) < 0) 
     {
-        pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "Clock: " << nClockId << ". Could not set time: " <<strerror(errno);
+        pml::log::log(pml::log::Level::kError, "pml::ptpmonkey") << "Clock: " << nClockId << ". Could not set time: " <<strerror(errno);
 		
 		return false;
 	}
@@ -376,13 +376,13 @@ void Sync::OpenHwClock(int nHwC)
 	
     std::string sPath = "/dev/ptp"+std::to_string(nHwC);
 
-    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Get ClockId for " << sPath;
+    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Get ClockId for " << sPath;
 
 	auto fd = open(sPath.c_str(), O_RDWR);
 
 	if (fd < 0)
 	{
-        pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "Could not open " << sPath;
+        pml::log::log(pml::log::Level::kError, "pml::ptpmonkey") << "Could not open " << sPath;
         m_nHwC = CLOCK_REALTIME;
     }
     else
@@ -391,19 +391,19 @@ void Sync::OpenHwClock(int nHwC)
         /* check if clkid is valid */
         if (clock_gettime(m_nHwC, &ts)) 
         {
-            pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "Could not get time from " << sPath;
+            pml::log::log(pml::log::Level::kError, "pml::ptpmonkey") << "Could not get time from " << sPath;
             close(fd);
             m_nHwC = CLOCK_REALTIME;
  
         }
 	    else if (clock_adjtime(m_nHwC, &tx)) 
         {
-            pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "Could not adjtime " << sPath;
+            pml::log::log(pml::log::Level::kError, "pml::ptpmonkey") << "Could not adjtime " << sPath;
 		    close(fd);
             m_nHwC = CLOCK_REALTIME;
     	}
     }
 
-    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "ClockId for " << sPath << " is " << m_nHwC;
+    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "ClockId for " << sPath << " is " << m_nHwC;
 
 }

@@ -30,9 +30,9 @@ using namespace pml;
 
 int main(int argc, char* argv[])
 {
-    pml::LogStream::AddOutput(std::make_unique<LogOutput>());
-    pml::LogStream::SetOutputLevel(pml::LOG_TRACE);
-    pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Start" << std::endl;
+    pml::log::Stream::AddOutput(std::make_unique<pml::log::Output>());
+    pml::log::Stream::SetOutputLevel(pml::LOG_TRACE);
+    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Start" << std::endl;
 
     ptpmonkey::PtpMonkey ptp(IpInterface("eth0"), 0, 10, ptpmonkey::Mode::MULTICAST, ptpmonkey::Rate::NEVER);
 //    ptp.AddEventHandler(std::make_shared<ptpmonkey::PtpEventLogHandler>(false));

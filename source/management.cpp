@@ -81,7 +81,7 @@ bool Manager::Get(mngmnt::enumGet id)
         strcpy(name.sun_path, ("/var/run/ptpmonkeyexample."+std::to_string(getpid())).c_str());
         if(bind(sock, (sockaddr*)&name, sizeof(sockaddr_un)))
         {
-            pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "Failed to bind " << strerror(errno);
+            pml::log::log(pml::log::Level::kError, "pml::ptpmonkey") << "Failed to bind " << strerror(errno);
             return false;
         }
         
@@ -92,7 +92,7 @@ bool Manager::Get(mngmnt::enumGet id)
         auto vBuffer = CreateManagement(ptpManagement(id, 0, "", 0xFFFF),m_nSequence, 0);
         if(sendto(sock, vBuffer.data(), vBuffer.size(), 0, (sockaddr*)&name, sizeof(sockaddr_un)) < 0)
         {
-            pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "Failed to send " << strerror(errno);
+            pml::log::log(pml::log::Level::kError, "pml::ptpmonkey") << "Failed to send " << strerror(errno);
             return false;
         }
         
@@ -100,13 +100,13 @@ bool Manager::Get(mngmnt::enumGet id)
         std::array<unsigned char, 1024> data;
         if(auto nRead = read(sock, data.data(), data.size()); nRead < 0)
         {
-            pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "Failed to read " << strerror(errno);
+            pml::log::log(pml::log::Level::kError, "pml::ptpmonkey") << "Failed to read " << strerror(errno);
             return false;
         }    
         else
         {
             auto str = std::string(data.begin(), data.begin()+nRead);
-            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "Received: '" << str << "'";
+            pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Received: '" << str << "'";
             return true;
         }
     }
@@ -330,7 +330,7 @@ bool Manager::TargetSet() const
 {
     if(m_sTargetPortId == TARGET_ID_ALL || m_nTargetPortNumber == TARGET_NUMBER_ALL)
     {
-        pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "Attempting management SET but target not configured";
+        pml::log::log(pml::log::Level::kWarning, "pml::ptpmonkey") << "Attempting management SET but target not configured";
         return false;
     }
     return true;

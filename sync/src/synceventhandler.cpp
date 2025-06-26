@@ -9,20 +9,20 @@ using namespace pml::ptpmonkey;
 
 void SyncEventHandler::ClockAdded(std::shared_ptr<ptpmonkey::PtpV2Clock> pClock)
 {
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "---------CLOCK ADDED---------";
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Id:\t\t" << pClock->GetId() ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "---------CLOCK ADDED---------";
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Id:\t\t" << pClock->GetId() ;
 }
 
 void SyncEventHandler::ClockUpdated(std::shared_ptr<ptpmonkey::PtpV2Clock> pClock)
 {
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "---------CLOCK UPDATED---------";
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Id:\t\t" << pClock->GetId() ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "---------CLOCK UPDATED---------";
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Id:\t\t" << pClock->GetId() ;
 }
 
 void SyncEventHandler::ClockRemoved(std::shared_ptr<ptpmonkey::PtpV2Clock> pClock)
 {
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "---------CLOCK REMOVED---------";
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Id:\t\t" << pClock->GetId() ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "---------CLOCK REMOVED---------";
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Id:\t\t" << pClock->GetId() ;
 
     if(m_pSync)
     {
@@ -40,8 +40,8 @@ void SyncEventHandler::ClockTimeCalculated(std::shared_ptr<ptpmonkey::PtpV2Clock
 
 void SyncEventHandler::ClockBecomeMaster(std::shared_ptr<ptpmonkey::PtpV2Clock> pClock)
 {
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "---------CLOCK BECAME MASTER---------";
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Id:\t\t" << pClock->GetId() ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "---------CLOCK BECAME MASTER---------";
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Id:\t\t" << pClock->GetId() ;
     if(m_pSync)
     {
         m_pSync->ClockBecomeMaster(pClock);
@@ -50,8 +50,8 @@ void SyncEventHandler::ClockBecomeMaster(std::shared_ptr<ptpmonkey::PtpV2Clock> 
 
 void SyncEventHandler::ClockBecomeSlave(std::shared_ptr<ptpmonkey::PtpV2Clock> pClock)
 {
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "---------CLOCK BECAME SLAVE---------";
-    pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "Id:\t\t" << pClock->GetId() ;
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "---------CLOCK BECAME SLAVE---------";
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Id:\t\t" << pClock->GetId() ;
 
     if(m_pSync)
     {

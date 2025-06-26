@@ -126,7 +126,7 @@ void PtpV2Clock::DelayRequest(std::shared_ptr<ptpV2Header> pHeader, std::shared_
     auto itRequest = m_mDelayRequest.find(pHeader->nSequenceId);
     if(itRequest != m_mDelayRequest.end())
     {
-        pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "PtpMonkey\tDelayRequest: Sequence Id repeated: " << std::dec << pHeader->nSequenceId;
+        pml::log::log(pml::log::Level::kWarning, "pml::ptpmonkey") << "PtpMonkey\tDelayRequest: Sequence Id repeated: " << std::dec << pHeader->nSequenceId;
     }
     else
     {

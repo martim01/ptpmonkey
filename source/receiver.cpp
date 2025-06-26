@@ -37,19 +37,19 @@ void Receiver::Run(const asio::ip::address& listen_address, unsigned int nPort, 
     {
         if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPING, &nFlags, sizeof(nFlags)) < 0)
         {
-            pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Failed to set SO_TIMESTAMPING";
+            pml::log::log(pml::log::Level::kWarning, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Failed to set SO_TIMESTAMPING";
             if(setsockopt(m_socket.native_handle(), SOL_SOCKET, SO_TIMESTAMPNS, &nFlags, sizeof(nFlags)))
             {
-                pmlLog(pml::LOG_WARN, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Failed to set SO_TIMESTAMPNS";
+                pml::log::log(pml::log::Level::kWarning, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Failed to set SO_TIMESTAMPNS";
             }
             else
             {
-                pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Set SO_TIMESTAMPNS timestamping";
+                pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Set SO_TIMESTAMPNS timestamping";
             }
         }
         else
         {
-            pmlLog(pml::LOG_INFO, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Set SO_TIMESTAMPING timestamping";
+            pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Set SO_TIMESTAMPING timestamping";
         }
     }
     #endif // __GNU__
@@ -59,18 +59,18 @@ void Receiver::Run(const asio::ip::address& listen_address, unsigned int nPort, 
     m_socket.bind(listen_endpoint, ec);
     if(ec)
     {
-        pmlLog(pml::LOG_CRITICAL, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Can't bind receiver to endpoint: " << ec.message();
+        pml::log::log(pml::log::Level::kCritical, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Can't bind receiver to endpoint: " << ec.message();
     }
     else
     {
-        pmlLog(pml::LOG_DEBUG, "pml::ptpmonkey") << "" << "Bound now join multicast group";
+        pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "" << "Bound now join multicast group";
         // Join the multicast group.
         asio::ip::address_v4 addr = listen_address.to_v4();
         auto multiAddr = multicast_address.to_v4();
         m_socket.set_option(asio::ip::multicast::join_group(multiAddr, addr), ec);
         if(ec)
         {
-            pmlLog(pml::LOG_CRITICAL, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Can't join group: " << ec.message();
+            pml::log::log(pml::log::Level::kCritical, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Can't join group: " << ec.message();
         }
         else
         {
@@ -112,7 +112,7 @@ void Receiver::DoReceive()
         }
         else
         {
-            pmlLog(pml::LOG_ERROR, "pml::ptpmonkey") << "" << "Receiver: wait error: " << ec.message();
+            pml::log::log(pml::log::Level::kError, "pml::ptpmonkey") << "" << "Receiver: wait error: " << ec.message();
         }
     });
     #endif
