@@ -82,7 +82,7 @@ void PtpParser::ParseMessage(const rawMessage& aMessage)
         break;
     default:
         {
-            pml::log::Stream ls(pml::LOG_WARN);
+            pml::log::Stream ls(pml::log::Level::kWarning);
             ls << "Unknown version\n" << std::hex << std::setfill('0') << std::setw(2);
             for(const auto& byte : aMessage.vBuffer)
             {
