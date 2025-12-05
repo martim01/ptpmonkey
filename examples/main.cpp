@@ -47,13 +47,13 @@ int main(int argc, char* argv[])
         std::exit(1);
     }
 
-    
+
     pml::log::Stream::AddOutput(std::make_unique<pml::log::Output>());
     pml::log::Stream::SetOutputLevel(pml::LOG_TRACE);
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Start" << std::endl;
 
     ptpmonkey::PtpMonkey ptp(IpInterface(program.get<std::string>("--interface")), std::stoi(program.get<std::string>("--domain")), 10, ptpmonkey::Mode::MULTICAST, ptpmonkey::Rate::NEVER);
-//    ptp.AddEventHandler(std::make_shared<ptpmonkey::PtpEventLogHandler>(false));
+    ptp.AddEventHandler(std::make_shared<ptpmonkey::PtpEventLogHandler>(false));
     
     ptp.Run();
     getchar();
