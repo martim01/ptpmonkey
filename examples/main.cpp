@@ -24,24 +24,30 @@
 #include "ptpeventloghandler.h"
 #include "log.h"
 
+#include "argparse.hpp"
+
 constexpr short multicast_port = 319;
 
 using namespace pml;
 
 int main(int argc, char* argv[])
 {
+    argparse::ArgumentParser program("in");
+    program.add_argument("-i", "--interface").help("Interface to use for the PTP").default_value("eth0");
+    program.add_argument("-d", "--domain").help("PTP domain").default_value("0");
+
     pml::log::Stream::AddOutput(std::make_unique<pml::log::Output>());
     pml::log::Stream::SetOutputLevel(pml::LOG_TRACE);
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Start" << std::endl;
 
-    ptpmonkey::PtpMonkey ptp(IpInterface("eth0"), 0, 10, ptpmonkey::Mode::MULTICAST, ptpmonkey::Rate::NEVER);
+    ptpmonkey::PtpMonkey ptp(IpInterface(program.get<std::string>("--interface")), std::stoi(program.get<std::string>("--domain")), 10, ptpmonkey::Mode::MULTICAST, ptpmonkey::Rate::NEVER);
 //    ptp.AddEventHandler(std::make_shared<ptpmonkey::PtpEventLogHandler>(false));
     
     ptp.Run();
     getchar();
     //ptp.Manage().UsePtp4l(true);
-    ptp.Manage().Get(ptpmonkey::mngmnt::enumGet::PRIORITY1);
-    getchar();
+//    ptp.Manage().Get(ptpmonkey::mngmnt::enumGet::PRIORITY1);
+//    getchar();
 
 
     /*
