@@ -33,9 +33,21 @@ using namespace pml;
 int main(int argc, char* argv[])
 {
     argparse::ArgumentParser program("in");
+    
     program.add_argument("-i", "--interface").help("Interface to use for the PTP").default_value("eth0");
     program.add_argument("-d", "--domain").help("PTP domain").default_value("0");
+    try
+    {
+        program.parse_args(argc, argv);
+    }
+    catch(const std::exception& e)
+    {
+        std::cout << "CAUGHT " << e.what() << std::endl;
+        std::cout << program << std::endl;
+        std::exit(1);
+    }
 
+    
     pml::log::Stream::AddOutput(std::make_unique<pml::log::Output>());
     pml::log::Stream::SetOutputLevel(pml::LOG_TRACE);
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Start" << std::endl;
