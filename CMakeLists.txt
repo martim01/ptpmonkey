@@ -41,7 +41,7 @@ add_external_library(pml_log ${DIR_ASIO} "https://github.com/chriskohlhoff/asio"
 
 target_include_directories(ptpmonkey PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(ptpmonkey PUBLIC ${DIR_LOG}/include)
-target_include_directories(ptpmonkey PUBLIC ${DIR_ASIO}/asio/include)
+target_include_directories(ptpmonkey PUBLIC ${DIR_ASIO}/include)
 
 SET(CMAKE_CXX_STANDARD 17)
 
