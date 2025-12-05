@@ -11,7 +11,7 @@ void InitLogging(const iniManager& ini)
 {
     if(ini.Get("logging", "console", 0L) > -1 )
     {
-        auto nLogToConsole = pml::log::Stream::AddOutput(std::make_unique<pml::pml::log::Output>());
+        auto nLogToConsole = pml::log::Stream::AddOutput(std::make_unique<pml::log::Output>());
         pml::log::Stream::SetOutputLevel(nLogToConsole, pml::enumLevel(ini.Get("logging", "console", (long)pml::LOG_TRACE)));
     }
     
@@ -19,7 +19,7 @@ void InitLogging(const iniManager& ini)
     {
         std::filesystem::path pathLog = ini.Get("path","log",".");
         pathLog /= "ptpsync";
-        auto nLogToFile = pml::log::Stream::AddOutput(std::make_unique<pml::LogToFile>(pathLog));
+        auto nLogToFile = pml::log::Stream::AddOutput(std::make_unique<pml::log::File>(pathLog));
         pml::log::Stream::SetOutputLevel(nLogToFile, pml::enumLevel(ini.Get("logging", "file", (long)pml::LOG_INFO)));
     }
 

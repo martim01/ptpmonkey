@@ -28,6 +28,8 @@ namespace pml
                 void DelayRequestSent(std::shared_ptr<ptpmonkey::PtpV2Clock> pClock) final;
                 void DelayResponseSent(std::shared_ptr<ptpmonkey::PtpV2Clock> pClock) final;
 
+                void ManagementMessageReceived(std::shared_ptr<ptpmonkey::ptpV2Header> pHeader, std::shared_ptr<ptpmonkey::ptpManagement> pMessage) final{}
+
             private:
                 Sync* m_pSync;
         };
