@@ -23,3 +23,4 @@
 !CMakeLists.txt
 /build/*
 version.cpp
+/external/*
