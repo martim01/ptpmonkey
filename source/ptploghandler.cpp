@@ -16,19 +16,19 @@ void PtpLogHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std::sh
         
         switch(static_cast<hdr::enumType>(pPtpH->nType))
         {
-            case hdr::enumType::SYNC:
+            case hdr::enumType::kSync:
           //      pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Sync\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
                 break;
-            case hdr::enumType::FOLLOW_UP:
+            case hdr::enumType::kFollowUp:
             //    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "FollowUp\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
-            case hdr::enumType::DELAY_REQ:
+            case hdr::enumType::kDelayReq:
               //  pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "DelayReq\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
-            case hdr::enumType::DELAY_RESP:
+            case hdr::enumType::kDelayResp:
             //    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "DelayRep\t" << TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId << " " << TimeToString(pPtpP->originTime);
-            case hdr::enumType::ANNOUNCE:
+            case hdr::enumType::kAnnounce:
             ///    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Announce\t" <<  TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId;
                 break;
-            case hdr::enumType::MANAGEMENT:
+            case hdr::enumType::kManagement:
             pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "===============================================================================================";
                 pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Management\t" <<  TimeToString(pPtpH->timestamp) << "\t" << pPtpH->source.sSourceId;
                 pPtpP->OutputValues();

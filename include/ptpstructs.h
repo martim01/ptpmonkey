@@ -162,7 +162,7 @@ namespace pml::ptpmonkey
 
     struct PTP_IMPEXPORT tlvClockAccuracy : public tlvBasic
     {
-        tlvClockAccuracy() : tlvBasic(mngmnt::enumId::CLOCK_ACCURACY){}
+        tlvClockAccuracy() : tlvBasic(mngmnt::enumId::kClockAccuracy){}
         explicit tlvClockAccuracy(const std::vector<unsigned char>& vMessage);
 
         void OutputValues() const override;
@@ -171,7 +171,7 @@ namespace pml::ptpmonkey
 
     struct PTP_IMPEXPORT tlvTraceable : public tlvBasic
     {
-        tlvTraceable() : tlvBasic(mngmnt::enumId::TRACEABILITY_PROPERTIES){}
+        tlvTraceable() : tlvBasic(mngmnt::enumId::kTraceabilityProperties){}
         
         explicit tlvTraceable(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
@@ -183,7 +183,7 @@ namespace pml::ptpmonkey
 
     struct PTP_IMPEXPORT tlvTimescale : public tlvBasic
     {
-        tlvTimescale() : tlvBasic(mngmnt::enumId::TIMESCALE_PROPERTIES){}
+        tlvTimescale() : tlvBasic(mngmnt::enumId::kTimescaleProperties){}
         explicit tlvTimescale(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
         std::vector<unsigned char> CreateMessage() const final;
@@ -193,7 +193,7 @@ namespace pml::ptpmonkey
 
     struct PTP_IMPEXPORT tlvVersion : public tlvBasic
     {
-        tlvVersion() : tlvBasic(mngmnt::enumId::VERSION_NUMBER){}
+        tlvVersion() : tlvBasic(mngmnt::enumId::kVersionNumber){}
         explicit tlvVersion(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
         std::vector<unsigned char> CreateMessage() const final;
@@ -203,7 +203,7 @@ namespace pml::ptpmonkey
 
     struct PTP_IMPEXPORT tlvUserDescription : public tlv
     {
-        tlvUserDescription() : tlv(mngmnt::enumId::USER_DESCRIPTION){}
+        tlvUserDescription() : tlv(mngmnt::enumId::kUserDescription){}
         explicit tlvUserDescription(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
         std::vector<unsigned char> CreateMessage() const final;
@@ -214,7 +214,7 @@ namespace pml::ptpmonkey
 
     struct PTP_IMPEXPORT tlvClockDescription : public tlv
     {
-        tlvClockDescription() : tlv(mngmnt::enumId::CLOCK_DESCRIPTION){}
+        tlvClockDescription() : tlv(mngmnt::enumId::kClockDescription){}
         explicit tlvClockDescription(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
         std::vector<unsigned char> CreateMessage() const final;
@@ -237,16 +237,16 @@ namespace pml::ptpmonkey
     struct PTP_IMPEXPORT clockQuality
     {
         uint8_t  nClass{0};
-        clck::enumAccuracy  eAccuracy{clck::enumAccuracy::ACC_NA};
+        clck::enumAccuracy  eAccuracy{clck::enumAccuracy::kNa};
         uint16_t  nOffsetScaledLogVariance{0};
 
-        static const std::map<clck::enumAccuracy, std::string> ACCURACY;
-        static const std::map<clck::enumTimeSource, std::string> SOURCE;
+        static const std::map<clck::enumAccuracy, std::string> kAccuracy;
+        static const std::map<clck::enumTimeSource, std::string> kSource;
     };
 
     struct PTP_IMPEXPORT tlvDefaultDataSet : public tlv
     {
-        tlvDefaultDataSet() : tlv(mngmnt::enumId::DEFAULT_DATA_SET){}
+        tlvDefaultDataSet() : tlv(mngmnt::enumId::kDefaultDataSet){}
         explicit tlvDefaultDataSet(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
         std::vector<unsigned char> CreateMessage() const final;
@@ -272,7 +272,7 @@ namespace pml::ptpmonkey
 
     struct PTP_IMPEXPORT tlvCurrentDataSet  : public tlv
     {
-        tlvCurrentDataSet() : tlv(mngmnt::enumId::CURRENT_DATA_SET){}
+        tlvCurrentDataSet() : tlv(mngmnt::enumId::kCurrentDataSet){}
         explicit tlvCurrentDataSet(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
         std::vector<unsigned char> CreateMessage() const final;
@@ -284,7 +284,7 @@ namespace pml::ptpmonkey
 
     struct PTP_IMPEXPORT tlvParentDataSet : public tlv 
     {
-        tlvParentDataSet() : tlv(mngmnt::enumId::PARENT_DATA_SET){};
+        tlvParentDataSet() : tlv(mngmnt::enumId::kParentDataSet){};
         explicit tlvParentDataSet(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
         std::vector<unsigned char> CreateMessage() const final;
@@ -302,13 +302,13 @@ namespace pml::ptpmonkey
 
     struct PTP_IMPEXPORT tlvTimePropertiesDataSet : public tlv 
     {
-        tlvTimePropertiesDataSet() : tlv(mngmnt::enumId::TIME_PROPERTIES_DATA_SET){};
+        tlvTimePropertiesDataSet() : tlv(mngmnt::enumId::kTimePropertiesDataSet){};
         explicit tlvTimePropertiesDataSet(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
         std::vector<unsigned char> CreateMessage() const final;
 
         uint16_t nCurrentUtcOffset{0};
-        clck::enumTimeSource eTimeSource{clck::enumTimeSource::NA};
+        clck::enumTimeSource eTimeSource{clck::enumTimeSource::kNa};
 
         bool bLeap61{false};
         bool bLeap59{false};
@@ -320,7 +320,7 @@ namespace pml::ptpmonkey
 
     struct PTP_IMPEXPORT tlvPortDataSet : public tlv
     { 
-        tlvPortDataSet() : tlv(mngmnt::enumId::PORT_DATA_SET){};
+        tlvPortDataSet() : tlv(mngmnt::enumId::kPortDataSet){};
         explicit tlvPortDataSet(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
         std::vector<unsigned char> CreateMessage() const final;
@@ -333,18 +333,18 @@ namespace pml::ptpmonkey
         int8_t  nLogAnnounceInterval{0};
         uint8_t nAnnounceReceiptTimeout{0};
         int8_t  nLogSyncInterval{0};
-        clck::enumDelay eDelayMechanism{clck::enumDelay::E2E};
+        clck::enumDelay eDelayMechanism{clck::enumDelay::kE2E};
         int8_t  nLogMinPdelayReqInterval{0};
         uint8_t nVersionNumber{0};
 
-        static const std::array<std::string, 11> PORT_STATES; 
-        static const std::array<std::string, 5> TIMESTAMPING;
+        static const std::array<std::string, 11> kPortStates; 
+        static const std::array<std::string, 5> kTimestamping;
     };
 
 
     struct PTP_IMPEXPORT tlvAlternateTimeOffsetName  : public tlv
     {
-        tlvAlternateTimeOffsetName() : tlv(mngmnt::enumId::ALTERNATE_TIME_OFFSET_NAME){};
+        tlvAlternateTimeOffsetName() : tlv(mngmnt::enumId::kAlternateTimeOffsetName){};
         explicit tlvAlternateTimeOffsetName(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
         std::vector<unsigned char> CreateMessage() const final;
@@ -354,7 +354,7 @@ namespace pml::ptpmonkey
     };
     struct PTP_IMPEXPORT tlvAlternateTimeOffsetProperties  : public tlv
     {
-        tlvAlternateTimeOffsetProperties() : tlv(mngmnt::enumId::ALTERNATE_TIME_OFFSET_PROPERTIES){};
+        tlvAlternateTimeOffsetProperties() : tlv(mngmnt::enumId::kAlternateTimeOffsetProperties){};
         explicit tlvAlternateTimeOffsetProperties(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
         std::vector<unsigned char> CreateMessage() const final;
@@ -367,7 +367,7 @@ namespace pml::ptpmonkey
 
     struct PTP_IMPEXPORT tlvTimeStatusNP : public tlv
     {
-        tlvTimeStatusNP() : tlv(mngmnt::enumId::TIME_STATUS_NP){};
+        tlvTimeStatusNP() : tlv(mngmnt::enumId::kTimeStatusNp){};
         explicit tlvTimeStatusNP(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
         std::vector<unsigned char> CreateMessage() const final;
@@ -391,7 +391,7 @@ namespace pml::ptpmonkey
 
     struct PTP_IMPEXPORT tlvTime : public tlv
     {
-        tlvTime() : tlv(mngmnt::enumId::TIME){};
+        tlvTime() : tlv(mngmnt::enumId::kTime){};
         explicit tlvTime(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
         std::vector<unsigned char> CreateMessage() const final;
@@ -401,14 +401,14 @@ namespace pml::ptpmonkey
     
     struct PTP_IMPEXPORT tlvGrandmasterSettingsNP : public tlv 
     {
-        tlvGrandmasterSettingsNP() : tlv(mngmnt::enumId::GRANDMASTER_SETTINGS_NP){};
+        tlvGrandmasterSettingsNP() : tlv(mngmnt::enumId::kGrandmasterSettingsNp){};
         explicit tlvGrandmasterSettingsNP(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
         std::vector<unsigned char> CreateMessage() const final;
 
         clockQuality quality;
         int16_t nUtcOffset{0};
-        clck::enumTimeSource eTimeSource{clck::enumTimeSource::NA};
+        clck::enumTimeSource eTimeSource{clck::enumTimeSource::kNa};
 
         bool bLeap61{false};
         bool bLeap59{false};
@@ -420,7 +420,7 @@ namespace pml::ptpmonkey
 
     struct PTP_IMPEXPORT tlvPortPropertiesNP : public tlv 
     {
-        tlvPortPropertiesNP() : tlv(mngmnt::enumId::PORT_PROPERTIES_NP){};
+        tlvPortPropertiesNP() : tlv(mngmnt::enumId::kPortPropertiesNp){};
         explicit tlvPortPropertiesNP(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
         std::vector<unsigned char> CreateMessage() const final;
@@ -433,7 +433,7 @@ namespace pml::ptpmonkey
 
     struct PTP_IMPEXPORT tlvPortStatsNP : public tlv
     {
-        tlvPortStatsNP() : tlv(mngmnt::enumId::PORT_STATS_NP){};
+        tlvPortStatsNP() : tlv(mngmnt::enumId::kPortStatsNp){};
         explicit tlvPortStatsNP(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
         std::vector<unsigned char> CreateMessage() const final;
@@ -445,7 +445,7 @@ namespace pml::ptpmonkey
 
     struct PTP_IMPEXPORT tlvPortServiceStatsNP : public tlv
     {
-        tlvPortServiceStatsNP() : tlv(mngmnt::enumId::PORT_SERVICE_STATS_NP){};
+        tlvPortServiceStatsNP() : tlv(mngmnt::enumId::kPortServiceStatsNp){};
         explicit tlvPortServiceStatsNP(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
         std::vector<unsigned char> CreateMessage() const final;
@@ -466,7 +466,7 @@ namespace pml::ptpmonkey
 
     struct PTP_IMPEXPORT tlvPortDataSetNP : public tlv
     {
-        tlvPortDataSetNP() : tlv(mngmnt::enumId::PORT_DATA_SET_NP){};
+        tlvPortDataSetNP() : tlv(mngmnt::enumId::kPortDataSetNp){};
         explicit tlvPortDataSetNP(const std::vector<unsigned char>& vMessage);
         void OutputValues() const final;
         std::vector<unsigned char> CreateMessage() const final;
@@ -487,11 +487,11 @@ namespace pml::ptpmonkey
         uint16_t nLength{0}; /* must be even */
         mngmnt::enumId eId;
         std::shared_ptr<tlv> pData = nullptr;
-        mngmnt::enumError eError{mngmnt::enumError::OKAY};
+        mngmnt::enumError eError{mngmnt::enumError::kOkay};
         uint32_t nReserved{0};
         std::string sError;
 
-        static const std::map<mngmnt::enumId, std::string> TLV_ID;
+        static const std::map<mngmnt::enumId, std::string> kTlvId;
     };
 
     struct PTP_IMPEXPORT managementTlvResponse : public managementTlv
@@ -507,7 +507,7 @@ namespace pml::ptpmonkey
         void ParseTlv(const std::vector<unsigned char>& vMessage);
         void CreateMessage(std::vector<unsigned char>& vMessage) const final;
 
-        static const std::map<mngmnt::enumError, std::string> MNGMNT_ERROR;
+        static const std::map<mngmnt::enumError, std::string> kError;
     };
 
     
@@ -532,7 +532,7 @@ namespace pml::ptpmonkey
         uint8_t  nReserved{0};
         std::shared_ptr<managementTlv> pTlv = nullptr;
 
-        static const std::array<std::string, 5> MANAGEMENT_ACTION;
+        static const std::array<std::string, 5> kManagementAction;
     };
    
 }

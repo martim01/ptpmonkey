@@ -3,11 +3,11 @@
 #include <iomanip>
 #include "log.h"
 #include "ptpmonkey.h"
-#ifdef __GNU__
+#ifdef __GNU
 #include <linux/socket.h>
 #include <linux/net_tstamp.h>
 #include <time.h>
-#endif // __GNU__
+#endif // __GNU
 
 
 using namespace pml::ptpmonkey;
@@ -28,10 +28,10 @@ void Receiver::Run(const asio::ip::address& listen_address, unsigned int nPort, 
     m_socket.set_option(asio::ip::udp::socket::reuse_address(true));
 
     //set the rx hardware software timestamping
-    #ifdef __GNU__
+    #ifdef __GNU
      int nFlags(0);
-    nFlags |= (m_nTimestampingSupported & port::enumTimestamping::TIMESTAMP_RX_HARDWARE) ? (SOF_TIMESTAMPING_RX_HARDWARE | SOF_TIMESTAMPING_RAW_HARDWARE) : 0;
-    nFlags |= (m_nTimestampingSupported & port::enumTimestamping::TIMESTAMP_RX_SOFTWARE) ? (SOF_TIMESTAMPING_RX_SOFTWARE | SOF_TIMESTAMPING_SOFTWARE) : 0;
+    nFlags |= (m_nTimestampingSupported & port::enumTimestamping::kTimestampRxHardware) ? (SOF_TIMESTAMPING_RX_HARDWARE | SOF_TIMESTAMPING_RAW_HARDWARE) : 0;
+    nFlags |= (m_nTimestampingSupported & port::enumTimestamping::kTimestampRxSoftware) ? (SOF_TIMESTAMPING_RX_SOFTWARE | SOF_TIMESTAMPING_SOFTWARE) : 0;
 
     if(nFlags != 0)
     {
@@ -52,7 +52,7 @@ void Receiver::Run(const asio::ip::address& listen_address, unsigned int nPort, 
             pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "" << "Receiver [" << nPort << "]: Set SO_TIMESTAMPING timestamping";
         }
     }
-    #endif // __GNU__
+    #endif // __GNU
 
 
     asio::error_code ec;
@@ -83,7 +83,7 @@ void Receiver::Run(const asio::ip::address& listen_address, unsigned int nPort, 
 
 void Receiver::DoReceive()
 {
-    #ifndef __GNU__
+    #ifndef __GNU
     m_socket.async_receive_from(asio::buffer(m_data), m_sender_endpoint, [this](std::error_code ec, std::size_t length)
     {
         if (!ec)
@@ -119,7 +119,7 @@ void Receiver::DoReceive()
 }
 
 
-#ifdef __GNU__
+#ifdef __GNU
 rawMessage Receiver::NativeReceive(asio::ip::udp::socket& aSocket, int nFlags)
 {
     unsigned char data[512];

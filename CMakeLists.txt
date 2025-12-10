@@ -62,7 +62,7 @@ target_link_libraries(ptpmonkey optimized pml_log debug pml_logd)
 
 #linux specific
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	target_compile_definitions(ptpmonkey PRIVATE __GNU__)
+	target_compile_definitions(ptpmonkey PRIVATE "__GNU")
 	target_link_libraries(ptpmonkey pthread)
 else()
     target_compile_definitions(ptpmonkey PRIVATE ASIO_DISABLE_IOCP)

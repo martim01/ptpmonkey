@@ -19,7 +19,7 @@ void PtpEventLogHandler::ClockAdded(std::shared_ptr<PtpV2Clock> pClock)
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Priority2:\t" << (int)pClock->GetPriority2() ;
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Steps:\t\t" << (int)pClock->GetStepsRemoved() ;
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Source:\t\t" << std::hex << "0x" << (int)pClock->GetTimeSource() ;
-    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Flags:\t\t" << std::hex << "0x" << (int)pClock->GetFlags(hdr::enumType::ANNOUNCE) ;
+    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Flags:\t\t" << std::hex << "0x" << (int)pClock->GetFlags(hdr::enumType::kAnnounce) ;
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << (pClock->IsGrandMaster() ? "Master" : "Slave");
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << (pClock->IsSyncMaster() ? "Sync Master" : "Slave");
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "---------------------------";
@@ -39,7 +39,7 @@ void PtpEventLogHandler::ClockUpdated(std::shared_ptr<PtpV2Clock> pClock)
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Priority2:\t" << (int)pClock->GetPriority2() ;
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Steps:\t\t" << (int)pClock->GetStepsRemoved() ;
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Source:\t\t" << std::hex << "0x" << (int)pClock->GetTimeSource() ;
-    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Flags:\t\t" << std::hex << "0x" << (int)pClock->GetFlags(hdr::enumType::ANNOUNCE) ;
+    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Flags:\t\t" << std::hex << "0x" << (int)pClock->GetFlags(hdr::enumType::kAnnounce) ;
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << (pClock->IsGrandMaster() ? "Master" : "Slave");
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << (pClock->IsSyncMaster() ? "Sync Master" : "Slave");
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "---------------------------";
@@ -71,8 +71,8 @@ void PtpEventLogHandler::ClockTimeCalculated(std::shared_ptr<PtpV2Clock> pClock)
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Time Calculated :\t\t" << pClock->GetId();
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << TimeToIsoString(pClock->GetLastPtpTime()) << "\tat " << TimeToIsoString(pClock->GetLastCalculatedTime()) << "\t" << TimeToString(pClock->GetOffset(PtpV2Clock::CURRENT));
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Sync: " << (pClock->IsSynced() ? "YES" : "NO");
-    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Requests: " << pClock->GetCount(hdr::enumType::DELAY_REQ) << " interval: " << std::hex << (int)pClock->GetInterval(hdr::enumType::DELAY_REQ) << std::dec;
-    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Responses: " << pClock->GetCount(hdr::enumType::DELAY_RESP) << " interval: " << std::hex << (int)pClock->GetInterval(hdr::enumType::DELAY_RESP) << std::dec;
+    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Requests: " << pClock->GetCount(hdr::enumType::kDelayReq) << " interval: " << std::hex << (int)pClock->GetInterval(hdr::enumType::kDelayReq) << std::dec;
+    pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Responses: " << pClock->GetCount(hdr::enumType::kDelayResp) << " interval: " << std::hex << (int)pClock->GetInterval(hdr::enumType::kDelayResp) << std::dec;
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Delay_Mean:" << TimeToString(pClock->GetDelay(PtpV2Clock::MEAN));
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "DelayRange :" << TimeToString(pClock->GetDelay(PtpV2Clock::MIN)) << "-" << TimeToString(pClock->GetDelay(PtpV2Clock::MAX)) << "=" << TimeToString((pClock->GetDelay(PtpV2Clock::MAX)-pClock->GetDelay(PtpV2Clock::MIN)));
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Delay SD :" << TimeToString(pClock->GetDelay(PtpV2Clock::SD)) << " " << TimeToString(pClock->GetDelay(PtpV2Clock::SE));

@@ -8,11 +8,11 @@
 #include "receiver.h"
 #include "ptpmonkey.h"
 
-#ifdef __GNU__
+#ifdef __GNU
 #include <linux/socket.h>
 #include <linux/net_tstamp.h>
 #include <time.h>
-#endif // __GNU__
+#endif // __GNU
 #include <iostream>
 #include <iomanip>
 #include "log.h"
@@ -51,16 +51,16 @@ void Sender::Run()
         m_socket.set_option(optionl);
     }
 
-    #ifdef __GNU__
+    #ifdef __GNU
     // @todo for some reason we get tx software timestamps even though pi says it doesn't suppport it. add this bodge for now to aid debugging
     #if FORCE_SO==1
-    m_nTimestampingSupported |= port::enumTimestamping::TIMESTAMP_TX_SOFTWARE;
+    m_nTimestampingSupported |= port::enumTimestamping::kTimestampTxSoftware;
     pml::log::log(pml::log::Level::kWarning, "pml::ptpmonkey") << "" << "Sender: Attempt to set tx software timestamping anyway.";
     #endif // FORCE_SO
 
     int nFlags(0);
-    nFlags |= (m_nTimestampingSupported & port::enumTimestamping::TIMESTAMP_TX_HARDWARE) ? (SOF_TIMESTAMPING_TX_HARDWARE | SOF_TIMESTAMPING_RAW_HARDWARE) : 0;
-    nFlags |= (m_nTimestampingSupported & port::enumTimestamping::TIMESTAMP_TX_SOFTWARE) ? (SOF_TIMESTAMPING_TX_SOFTWARE | SOF_TIMESTAMPING_SOFTWARE) : 0;
+    nFlags |= (m_nTimestampingSupported & port::enumTimestamping::kTimestampTxHardware) ? (SOF_TIMESTAMPING_TX_HARDWARE | SOF_TIMESTAMPING_RAW_HARDWARE) : 0;
+    nFlags |= (m_nTimestampingSupported & port::enumTimestamping::kTimestampTxSoftware) ? (SOF_TIMESTAMPING_TX_SOFTWARE | SOF_TIMESTAMPING_SOFTWARE) : 0;
 
     if(nFlags != 0)
     {
@@ -144,11 +144,11 @@ void Sender::Queue(const ptpManagement& message)
 
 std::vector<unsigned char> Sender::CreateManagement(std::shared_ptr<ptpManagement> pMessage)
 {
-    auto itSequence = m_mSequence.try_emplace(hdr::enumType::MANAGEMENT, 0).first;
+    auto itSequence = m_mSequence.try_emplace(hdr::enumType::kManagement, 0).first;
 
     auto vPayload = pMessage->CreateMessage();
 
-    auto theHeader = CreateHeader(hdr::enumType::MANAGEMENT, itSequence->second, 34+vPayload.size(), 0x7f);
+    auto theHeader = CreateHeader(hdr::enumType::kManagement, itSequence->second, 34+vPayload.size(), 0x7f);
 
     auto vBuffer = theHeader.CreateMessage();
     std::copy(vPayload.begin(), vPayload.end(), std::back_inserter(vBuffer));
@@ -170,7 +170,7 @@ ptpV2Header Sender::CreateHeader(hdr::enumType eType, uint16_t nSequence, uint16
     theHeader.nFlags = 0;
     if(!m_bMulticast)
     {
-        theHeader.nFlags |= static_cast<unsigned short>(hdr::enumFlags::UNICAST);
+        theHeader.nFlags |= static_cast<unsigned short>(hdr::enumFlags::kUnicast);
     }
     theHeader.nCorrection = 0;
     theHeader.source.nSourceId = GenerateClockIdentity(m_outboundIpAddress);
@@ -183,8 +183,8 @@ ptpV2Header Sender::CreateHeader(hdr::enumType eType, uint16_t nSequence, uint16
 
 std::vector<unsigned char> Sender::CreateDelayRequest()
 {
-    auto itSequence = m_mSequence.try_emplace(hdr::enumType::DELAY_REQ, 0).first;
-    auto theHeader = CreateHeader(hdr::enumType::DELAY_REQ, itSequence->second, 44, static_cast<char>(m_manager.GetDelayRate()));
+    auto itSequence = m_mSequence.try_emplace(hdr::enumType::kDelayReq, 0).first;
+    auto theHeader = CreateHeader(hdr::enumType::kDelayReq, itSequence->second, 44, static_cast<char>(m_manager.GetDelayRate()));
 
     ptpV2Payload thePayload;
     m_lastDelayReq = Now();
@@ -225,7 +225,7 @@ void Sender::DoTimeout()
 
 void Sender::GetTxTimestamp(const std::vector<unsigned char>& vBuffer)
 {
-    #ifdef __GNU__
+    #ifdef __GNU
     rawMessage aMessage = Receiver::NativeReceive(m_socket, MSG_ERRQUEUE);
     if(vBuffer.size() >= 34)
     {
@@ -233,7 +233,7 @@ void Sender::GetTxTimestamp(const std::vector<unsigned char>& vBuffer)
         //tell the local client what the actual timestamp for this message a
         m_manager.DelayRequestSent(pMessage.first, pMessage.second);
     }
-    #endif // __GNU__
+    #endif // __GNU
 }
 
 void Sender::ChangeEndpoint(const asio::ip::address& destination)

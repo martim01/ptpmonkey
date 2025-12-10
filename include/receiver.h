@@ -18,9 +18,9 @@ namespace pml
 
                 void Run(const asio::ip::address& listen_address, unsigned int nPort, const asio::ip::address& multicast_address=asio::ip::make_address("0.0.0.0"));
 
-                #ifdef __GNU__
+                #ifdef __GNU
                 static rawMessage NativeReceive(asio::ip::udp::socket& aSocket, int nFlags);
-                #endif // __GNU__
+                #endif // __GNU
             private:
                 void DoReceive();
 

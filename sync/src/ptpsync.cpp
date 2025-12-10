@@ -74,19 +74,19 @@ void Sync::SaveDetails() const
             ofs << "\"Utc_Offset\": "  << +pMaster->GetUtcOffset() << ", ";
 
 
-            auto flags = pMaster->GetFlags(hdr::enumType::SYNC);
+            auto flags = pMaster->GetFlags(hdr::enumType::kSync);
 	        ofs << "\"Flags\": " << flags << ", ";
-            ofs << "\"Alternate_Master\": " << ((flags & static_cast<unsigned short>(hdr::enumFlags::ALTERNATE_MASTER)) != 0) << ", ";
-            ofs << "\"Two_Step\": " <<         ((flags & static_cast<unsigned short>(hdr::enumFlags::TWO_STEP)) != 0) << ", ";
-            ofs << "\"Unicast\": " <<          ((flags & static_cast<unsigned short>(hdr::enumFlags::UNICAST)) != 0) << ", ";
-            ofs << "\"Profile1\": " <<         ((flags & static_cast<unsigned short>(hdr::enumFlags::PROFILE1)) != 0) << ", ";
-            ofs << "\"Profile2\": " <<         ((flags & static_cast<unsigned short>(hdr::enumFlags::PROFILE2)) != 0) << ", ";
-            ofs << "\"LI_61\": " <<            ((flags & static_cast<unsigned short>(hdr::enumFlags::LI_61)) != 0) << ", ";
-            ofs << "\"LI_59\": " <<            ((flags & static_cast<unsigned short>(hdr::enumFlags::LI_59)) != 0) << ", ";
-            ofs << "\"UTC_Valid\": " <<        ((flags & static_cast<unsigned short>(hdr::enumFlags::UTC_OFFSET_VALID)) != 0) << ", ";
-            ofs << "\"Timescale\": " <<        ((flags & static_cast<unsigned short>(hdr::enumFlags::TIMESCALE)) != 0) << ", ";
-            ofs << "\"Time_Traceable\": " <<   ((flags & static_cast<unsigned short>(hdr::enumFlags::TIME_TRACEABLE)) != 0) << ", ";
-            ofs << "\"Freq_Traceable\": " <<   ((flags & static_cast<unsigned short>(hdr::enumFlags::FREQ_TRACEABLE)) != 0);
+            ofs << "\"Alternate_Master\": " << ((flags & static_cast<unsigned short>(hdr::enumFlags::kAlternateMaster)) != 0) << ", ";
+            ofs << "\"Two_Step\": " <<         ((flags & static_cast<unsigned short>(hdr::enumFlags::kTwoStep)) != 0) << ", ";
+            ofs << "\"Unicast\": " <<          ((flags & static_cast<unsigned short>(hdr::enumFlags::kUnicast)) != 0) << ", ";
+            ofs << "\"Profile1\": " <<         ((flags & static_cast<unsigned short>(hdr::enumFlags::kProfile1)) != 0) << ", ";
+            ofs << "\"Profile2\": " <<         ((flags & static_cast<unsigned short>(hdr::enumFlags::kProfile2)) != 0) << ", ";
+            ofs << "\"LI_61\": " <<            ((flags & static_cast<unsigned short>(hdr::enumFlags::kLI_61)) != 0) << ", ";
+            ofs << "\"LI_59\": " <<            ((flags & static_cast<unsigned short>(hdr::enumFlags::kLI_59)) != 0) << ", ";
+            ofs << "\"UTC_Valid\": " <<        ((flags & static_cast<unsigned short>(hdr::enumFlags::kUtcOffsetValid)) != 0) << ", ";
+            ofs << "\"Timescale\": " <<        ((flags & static_cast<unsigned short>(hdr::enumFlags::kTimescale)) != 0) << ", ";
+            ofs << "\"Time_Traceable\": " <<   ((flags & static_cast<unsigned short>(hdr::enumFlags::kTimeTraceable)) != 0) << ", ";
+            ofs << "\"Freq_Traceable\": " <<   ((flags & static_cast<unsigned short>(hdr::enumFlags::kFreqTraceable)) != 0);
             
         }
         ofs << " }, ";
@@ -118,25 +118,25 @@ void Sync::SaveDetails() const
         ofs << "\"Received\": { ";
         if(m_pMonkey->GetLocalClock())
         {
-            ofs << "\"Announce\": "   << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::ANNOUNCE) << ", ";
-            ofs << "\"Sync\": "       << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::SYNC) << ", ";
-            ofs << "\"DelayReq\": "   << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::DELAY_REQ) << ", ";
-            ofs << "\"DelayResp\": "  << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::DELAY_RESP) << ", ";
-            ofs << "\"FollowUp\": "   << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::FOLLOW_UP) << ", ";
-            ofs << "\"Signalling\": " << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::SIGNALLING) << ", ";
-            ofs << "\"Management\": " << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::MANAGEMENT);
+            ofs << "\"Announce\": "   << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::kAnnounce) << ", ";
+            ofs << "\"Sync\": "       << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::kSync) << ", ";
+            ofs << "\"DelayReq\": "   << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::kDelayReq) << ", ";
+            ofs << "\"DelayResp\": "  << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::kDelayResp) << ", ";
+            ofs << "\"FollowUp\": "   << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::kFollowUp) << ", ";
+            ofs << "\"Signalling\": " << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::kSignalling) << ", ";
+            ofs << "\"Management\": " << m_pMonkey->GetLocalClock()->GetCount(hdr::enumType::kManagement);
         }
         ofs << " }, ";
         ofs << "\"Interval\": { ";
         if(m_pMonkey->GetLocalClock())
         {
-            ofs << "\"Announce\": "   << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::ANNOUNCE) << ", ";
-            ofs << "\"Sync\": "       << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::SYNC) << ", ";
-            ofs << "\"DelayReq\": "   << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::DELAY_REQ) << ", ";
-            ofs << "\"DelayResp\": "  << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::DELAY_RESP) << ", ";
-            ofs << "\"FollowUp\": "   << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::FOLLOW_UP) << ", ";
-            ofs << "\"Signalling\": " << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::SIGNALLING) << ", ";
-            ofs << "\"Management\": " << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::MANAGEMENT);
+            ofs << "\"Announce\": "   << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::kAnnounce) << ", ";
+            ofs << "\"Sync\": "       << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::kSync) << ", ";
+            ofs << "\"DelayReq\": "   << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::kDelayReq) << ", ";
+            ofs << "\"DelayResp\": "  << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::kDelayResp) << ", ";
+            ofs << "\"FollowUp\": "   << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::kFollowUp) << ", ";
+            ofs << "\"Signalling\": " << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::kSignalling) << ", ";
+            ofs << "\"Management\": " << +m_pMonkey->GetLocalClock()->GetInterval(hdr::enumType::kManagement);
         }
 
         ofs << " } }" << std::endl;
@@ -150,7 +150,7 @@ bool Sync::Run(const IpInterface& interface, unsigned char nDomain, Mode mode, i
     {
         m_interface = interface;
         
-        m_pMonkey = std::make_unique<PtpMonkey>(m_interface, nDomain, 2, mode, Rate::EVERY_1_SEC);
+        m_pMonkey = std::make_unique<PtpMonkey>(m_interface, nDomain, 2, mode, Rate::kEvery1Sec);
         m_pMonkey->AddEventHandler(std::make_shared<SyncEventHandler>(this));
         m_pMonkey->Run(false);
     }
@@ -170,7 +170,7 @@ bool Sync::Run(const IpAddress& address, unsigned char nDomain, Mode mode, int n
     {
         m_address = address;
         
-        m_pMonkey = std::make_unique<PtpMonkey>(m_address, nDomain, 2, mode, Rate::EVERY_1_SEC);
+        m_pMonkey = std::make_unique<PtpMonkey>(m_address, nDomain, 2, mode, Rate::kEvery1Sec);
         m_pMonkey->AddEventHandler(std::make_shared<SyncEventHandler>(this));
         m_pMonkey->Run(false);
     }

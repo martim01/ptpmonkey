@@ -33,14 +33,14 @@ namespace pml::ptpmonkey
             *   @param nSampleSize the number of delay req/resp to receive before assuming offset is calculated
             *   @param nDelayRequestPerSec the number of delayy request messages to send to the master clock each second
             **/
-            PtpMonkey(const IpAddress& ipAddress, unsigned char nDomain, unsigned short nSampleSize, Mode mode, Rate eDelayRequest=Rate::PER_SEC_4);
+            PtpMonkey(const IpAddress& ipAddress, unsigned char nDomain, unsigned short nSampleSize, Mode mode, Rate eDelayRequest=Rate::kPerSec4);
 
             /** @brief Constructor
             *   @param IpInterface the name of the network interface to use to send/receivee PTP messages
             *   @param nDomain the PTP domain to join
             *   @param nDelayRequestPerSec the number of delayy request messages to send to the master clock each second
             **/
-            PtpMonkey(const IpInterface& IpInterface, unsigned char nDomain,unsigned short nSampleSize, Mode mode, Rate eDelayRequest=Rate::PER_SEC_4);
+            PtpMonkey(const IpInterface& IpInterface, unsigned char nDomain,unsigned short nSampleSize, Mode mode, Rate eDelayRequest=Rate::kPerSec4);
 
             ~PtpMonkey()=default;
 

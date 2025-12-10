@@ -32,22 +32,22 @@ ptpV2Message PtpParser::ParseV2(const std::chrono::nanoseconds& socketTime, cons
 
         switch(static_cast<hdr::enumType>(pHeader->nType))
         {
-            case hdr::enumType::SYNC:
+            case hdr::enumType::kSync:
                 pPayload = std::make_shared<ptpV2Payload>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
-            case hdr::enumType::DELAY_RESP:
+            case hdr::enumType::kDelayResp:
                 pPayload = std::make_shared<ptpDelayResponse>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
-            case hdr::enumType::DELAY_REQ:
+            case hdr::enumType::kDelayReq:
                 pPayload = std::make_shared<ptpV2Payload>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
-            case hdr::enumType::FOLLOW_UP:
+            case hdr::enumType::kFollowUp:
                 pPayload = std::make_shared<ptpV2Payload>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
-            case hdr::enumType::ANNOUNCE:
+            case hdr::enumType::kAnnounce:
                 pPayload = std::make_shared<ptpAnnounce>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
                 break;
-            case hdr::enumType::MANAGEMENT:
+            case hdr::enumType::kManagement:
                 pPayload = std::make_shared<ptpManagement>(std::vector<unsigned char>(vMessage.begin()+34, vMessage.end()));
         }
     }

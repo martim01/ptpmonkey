@@ -1,28 +1,20 @@
-//
-// receiver.cpp
-// ~~~~~~~~~~~~
-//
-// Copyright (c) 2003-2019 Christopher M. Kohlhoff (chris at kohlhoff dot com)
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//
-
 #include <array>
-#include <iostream>
+#include <chrono>
 #include <iomanip>
+#include <iostream>
 #include <string>
+#include <thread>
+
+#include "log.h"
+
 #include "asio.hpp"
+#include "mac.h"
+#include "ptpeventloghandler.h"
+#include "ptploghandler.h"
+#include "ptpmonkey.h"
 #include "ptpparser.h"
 #include "receiver.h"
-#include "ptploghandler.h"
 #include "sender.h"
-#include "mac.h"
-#include "ptpmonkey.h"
-#include <thread>
-#include <chrono>
-#include "ptpeventloghandler.h"
-#include "log.h"
 
 #include "argparse.hpp"
 
@@ -30,12 +22,32 @@ constexpr short multicast_port = 319;
 
 using namespace pml;
 
+const std::map<std::string, ptpmonkey::Rate> kRateMap = {
+    {"NEVER", ptpmonkey::Rate::kNever},
+    {"PER_SEC_128", ptpmonkey::Rate::kPerSec128},
+    {"PER_SEC_64", ptpmonkey::Rate::kPerSec64},
+    {"PER_SEC_32", ptpmonkey::Rate::kPerSec32},
+    {"PER_SEC_16", ptpmonkey::Rate::kPerSec16},
+    {"PER_SEC_8", ptpmonkey::Rate::kPerSec8},
+    {"PER_SEC_4", ptpmonkey::Rate::kPerSec4},
+    {"PER_SEC_2", ptpmonkey::Rate::kPerSec2},
+    {"EVERY_1_SEC", ptpmonkey::Rate::kEvery1Sec},
+    {"EVERY_2_SEC", ptpmonkey::Rate::kEvery2Sec},
+    {"EVERY_4_SEC", ptpmonkey::Rate::kEvery4Sec},
+    {"EVERY_8_SEC", ptpmonkey::Rate::kEvery8Sec},
+    {"EVERY_16_SEC", ptpmonkey::Rate::kEvery16Sec}
+};
+
 int main(int argc, char* argv[])
 {
     argparse::ArgumentParser program("in");
     
     program.add_argument("-i", "--interface").help("Interface to use for the PTP").default_value("eth0");
     program.add_argument("-d", "--domain").help("PTP domain").default_value("0");
+    program.add_argument("-m", "--mode").help("PTP mode (MULTICAST, UNICAST, HYBRID)").default_value("MULTICAST");
+    program.add_argument("-r", "--rate").help("Delay request rate (NEVER, PER_SEC_128, PER_SEC_64, PER_SEC_32, PER_SEC_16, PER_SEC_8, PER_SEC_4, PER_SEC_2, EVERY_1_SEC, EVERY_2_SEC, EVERY_4_SEC, EVERY_8_SEC, EVERY_16_SEC)").default_value("NEVER");
+
+
     try
     {
         program.parse_args(argc, argv);
@@ -52,11 +64,31 @@ int main(int argc, char* argv[])
     pml::log::Stream::SetOutputLevel(pml::LOG_TRACE);
     pml::log::log(pml::log::Level::kInfo, "pml::ptpmonkey") << "Start" << std::endl;
 
-    ptpmonkey::PtpMonkey ptp(IpInterface(program.get<std::string>("--interface")), std::stoi(program.get<std::string>("--domain")), 10, ptpmonkey::Mode::MULTICAST, ptpmonkey::Rate::NEVER);
+    auto mode = ptpmonkey::Mode::kMulticast;
+
+    auto sMode = program.get<std::string>("--mode");
+    if(sMode == "UNICAST")
+    {
+        mode = ptpmonkey::Mode::kUnicast;
+    }
+    else if(sMode == "HYBRID")
+    {
+        mode = ptpmonkey::Mode::kHybrid;
+    }
+
+    auto rate = ptpmonkey::Rate::kNever;
+    if(auto it = kRateMap.find(program.get<std::string>("--rate")); it != kRateMap.end())
+    {
+        rate = it->second;
+    }
+
+    ptpmonkey::PtpMonkey ptp(IpInterface(program.get<std::string>("--interface")), std::stoi(program.get<std::string>("--domain")), 10, mode, rate);
     ptp.AddEventHandler(std::make_shared<ptpmonkey::PtpEventLogHandler>(false));
     
     ptp.Run();
     getchar();
+    
+    
     //ptp.Manage().UsePtp4l(true);
 //    ptp.Manage().Get(ptpmonkey::mngmnt::enumGet::PRIORITY1);
 //    getchar();

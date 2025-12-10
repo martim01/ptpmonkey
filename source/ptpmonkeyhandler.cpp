@@ -31,37 +31,37 @@ void PtpMonkeyHandler::HandleParsedMessage(std::shared_ptr<header> pHeader, std:
     {
         switch(static_cast<hdr::enumType>(pPtpH->nType))
         {
-            case hdr::enumType::SYNC:
+            case hdr::enumType::kSync:
                 if(m_pSync)
                 {
                     m_pSync(pPtpH, pPtpP);
                 }
                 break;
-            case hdr::enumType::FOLLOW_UP:
+            case hdr::enumType::kFollowUp:
                 if(m_pFollowUp)
                 {
                     m_pFollowUp(pPtpH, pPtpP);
                 }
                 break;
-            case hdr::enumType::DELAY_RESP:
+            case hdr::enumType::kDelayResp:
                 if(m_pDelayResponse)
                 {
                     m_pDelayResponse(pPtpH, std::dynamic_pointer_cast<ptpDelayResponse>(pPtpP));
                 }
                 break;
-            case hdr::enumType::ANNOUNCE:
+            case hdr::enumType::kAnnounce:
                 if(m_pAnnounce)
                 {
                     m_pAnnounce(pPtpH, std::dynamic_pointer_cast<ptpAnnounce>(pPtpP));
                 }
                 break;
-            case hdr::enumType::DELAY_REQ:
+            case hdr::enumType::kDelayReq:
                 if(m_pDelayRequest)
                 {
                     m_pDelayRequest(pPtpH, pPtpP);
                 }
                 break;
-            case hdr::enumType::MANAGEMENT:
+            case hdr::enumType::kManagement:
                 if(m_pManagement)
                 {
                     m_pManagement(pPtpH, std::dynamic_pointer_cast<ptpManagement>(pPayload));

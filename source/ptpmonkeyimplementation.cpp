@@ -1,21 +1,11 @@
 #include "ptpmonkeyimplementation.h"
-#include "asio.hpp"
-#include "ptpparser.h"
-#include "receiver.h"
-#include "sender.h"
-#include "ptpmonkeyhandler.h"
-#include "ptploghandler.h"
+
 #include <chrono>
 #include <iomanip>
 #include <iostream>
 #include <thread>
-#include "ptpclock.h"
-#include "ptpeventloghandler.h"
-#include "mac.h"
-#include "loghander.h"
-#include "log.h"
 
-#ifdef __GNU__
+#ifdef __GNU
 #include <linux/ethtool.h>
 #include <linux/if.h>
 #include <linux/sockios.h>
@@ -23,13 +13,25 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#endif // __GNU__
+#endif // __GNU
 
+#include "log.h"
+
+#include "asio.hpp"
+#include "loghander.h"
+#include "mac.h"
+#include "ptpclock.h"
+#include "ptpeventloghandler.h"
+#include "ptploghandler.h"
+#include "ptpmonkeyhandler.h"
+#include "ptpparser.h"
+#include "receiver.h"
+#include "sender.h"
 
 using namespace pml::ptpmonkey;
 using namespace std::placeholders;
 
-const std::string PtpMonkeyImplementation::MULTICAST = "224.0.1.129";
+const std::string PtpMonkeyImplementation::kMulticast = "224.0.1.129";
 
 PtpMonkeyImplementation::PtpMonkeyImplementation(const IpAddress& ipAddress, unsigned char nDomain,unsigned short nSampleSize, Mode mode, Rate enumDelayRequest)  :
     m_local(ipAddress),
@@ -106,13 +108,13 @@ bool PtpMonkeyImplementation::Run()
         Receiver mR320(m_context, m_pParser, m_nTimestamping);
         
         pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Run R319";
-        mR319.Run(asio::ip::make_address(m_local.Get()), 319,asio::ip::make_address(MULTICAST));
+        mR319.Run(asio::ip::make_address(m_local.Get()), 319,asio::ip::make_address(kMulticast));
 
         pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Run R320";
-        mR320.Run(asio::ip::make_address(m_local.Get()), 320,asio::ip::make_address(MULTICAST));
+        mR320.Run(asio::ip::make_address(m_local.Get()), 320,asio::ip::make_address(kMulticast));
 
         pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Create and Run sender";
-        m_pSender = std::make_unique<Sender>(*this, m_pParser, m_context, m_local, asio::ip::make_address(MULTICAST), 319, m_nDomain, m_nTimestamping, m_mode == Mode::MULTICAST);
+        m_pSender = std::make_unique<Sender>(*this, m_pParser, m_context, m_local, asio::ip::make_address(kMulticast), 319, m_nDomain, m_nTimestamping, m_mode == Mode::kMulticast);
         m_pSender->Run();
 
         pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Run context";
@@ -200,7 +202,7 @@ void PtpMonkeyImplementation::ChangeSyncMaster(std::shared_ptr<PtpV2Clock> pNewM
     std::scoped_lock lg(m_mutex);
     m_pSyncMaster = pNewMaster;
 
-    if(m_mode != Mode::MULTICAST)
+    if(m_mode != Mode::kMulticast)
     {
         m_pSender->ChangeEndpoint(asio::ip::make_address(m_pSyncMaster->GetIpAddress()));
     }
@@ -489,7 +491,7 @@ std::shared_ptr<const PtpV2Clock> PtpMonkeyImplementation::GetLocalClock() const
 int PtpMonkeyImplementation::GetTimestampingSupported(const IpInterface& interface)
 {
     int nSupports(0);
-    #ifdef __GNU__
+    #ifdef __GNU
     ethtool_ts_info tsi = {.cmd = ETHTOOL_GET_TS_INFO};
     ifreq ifr;
     strcpy(ifr.ifr_name, interface.Get().c_str());
@@ -503,26 +505,26 @@ int PtpMonkeyImplementation::GetTimestampingSupported(const IpInterface& interfa
     pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "" << tsi.so_timestamping;
     if(tsi.so_timestamping & SOF_TIMESTAMPING_TX_HARDWARE)
     {
-        nSupports |= port::enumTimestamping::TIMESTAMP_TX_HARDWARE;
+        nSupports |= port::enumTimestamping::kTimestampTxHardware;
         pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << ""<< ifr.ifr_name << " supports harware tx";
     }
     if(tsi.so_timestamping & SOF_TIMESTAMPING_TX_SOFTWARE)
     {
-        nSupports |= port::enumTimestamping::TIMESTAMP_TX_SOFTWARE;
+        nSupports |= port::enumTimestamping::kTimestampTxSoftware;
         pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << ""<< ifr.ifr_name << " supports software tx";
     }
 
     if(tsi.so_timestamping & SOF_TIMESTAMPING_RX_HARDWARE)
     {
-        nSupports |= port::enumTimestamping::TIMESTAMP_RX_HARDWARE;
+        nSupports |= port::enumTimestamping::kTimestampRxHardware;
         pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << ""<< ifr.ifr_name << " supports harware rx";
     }
     if(tsi.so_timestamping & SOF_TIMESTAMPING_RX_SOFTWARE)
     {
-        nSupports |= port::enumTimestamping::TIMESTAMP_RX_SOFTWARE;
+        nSupports |= port::enumTimestamping::kTimestampRxSoftware;
         pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << ""<< ifr.ifr_name << " supports software rx";
     }
-    #endif // __GNU__
+    #endif // __GNU
     return nSupports;
 }
 

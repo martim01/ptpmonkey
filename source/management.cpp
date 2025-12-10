@@ -4,8 +4,8 @@
 #include "log.h"
 using namespace pml::ptpmonkey;
 
-const std::string Manager::TARGET_ID_ALL = "FF:FF:FF:FF:FF:FF:FF:FF";
-const uint16_t Manager::TARGET_NUMBER_ALL = 0xFFFF;
+const std::string Manager::kTargetIdAll = "FF:FF:FF:FF:FF:FF:FF:FF";
+const uint16_t Manager::kTargetNumberAll = 0xFFFF;
 
 ptpV2Header CreateHeader(hdr::enumType eType, uint16_t nSequence, uint16_t nLength, uint8_t nInterval, uint8_t nDomain)
 {
@@ -36,7 +36,7 @@ std::vector<unsigned char> CreateManagement(const ptpManagement& message, uint16
 {
     auto vPayload = message.CreateMessage();
 
-    auto theHeader = CreateHeader(hdr::enumType::MANAGEMENT, nSequence, 34+vPayload.size(), 0x7f, nDomain);
+    auto theHeader = CreateHeader(hdr::enumType::kManagement, nSequence, 34+vPayload.size(), 0x7f, nDomain);
 
     auto vBuffer = theHeader.CreateMessage();
     std::copy(vPayload.begin(), vPayload.end(), std::back_inserter(vBuffer));
@@ -117,8 +117,8 @@ bool Manager::SetPriority1(uint8_t nPriority)
 {
     if(!TargetSet()) { return false; }
 
-    auto message = ptpManagement(mngmnt::enumSet::PRIORITY1, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
-    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::PRIORITY1);
+    auto message = ptpManagement(mngmnt::enumSet::kPriority1, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
+    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::kPriority1);
     ptlv->nValue = nPriority;
     message.pTlv->pData = ptlv;
 
@@ -129,8 +129,8 @@ bool Manager::SetPriority2(uint8_t nPriority)
 {
     if(!TargetSet()) { return false; }
 
-    auto message = ptpManagement(mngmnt::enumSet::PRIORITY2, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
-    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::PRIORITY2);
+    auto message = ptpManagement(mngmnt::enumSet::kPriority2, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
+    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::kPriority2);
     ptlv->nValue = nPriority;
     message.pTlv->pData = ptlv;
 
@@ -141,8 +141,8 @@ bool Manager::SetAlternateTimeOffsetEnable(uint8_t nKeyField, bool bEnable)
 {
     if(!TargetSet()) { return false; }
 
-    auto message = ptpManagement(mngmnt::enumSet::ALTERNATE_TIME_OFFSET_ENABLE, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
-    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::ALTERNATE_TIME_OFFSET_ENABLE);
+    auto message = ptpManagement(mngmnt::enumSet::kAlternateTimeOffsetEnable, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
+    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::kAlternateTimeOffsetEnable);
     ptlv->nValue = nKeyField;
     ptlv->nReserved = bEnable;
     message.pTlv->pData = ptlv;
@@ -154,7 +154,7 @@ bool Manager::SetAlternateTimeOffsetName(uint8_t nKeyField, const std::string& s
 {
     if(!TargetSet()) { return false; }
 
-    auto message = ptpManagement(mngmnt::enumSet::ALTERNATE_TIME_OFFSET_NAME, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
+    auto message = ptpManagement(mngmnt::enumSet::kAlternateTimeOffsetName, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
     auto ptlv = std::make_shared<tlvAlternateTimeOffsetName>();
     ptlv->nKeyField = nKeyField;
     ptlv->sName = sName.substr(0,10);   //max 10 chars I think
@@ -168,7 +168,7 @@ bool Manager::SetAlternateTimeOffsetProperties(uint8_t nKeyField, uint32_t nCurr
     if(!TargetSet()) { return false; }
 
 
-    auto message = ptpManagement(mngmnt::enumSet::ALTERNATE_TIME_OFFSET_PROPERTIES, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
+    auto message = ptpManagement(mngmnt::enumSet::kAlternateTimeOffsetProperties, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
     
     auto ptlv = std::make_shared<tlvAlternateTimeOffsetProperties>();
     ptlv->nKeyField = nKeyField;
@@ -186,7 +186,7 @@ bool Manager::SetGrandmasterSettings(uint8_t nClass, clck::enumAccuracy eAccurac
     if(!TargetSet()) { return false; }
 
 
-    auto message = ptpManagement(mngmnt::enumSet::GRANDMASTER_SETTINGS_NP, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
+    auto message = ptpManagement(mngmnt::enumSet::kGrandmasterSettingsNp, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
     auto ptlv = std::make_shared<tlvGrandmasterSettingsNP>();
     ptlv->quality.nClass = nClass;
     ptlv->quality.eAccuracy = eAccuracy;
@@ -209,8 +209,8 @@ bool Manager::SetSynchonizationUncertain(clck::enumSync eState)
 {
     if(!TargetSet()) { return false; }
 
-    auto message = ptpManagement(mngmnt::enumSet::SYNCHRONIZATION_UNCERTAIN_NP, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
-    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::SYNCHRONIZATION_UNCERTAIN_NP);
+    auto message = ptpManagement(mngmnt::enumSet::kSynchronizationUncertainNp, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
+    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::kSynchronizationUncertainNp);
     ptlv->nValue = static_cast<uint8_t>(eState);
     
     message.pTlv->pData = ptlv;
@@ -221,7 +221,7 @@ bool Manager::SetPortDataSetNP(const std::chrono::nanoseconds& neighbourPropDela
 {
    if(!TargetSet()) { return false; } 
     
-    auto message = ptpManagement(mngmnt::enumSet::PORT_DATA_SET_NP, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
+    auto message = ptpManagement(mngmnt::enumSet::kPortDataSetNp, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
     auto ptlv = std::make_shared<tlvPortDataSetNP>();
     ptlv->bCapable = bCapable;
     ptlv->neighbourPropDelayThresh = neighbourPropDelayThresh;
@@ -236,7 +236,7 @@ bool Manager::SetUserDescription(const std::string& sName, const std::string& sL
 {
     if(!TargetSet()) { return false; }
 
-    auto message = ptpManagement(mngmnt::enumSet::USER_DESCRIPTION, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
+    auto message = ptpManagement(mngmnt::enumSet::kUserDescription, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
     auto ptlv = std::make_shared<tlvUserDescription>();
     ptlv->sName = sName;
     ptlv->sLocation = sLocation;
@@ -249,8 +249,8 @@ bool Manager::SetDomain(uint8_t nDomain)
 {
     if(!TargetSet()) { return false; }
 
-    auto message = ptpManagement(mngmnt::enumSet::DOMAIN, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
-    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::DOMAIN);
+    auto message = ptpManagement(mngmnt::enumSet::kDomain, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
+    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::kDomain);
     ptlv->nValue = nDomain;
 
     message.pTlv->pData = ptlv;
@@ -261,8 +261,8 @@ bool Manager::SetSlaveOnly(bool bSlaveOnly)
 {
     if(!TargetSet()) { return false; }
 
-    auto message = ptpManagement(mngmnt::enumSet::SLAVE_ONLY, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
-    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::SLAVE_ONLY);
+    auto message = ptpManagement(mngmnt::enumSet::kSlaveOnly, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
+    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::kSlaveOnly);
     ptlv->nValue = bSlaveOnly;
     message.pTlv->pData = ptlv;
     return m_pSender(message);
@@ -272,8 +272,8 @@ bool Manager::SetAnnounceInterval(Rate eInterval)
 {
     if(!TargetSet()) { return false; }
 
-    auto message = ptpManagement(mngmnt::enumSet::LOG_ANNOUNCE_INTERVAL, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
-    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::LOG_ANNOUNCE_INTERVAL);
+    auto message = ptpManagement(mngmnt::enumSet::kLogAnnounceInterval, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
+    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::kLogAnnounceInterval);
     ptlv->nValue = static_cast<uint8_t>(eInterval);
     message.pTlv->pData = ptlv;
     return m_pSender(message);
@@ -283,8 +283,8 @@ bool Manager::SetAnnounceReceiptTimeout(uint8_t nTimeout)
 {
     if(!TargetSet()) { return false; }
        
-    auto message = ptpManagement(mngmnt::enumSet::ANNOUNCE_RECEIPT_TIMEOUT, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
-    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::ANNOUNCE_RECEIPT_TIMEOUT);
+    auto message = ptpManagement(mngmnt::enumSet::kAnnounceReceiptTimeout, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
+    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::kAnnounceReceiptTimeout);
     ptlv->nValue = nTimeout;
     message.pTlv->pData = ptlv;
     return m_pSender(message);
@@ -294,8 +294,8 @@ bool Manager::SetSyncInterval(Rate eInterval)
 {
     if(!TargetSet()) { return false; }
        
-    auto message = ptpManagement(mngmnt::enumSet::LOG_SYNC_INTERVAL, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
-    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::LOG_SYNC_INTERVAL);
+    auto message = ptpManagement(mngmnt::enumSet::kLogSyncInterval, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
+    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::kLogSyncInterval);
     ptlv->nValue = static_cast<uint8_t>(eInterval);
     
     message.pTlv->pData = ptlv;
@@ -306,8 +306,8 @@ bool Manager::SetVersionNumber(uint8_t nVersion)
 {
     if(!TargetSet()) { return false; }
 
-    auto message = ptpManagement(mngmnt::enumSet::VERSION_NUMBER, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
-    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::VERSION_NUMBER);
+    auto message = ptpManagement(mngmnt::enumSet::kVersionNumber, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
+    auto ptlv = std::make_shared<tlvBasic>(mngmnt::enumId::kVersionNumber);
     ptlv->nValue = nVersion;
     message.pTlv->pData = ptlv;
     return m_pSender(message);
@@ -317,7 +317,7 @@ bool Manager::SetTime(const std::chrono::nanoseconds& timestamp, uint16_t nSubNa
 {
     if(!TargetSet()) { return false; }
     
-    auto message = ptpManagement(mngmnt::enumSet::TIME, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
+    auto message = ptpManagement(mngmnt::enumSet::kTime, m_nHops, m_sTargetPortId, m_nTargetPortNumber);
     auto ptlv = std::make_shared<tlvTime>();
     ptlv->timestamp = timestamp;
     
@@ -328,7 +328,7 @@ bool Manager::SetTime(const std::chrono::nanoseconds& timestamp, uint16_t nSubNa
 
 bool Manager::TargetSet() const
 {
-    if(m_sTargetPortId == TARGET_ID_ALL || m_nTargetPortNumber == TARGET_NUMBER_ALL)
+    if(m_sTargetPortId == kTargetIdAll || m_nTargetPortNumber == kTargetNumberAll)
     {
         pml::log::log(pml::log::Level::kWarning, "pml::ptpmonkey") << "Attempting management SET but target not configured";
         return false;

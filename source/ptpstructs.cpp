@@ -8,25 +8,25 @@
 
 using namespace pml::ptpmonkey;
 
-const std::array<std::string, 5> ptpManagement::MANAGEMENT_ACTION{"GET", "SET", "RESPONSE", "COMMAND", "ACKNOWLEDGE"};
+const std::array<std::string, 5> ptpManagement::kManagementAction{"GET", "SET", "RESPONSE", "COMMAND", "ACKNOWLEDGE"};
 
-const std::map<mngmnt::enumId, std::string> managementTlv::TLV_ID{{mngmnt::enumId::USER_DESCRIPTION, "USER_DESCRIPTION"}, {mngmnt::enumId::SAVE_IN_NON_VOLATILE_STORAGE, "SAVE_IN_NON_VOLATILE_STORAGE"},  {mngmnt::enumId::RESET_NON_VOLATILE_STORAGE, "RESET_NON_VOLATILE_STORAGE"},{mngmnt::enumId::INITIALIZE, "INITIALIZE"}, {mngmnt::enumId::FAULT_LOG, "FAULT_LOG"}, {mngmnt::enumId::FAULT_LOG_RESET, "FAULT_LOG_RESET"}, {mngmnt::enumId::DEFAULT_DATA_SET, "DEFAULT_DATA_SET"}, {mngmnt::enumId::CURRENT_DATA_SET, "CURRENT_DATA_SET"}, {mngmnt::enumId::PARENT_DATA_SET, "PARENT_DATA_SET"}, {mngmnt::enumId::TIME_PROPERTIES_DATA_SET,"TIME_PROPERTIES_DATA_SET"}, {mngmnt::enumId::PRIORITY1, "PRIORITY1"}, {mngmnt::enumId::PRIORITY2, "PRIORITY2"}, {mngmnt::enumId::DOMAIN, "DOMAIN"}, {mngmnt::enumId::SLAVE_ONLY, "SLAVE_ONLY"}, {mngmnt::enumId::TIME, "TIME"}, {mngmnt::enumId::CLOCK_ACCURACY, "CLOCK_ACCURACY"}, {mngmnt::enumId::UTC_PROPERTIES, "UTC_PROPERTIES"}, {mngmnt::enumId::TRACEABILITY_PROPERTIES, "TRACEABILITY_PROPERTIES"}, {mngmnt::enumId::TIMESCALE_PROPERTIES, "TIMESCALE_PROPERTIES"}, {mngmnt::enumId::PATH_TRACE_LIST, "PATH_TRACE_LIST"}, {mngmnt::enumId::PATH_TRACE_ENABLE, "PATH_TRACE_ENABLE"}, {mngmnt::enumId::GRANDMASTER_CLUSTER_TABLE, "GRANDMASTER_CLUSTER_TABLE"}, {mngmnt::enumId::ACCEPTABLE_MASTER_TABLE, "ACCEPTABLE_MASTER_TABLE"}, {mngmnt::enumId::ACCEPTABLE_MASTER_MAX_TABLE_SIZE, "ACCEPTABLE_MASTER_MAX_TABLE_SIZE"}, {mngmnt::enumId::ALTERNATE_TIME_OFFSET_ENABLE, "ALTERNATE_TIME_OFFSET_ENABLE"}, {mngmnt::enumId::ALTERNATE_TIME_OFFSET_NAME, "ALTERNATE_TIME_OFFSET_NAME"}, {mngmnt::enumId::ALTERNATE_TIME_OFFSET_MAX_KEY, "ALTERNATE_TIME_OFFSET_MAX_KEY"}, {mngmnt::enumId::ALTERNATE_TIME_OFFSET_PROPERTIES, "ALTERNATE_TIME_OFFSET_PROPERTIES"}, {mngmnt::enumId::EXTERNAL_PORT_CONFIGURATION_ENABLED, "EXTERNAL_PORT_CONFIGURATION_ENABLED"}, {mngmnt::enumId::HOLDOVER_UPGRADE_ENABLE, "HOLDOVER_UPGRADE_ENABLE"}, {mngmnt::enumId::TRANSPARENT_CLOCK_DEFAULT_DATA_SET, "TRANSPARENT_CLOCK_DEFAULT_DATA_SET"}, {mngmnt::enumId::PRIMARY_DOMAIN, "PRIMARY_DOMAIN"}, {mngmnt::enumId::TIME_STATUS_NP, "TIME_STATUS_NP"}, {mngmnt::enumId::GRANDMASTER_SETTINGS_NP, "GRANDMASTER_SETTINGS_NP"}, {mngmnt::enumId::SUBSCRIBE_EVENTS_NP, "SUBSCRIBE_EVENTS_NP"}, {mngmnt::enumId::SYNCHRONIZATION_UNCERTAIN_NP, "SYNCHRONIZATION_UNCERTAIN_NP"}, {mngmnt::enumId::NULL_MANAGEMENT, "NULL_MANAGEMENT"}, {mngmnt::enumId::CLOCK_DESCRIPTION, "CLOCK_DESCRIPTION"}, {mngmnt::enumId::PORT_DATA_SET, "PORT_DATA_SET"}, {mngmnt::enumId::LOG_ANNOUNCE_INTERVAL, "LOG_ANNOUNCE_INTERVAL"}, {mngmnt::enumId::ANNOUNCE_RECEIPT_TIMEOUT, "ANNOUNCE_RECEIPT_TIMEOUT"}, {mngmnt::enumId::LOG_SYNC_INTERVAL, "LOG_SYNC_INTERVAL"}, {mngmnt::enumId::VERSION_NUMBER, "VERSION_NUMBER"}, {mngmnt::enumId::ENABLE_PORT, "ENABLE_PORT"}, {mngmnt::enumId::DISABLE_PORT, "DISABLE_PORT"}, {mngmnt::enumId::UNICAST_NEGOTIATION_ENABLE, "UNICAST_NEGOTIATION_ENABLE"}, {mngmnt::enumId::UNICAST_MASTER_TABLE, "UNICAST_MASTER_TABLE"}, {mngmnt::enumId::UNICAST_MASTER_MAX_TABLE_SIZE, "UNICAST_MASTER_MAX_TABLE_SIZE"}, {mngmnt::enumId::ACCEPTABLE_MASTER_TABLE_ENABLED, "ACCEPTABLE_MASTER_TABLE_ENABLED"}, {mngmnt::enumId::ALTERNATE_MASTER, "ALTERNATE_MASTER"}, {mngmnt::enumId::MASTER_ONLY, "MASTER_ONLY"}, {mngmnt::enumId::EXT_PORT_CONFIG_PORT_DATA_SET, "EXT_PORT_CONFIG_PORT_DATA_SET"}, {mngmnt::enumId::TRANSPARENT_CLOCK_PORT_DATA_SET,"TRANSPARENT_CLOCK_PORT_DATA_SET"}, {mngmnt::enumId::DELAY_MECHANISM, "DELAY_MECHANISM"}, {mngmnt::enumId::LOG_MIN_PDELAY_REQ_INTERVAL, "LOG_MIN_PDELAY_REQ_INTERVAL"}, {mngmnt::enumId::PORT_DATA_SET_NP, "PORT_DATA_SET_NP"}, {mngmnt::enumId::PORT_PROPERTIES_NP, "PORT_PROPERTIES_NP"}, {mngmnt::enumId::PORT_STATS_NP, "PORT_STATS_NP"}, {mngmnt::enumId::PORT_SERVICE_STATS_NP, "PORT_SERVICE_STATS_NP"}, {mngmnt::enumId::UNICAST_MASTER_TABLE_NP, "UNICAST_MASTER_TABLE_NP"}, {mngmnt::enumId::PORT_HWCLOCK_NP, "PORT_HWCLOCK_NP"}, {mngmnt::enumId::POWER_PROFILE_SETTINGS_NP, "POWER_PROFILE_SETTINGS_NP"}, {mngmnt::enumId::CMLDS_INFO_NP, "CMLDS_INFO_NP"}};
+const std::map<mngmnt::enumId, std::string> managementTlv::kTlvId{{mngmnt::enumId::kUserDescription, "USER_DESCRIPTION"}, {mngmnt::enumId::kSaveInNonVolatileStorage, "SAVE_IN_NON_VOLATILE_STORAGE"},  {mngmnt::enumId::kResetNonVolatileStorage, "RESET_NON_VOLATILE_STORAGE"},{mngmnt::enumId::kInitialize, "INITIALIZE"}, {mngmnt::enumId::kFaultLog, "FAULT_LOG"}, {mngmnt::enumId::kFaultLogReset, "FAULT_LOG_RESET"}, {mngmnt::enumId::kDefaultDataSet, "DEFAULT_DATA_SET"}, {mngmnt::enumId::kCurrentDataSet, "CURRENT_DATA_SET"}, {mngmnt::enumId::kParentDataSet, "PARENT_DATA_SET"}, {mngmnt::enumId::kTimePropertiesDataSet,"TIME_PROPERTIES_DATA_SET"}, {mngmnt::enumId::kPriority1, "PRIORITY1"}, {mngmnt::enumId::kPriority2, "PRIORITY2"}, {mngmnt::enumId::kDomain, "DOMAIN"}, {mngmnt::enumId::kSlaveOnly, "SLAVE_ONLY"}, {mngmnt::enumId::kTime, "TIME"}, {mngmnt::enumId::kClockAccuracy, "CLOCK_ACCURACY"}, {mngmnt::enumId::kUtcProperties, "UTC_PROPERTIES"}, {mngmnt::enumId::kTraceabilityProperties, "TRACEABILITY_PROPERTIES"}, {mngmnt::enumId::kTimescaleProperties, "TIMESCALE_PROPERTIES"}, {mngmnt::enumId::kPathTraceList, "PATH_TRACE_LIST"}, {mngmnt::enumId::kPathTraceEnable, "PATH_TRACE_ENABLE"}, {mngmnt::enumId::kGrandmasterClusterTable, "GRANDMASTER_CLUSTER_TABLE"}, {mngmnt::enumId::kAcceptableMasterTable, "ACCEPTABLE_MASTER_TABLE"}, {mngmnt::enumId::kAcceptableMasterMaxTableSize,"ACCEPTABLE_MASTER_MAX_TABLE_SIZE"}, {mngmnt::enumId::kAlternateTimeOffsetEnable, "ALTERNATE_TIME_OFFSET_ENABLE"}, {mngmnt::enumId::kAlternateTimeOffsetName, "ALTERNATE_TIME_OFFSET_NAME"}, {mngmnt::enumId::kAlternateTimeOffsetMaxKey, "ALTERNATE_TIME_OFFSET_MAX_KEY"}, {mngmnt::enumId::kAlternateTimeOffsetProperties, "ALTERNATE_TIME_OFFSET_PROPERTIES"}, {mngmnt::enumId::kExternalPortConfigurationEnabled, "EXTERNAL_PORT_CONFIGURATION_ENABLED"}, {mngmnt::enumId::kHoldoverUpgradeEnable, "HOLDOVER_UPGRADE_ENABLE"}, {mngmnt::enumId::kTransparentClockDefaultDataSet,"TRANSPARENT_CLOCK_DEFAULT_DATA_SET"}, {mngmnt::enumId::kPrimaryDomain, "PRIMARY_DOMAIN"}, {mngmnt::enumId::kTimeStatusNp, "TIME_STATUS_NP"}, {mngmnt::enumId::kGrandmasterSettingsNp, "GRANDMASTER_SETTINGS_NP"}, {mngmnt::enumId::kSubscribeEventsNp, "SUBSCRIBE_EVENTS_NP"}, {mngmnt::enumId::kSynchronizationUncertainNp, "SYNCHRONIZATION_UNCERTAIN_NP"}, {mngmnt::enumId::kNullManagement, "NULL_MANAGEMENT"}, {mngmnt::enumId::kClockDescription, "CLOCK_DESCRIPTION"}, {mngmnt::enumId::kPortDataSet, "PORT_DATA_SET"}, {mngmnt::enumId::kLogAnnounceInterval, "LOG_ANNOUNCE_INTERVAL"}, {mngmnt::enumId::kAnnounceReceiptTimeout, "ANNOUNCE_RECEIPT_TIMEOUT"}, {mngmnt::enumId::kLogSyncInterval, "LOG_SYNC_INTERVAL"}, {mngmnt::enumId::kVersionNumber, "VERSION_NUMBER"}, {mngmnt::enumId::kEnablePort, "ENABLE_PORT"}, {mngmnt::enumId::kDisablePort, "DISABLE_PORT"}, {mngmnt::enumId::kUnicastNegotiationEnable, "UNICAST_NEGOTIATION_ENABLE"}, {mngmnt::enumId::kUnicastMasterTable, "UNICAST_MASTER_TABLE"}, {mngmnt::enumId::kUnicastMasterMaxTableSize, "UNICAST_MASTER_MAX_TABLE_SIZE"}, {mngmnt::enumId::kAcceptableMasterTableEnabled, "ACCEPTABLE_MASTER_TABLE_ENABLED"}, {mngmnt::enumId::kAlternateMaster, "ALTERNATE_MASTER"}, {mngmnt::enumId::kMasterOnly, "MASTER_ONLY"}, {mngmnt::enumId::kExtPortConfigPortDataSet, "EXT_PORT_CONFIG_PORT_DATA_SET"}, {mngmnt::enumId::kTransparentClockPortDataSet,"TRANSPARENT_CLOCK_PORT_DATA_SET"}, {mngmnt::enumId::kDelayMechanism, "DELAY_MECHANISM"}, {mngmnt::enumId::kLogMinPdelayReqInterval, "LOG_MIN_PDELAY_REQ_INTERVAL"}, {mngmnt::enumId::kPortDataSetNp, "PORT_DATA_SET_NP"}, {mngmnt::enumId::kPortPropertiesNp, "PORT_PROPERTIES_NP"}, {mngmnt::enumId::kPortStatsNp, "PORT_STATS_NP"}, {mngmnt::enumId::kPortServiceStatsNp, "PORT_SERVICE_STATS_NP"}, {mngmnt::enumId::kUnicastMasterTableNp, "UNICAST_MASTER_TABLE_NP"}, {mngmnt::enumId::kPortHwclockNp, "PORT_HWCLOCK_NP"}, {mngmnt::enumId::kPowerProfileSettingsNp, "POWER_PROFILE_SETTINGS_NP"}, {mngmnt::enumId::kCmldsInfoNp, "CMLDS_INFO_NP"}};
 
 
-const std::array<std::string, 11> tlvPortDataSet::PORT_STATES{"NONE","INITIALIZING","FAULTY","DISABLED","LISTENING","PRE_MASTER","MASTER","PASSIVE","UNCALIBRATED","SLAVE","GRAND_MASTER"};
-const std::array<std::string, 5> tlvPortDataSet::TIMESTAMPING{"SOFTWARE", "HARDWARE", "LEGACY_HW", "ONESTEP", "P2P1STEP"};
+const std::array<std::string, 11> tlvPortDataSet::kPortStates{"NONE","INITIALIZING","FAULTY","DISABLED","LISTENING","PRE_MASTER","MASTER","PASSIVE","UNCALIBRATED","SLAVE","GRAND_MASTER"};
+const std::array<std::string, 5> tlvPortDataSet::kTimestamping{"SOFTWARE", "HARDWARE", "LEGACY_HW", "ONESTEP", "P2P1STEP"};
 
-const std::map<clck::enumAccuracy, std::string> clockQuality::ACCURACY{ {clck::enumAccuracy::ACC_UNKNOWN, "NOT_AVAILABLE"}, {clck::enumAccuracy::ACC_25NS, "25ns"}, {clck::enumAccuracy::ACC_100NS, "100ns"}, {clck::enumAccuracy::ACC_250NS, "250ns"}, {clck::enumAccuracy::ACC_1US, "1us"}, {clck::enumAccuracy::ACC_2_5US, "2.5us"}, {clck::enumAccuracy::ACC_10US, "10us"}, {clck::enumAccuracy::ACC_25US, "25us"}, {clck::enumAccuracy::ACC_100US, "100us"}, {clck::enumAccuracy::ACC_250US, "250us"}, {clck::enumAccuracy::ACC_1MS, "1ms"}, {clck::enumAccuracy::ACC_2_5MS, "2 to 5ms"}, {clck::enumAccuracy::ACC_10MS, "10ms"}, {clck::enumAccuracy::ACC_25MS, "25ms"}, {clck::enumAccuracy::ACC_100MS, "100ms"}, {clck::enumAccuracy::ACC_250MS, "250ms"}, {clck::enumAccuracy::ACC_1S, "1s"}, {clck::enumAccuracy::ACC_10S, "10s"}, {clck::enumAccuracy::ACC_OVER, ">10s"}, {clck::enumAccuracy::ACC_UNKNOWN, "UNKNOWN"}};
+const std::map<clck::enumAccuracy, std::string> clockQuality::kAccuracy{ {clck::enumAccuracy::kNa, "NOT_AVAILABLE"}, {clck::enumAccuracy::k250Ns, "25ns"}, {clck::enumAccuracy::k100Ns, "100ns"}, {clck::enumAccuracy::k250Ns, "250ns"}, {clck::enumAccuracy::k1Us, "1us"}, {clck::enumAccuracy::k2_5Us, "2.5us"}, {clck::enumAccuracy::k10Us, "10us"}, {clck::enumAccuracy::k25Us, "25us"}, {clck::enumAccuracy::k100Us, "100us"}, {clck::enumAccuracy::k250Us, "250us"}, {clck::enumAccuracy::k1Ms, "1ms"}, {clck::enumAccuracy::k2_5Ms, "2 to 5ms"}, {clck::enumAccuracy::k10Ms, "10ms"}, {clck::enumAccuracy::k25Ms, "25ms"}, {clck::enumAccuracy::k100Ms, "100ms"}, {clck::enumAccuracy::k250Ms, "250ms"}, {clck::enumAccuracy::k1S, "1s"}, {clck::enumAccuracy::k10S, "10s"}, {clck::enumAccuracy::kOver, ">10s"}, {clck::enumAccuracy::kUnknown, "UNKNOWN"}};
 
-const std::map<clck::enumTimeSource, std::string> clockQuality::SOURCE{{clck::enumTimeSource::NA, "NOT_AVAILABLE"}, {clck::enumTimeSource::ATOMIC, "ATOMIC_CLOCK"}, {clck::enumTimeSource::GPS, "GPS"}, {clck::enumTimeSource::RADIO, "TERRESTRIAL_RADIO"}, {clck::enumTimeSource::PTP, "PTP"}, {clck::enumTimeSource::NTP, "NTP"}, {clck::enumTimeSource::HANDSET, "HANDSET"}, {clck::enumTimeSource::OTHER, "OTHER"}, {clck::enumTimeSource::INTERNAL, "INTERNAL_OSCILLATOR"}};
+const std::map<clck::enumTimeSource, std::string> clockQuality::kSource{{clck::enumTimeSource::kNa, "NOT_AVAILABLE"}, {clck::enumTimeSource::kAtomic, "ATOMIC_CLOCK"}, {clck::enumTimeSource::kGps, "GPS"}, {clck::enumTimeSource::kRadio, "TERRESTRIAL_RADIO"}, {clck::enumTimeSource::kPtp, "PTP"}, {clck::enumTimeSource::kNtp, "NTP"}, {clck::enumTimeSource::kHandset, "HANDSET"}, {clck::enumTimeSource::kOther, "OTHER"}, {clck::enumTimeSource::kInternal, "INTERNAL_OSCILLATOR"}};
 
-const std::map<mngmnt::enumError, std::string> managementTlvResponse::MNGMNT_ERROR{{mngmnt::enumError::RESPONSE_TOO_BIG, "RESPONSE_TOO_BIG"},
-																      {mngmnt::enumError::NO_SUCH_ID, "NO_SUCH_ID"},
-																	  {mngmnt::enumError::WRONG_LENGTH, "WRONG_LENGTH"},
-																	  {mngmnt::enumError::WRONG_VALUE, "WRONG_VALUE"},
-																	  {mngmnt::enumError::NOT_SETABLE, "NOT_SETABLE"},
-																	  {mngmnt::enumError::NOT_SUPPORTED, "NOT_SUPPORTED"},
-																	  {mngmnt::enumError::GENERAL_ERROR, "GENERAL_ERROR"}};
+const std::map<mngmnt::enumError, std::string> managementTlvResponse::kError{{mngmnt::enumError::kResponseTooBig, "RESPONSE_TOO_BIG"},
+																      {mngmnt::enumError::kNoSuchId, "NO_SUCH_ID"},
+																	  {mngmnt::enumError::kWrongLength, "WRONG_LENGTH"},
+																	  {mngmnt::enumError::kWrongValue, "WRONG_VALUE"},
+																	  {mngmnt::enumError::kNotSetable, "NOT_SETABLE"},
+																	  {mngmnt::enumError::kNotSupported, "NOT_SUPPORTED"},
+																	  {mngmnt::enumError::kGeneralError, "GENERAL_ERROR"}};
 
 
 
@@ -640,19 +640,19 @@ void ptpAnnounce::OutputValues() const
 {
     ptpV2Payload::OutputValues();
 
-	auto itAccuracy = clockQuality::ACCURACY.find(eGrandmasterAccuracy);
+	auto itAccuracy = clockQuality::kAccuracy.find(eGrandmasterAccuracy);
 
     pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "UTC Offset = " << (int)nUtcOffset ;
     pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "GrandmasterPriority1 = " << (int)nGrandmasterPriority1 ;
     pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "GrandmasterClass = " << (int)nGrandmasterClass ;
-    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "GrandmasterAccuracy = " << (itAccuracy != clockQuality::ACCURACY.end() ? itAccuracy->second : std::to_string(static_cast<int>(eGrandmasterAccuracy)));
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "GrandmasterAccuracy = " << (itAccuracy != clockQuality::kAccuracy.end() ? itAccuracy->second : std::to_string(static_cast<int>(eGrandmasterAccuracy)));
     pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "GrandmasterVariance = " << (int)nGrandmasterVariance ;
     pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "GrandmasterPriority2 = " << (int)nGrandmasterPriority2 ;
     pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Grandmaster ClockId = " << sGrandmasterClockId ;
     pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Steps = " << (int)nStepsRemoved ;
 
-	auto itSource = clockQuality::SOURCE.find(eTimeSource);
-    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Time Source = " << (itSource != clockQuality::SOURCE.end() ? itSource->second : std::to_string(static_cast<int>(eTimeSource)));
+	auto itSource = clockQuality::kSource.find(eTimeSource);
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Time Source = " << (itSource != clockQuality::kSource.end() ? itSource->second : std::to_string(static_cast<int>(eTimeSource)));
 }
 
 
@@ -668,7 +668,7 @@ ptpManagement::ptpManagement(const std::vector<unsigned char>& vMessage) : ptpV2
     //13 is reserved
     if(vMessage.size() > 19)
 	{
-		if(eAction == mngmnt::enumAction::RESPONSE)    //means we have a tlv
+		if(eAction == mngmnt::enumAction::kResponse)    //means we have a tlv
     	{
 			pTlv = std::make_shared<managementTlvResponse>(std::vector<unsigned char>(vMessage.begin()+14, vMessage.end()));
 		}
@@ -680,8 +680,8 @@ ptpManagement::ptpManagement(mngmnt::enumGet id, uint8_t nHops, const std::strin
 	sTargetPortIdentity = sTargetPortId+"-"+std::to_string(nTargetPortNumber);
 	nStartingBoundaryHops = nHops;
 	nBoundaryHops = nHops;
-	eAction = mngmnt::enumAction::GET;
-	pTlv = std::make_shared<managementTlvResponse>(mngmnt::enumType::MANAGEMENT, id);
+	eAction = mngmnt::enumAction::kGet;
+	pTlv = std::make_shared<managementTlvResponse>(mngmnt::enumType::kManagement, id);
 }
 
 ptpManagement::ptpManagement(mngmnt::enumSet id, uint8_t nHops, const std::string& sTargetPortId, uint16_t nTargetPortNumber)
@@ -689,8 +689,8 @@ ptpManagement::ptpManagement(mngmnt::enumSet id, uint8_t nHops, const std::strin
 	sTargetPortIdentity = sTargetPortId+"-"+std::to_string(nTargetPortNumber);
 	nStartingBoundaryHops = nHops;
 	nBoundaryHops = nHops;
-	eAction = mngmnt::enumAction::SET;
-	pTlv = std::make_shared<managementTlvResponse>(mngmnt::enumType::MANAGEMENT, id);
+	eAction = mngmnt::enumAction::kSet;
+	pTlv = std::make_shared<managementTlvResponse>(mngmnt::enumType::kManagement, id);
 }
 
 std::vector<unsigned char> ptpManagement::CreateMessage() const
@@ -718,7 +718,7 @@ void ptpManagement::OutputValues() const
     pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Target Port            = " << sTargetPortIdentity;
     pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Starting Boundary Hops = " << (int)nStartingBoundaryHops;
     pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Boundary Hops          = " << (int)nBoundaryHops;
-    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Action                 = " << MANAGEMENT_ACTION[static_cast<int>(eAction)];
+    pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Action                 = " << kManagementAction[static_cast<int>(eAction)];
 
 	if(pTlv)
 	{
@@ -728,10 +728,10 @@ void ptpManagement::OutputValues() const
 
 void managementTlvResponse::OutputValues() const
 {
-	auto itId = TLV_ID.find(eId);
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "ID = " << (itId != TLV_ID.end() ? itId->second : std::to_string(static_cast<int>(eId)));
+	auto itId = kTlvId.find(eId);
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "ID = " << (itId != kTlvId.end() ? itId->second : std::to_string(static_cast<int>(eId)));
 
-	if(eType == mngmnt::enumType::MANAGEMENT)
+	if(eType == mngmnt::enumType::kManagement)
 	{
 		if(pData)
 		{
@@ -742,10 +742,10 @@ void managementTlvResponse::OutputValues() const
 			pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "No Data";
 		}
 	}
-	else if(eType == mngmnt::enumType::MANAGEMENT_ERROR_STATUS)
+	else if(eType == mngmnt::enumType::kManagementErrorStatus)
 	{
-		auto itError = MNGMNT_ERROR.find(eError);
-		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << (itError != MNGMNT_ERROR.end() ? itError->second : std::to_string(static_cast<uint16_t>(eError)));
+		auto itError = kError.find(eError);
+		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << (itError != kError.end() ? itError->second : std::to_string(static_cast<uint16_t>(eError)));
 
 		if(sError.empty() == false)
 		{
@@ -764,11 +764,11 @@ managementTlvResponse::managementTlvResponse(const std::vector<unsigned char>& v
 	nLength = ToU16(vMessage, nPos);
     
 
-	if(eType == mngmnt::enumType::MANAGEMENT)
+	if(eType == mngmnt::enumType::kManagement)
 	{
 		ParseTlv(vMessage);
 	}
-	else if(eType == mngmnt::enumType::MANAGEMENT_ERROR_STATUS)
+	else if(eType == mngmnt::enumType::kManagementErrorStatus)
 	{
 		eError = static_cast<mngmnt::enumError>(ToU16(vMessage, nPos));
 		eId = static_cast<mngmnt::enumId>(ToU16(vMessage, nPos));
@@ -789,81 +789,81 @@ managementTlvResponse::managementTlvResponse(mngmnt::enumType eT, mngmnt::enumGe
 	eId = static_cast<mngmnt::enumId>(eI);
 	switch(eId)
 	{
-		case mngmnt::enumId::CLOCK_DESCRIPTION:
+		case mngmnt::enumId::kClockDescription:
 			pData = std::make_shared<tlvClockDescription>();
 			break;
-		case mngmnt::enumId::USER_DESCRIPTION:
+		case mngmnt::enumId::kUserDescription:
 			pData = std::make_shared<tlvUserDescription>();
 			break;
-		case mngmnt::enumId::DEFAULT_DATA_SET:
+		case mngmnt::enumId::kDefaultDataSet:
 			pData = std::make_shared<tlvDefaultDataSet>();
 			break;
-		case mngmnt::enumId::CURRENT_DATA_SET:
+		case mngmnt::enumId::kCurrentDataSet:
 			pData = std::make_shared<tlvCurrentDataSet>();
 			break;
-		case mngmnt::enumId::PORT_DATA_SET:
+		case mngmnt::enumId::kPortDataSet:
 			pData = std::make_shared<tlvPortDataSet>();
 			break;
-		case mngmnt::enumId::PARENT_DATA_SET:
+		case mngmnt::enumId::kParentDataSet:
 			pData = std::make_shared<tlvParentDataSet>();
 			break;
-		case mngmnt::enumId::TIME_PROPERTIES_DATA_SET:
+		case mngmnt::enumId::kTimePropertiesDataSet:
 			pData = std::make_shared<tlvTimePropertiesDataSet>();
 			break;
-		case mngmnt::enumId::TIME:
+		case mngmnt::enumId::kTime:
 			pData = std::make_shared<tlvTime>();
 			break;
-		case mngmnt::enumId::PRIORITY1:
-		case mngmnt::enumId::PRIORITY2:
-		case mngmnt::enumId::DOMAIN:
-		case mngmnt::enumId::SLAVE_ONLY:
-		case mngmnt::enumId::MASTER_ONLY:
-		case mngmnt::enumId::SYNCHRONIZATION_UNCERTAIN_NP:
-		case mngmnt::enumId::LOG_ANNOUNCE_INTERVAL:
-		case mngmnt::enumId::LOG_MIN_PDELAY_REQ_INTERVAL:
-		case mngmnt::enumId::DELAY_MECHANISM:
-		case mngmnt::enumId::LOG_SYNC_INTERVAL:
-		case mngmnt::enumId::ANNOUNCE_RECEIPT_TIMEOUT:
-		case mngmnt::enumId::ALTERNATE_TIME_OFFSET_ENABLE:
+		case mngmnt::enumId::kPriority1:
+		case mngmnt::enumId::kPriority2:
+		case mngmnt::enumId::kDomain:
+		case mngmnt::enumId::kSlaveOnly:
+		case mngmnt::enumId::kMasterOnly:
+		case mngmnt::enumId::kSynchronizationUncertainNp:
+		case mngmnt::enumId::kLogAnnounceInterval:
+		case mngmnt::enumId::kLogMinPdelayReqInterval:
+		case mngmnt::enumId::kDelayMechanism:
+		case mngmnt::enumId::kLogSyncInterval:
+		case mngmnt::enumId::kAnnounceReceiptTimeout:
+		case mngmnt::enumId::kAlternateTimeOffsetEnable:
 			pData = std::make_shared<tlvBasic>(eId);
 			break;
-		case mngmnt::enumId::CLOCK_ACCURACY:
+		case mngmnt::enumId::kClockAccuracy:
 			pData = std::make_shared<tlvClockAccuracy>();
 			break;
-		case mngmnt::enumId::TRACEABILITY_PROPERTIES:
+		case mngmnt::enumId::kTraceabilityProperties:
 			pData = std::make_shared<tlvTraceable>();
 			break;
-		case mngmnt::enumId::TIMESCALE_PROPERTIES:
+		case mngmnt::enumId::kTimescaleProperties:
 			pData = std::make_shared<tlvTimescale>();
 			break;
-		case mngmnt::enumId::VERSION_NUMBER:
+		case mngmnt::enumId::kVersionNumber:
 			pData = std::make_shared<tlvVersion>();
 			break;
-		case mngmnt::enumId::ALTERNATE_TIME_OFFSET_NAME:
+		case mngmnt::enumId::kAlternateTimeOffsetName:
 			pData = std::make_shared<tlvAlternateTimeOffsetName>();
 			break;
-		case mngmnt::enumId::ALTERNATE_TIME_OFFSET_PROPERTIES:
+		case mngmnt::enumId::kAlternateTimeOffsetProperties:
 			pData = std::make_shared<tlvAlternateTimeOffsetProperties>();
 			break;
-		case mngmnt::enumId::TIME_STATUS_NP:
+		case mngmnt::enumId::kTimeStatusNp:
 			pData = std::make_shared<tlvTimeStatusNP>();
 			break;
-		case mngmnt::enumId::GRANDMASTER_SETTINGS_NP:
+		case mngmnt::enumId::kGrandmasterSettingsNp:
 			pData = std::make_shared<tlvGrandmasterSettingsNP>();
 			break;
-		case mngmnt::enumId::SUBSCRIBE_EVENTS_NP:
+		case mngmnt::enumId::kSubscribeEventsNp:
 			// @todo
 			break;
-		case mngmnt::enumId::PORT_PROPERTIES_NP:
+		case mngmnt::enumId::kPortPropertiesNp:
 			pData = std::make_shared<tlvPortPropertiesNP>();
 			break;
-		case mngmnt::enumId::PORT_STATS_NP:
+		case mngmnt::enumId::kPortStatsNp:
 			pData = std::make_shared<tlvPortStatsNP>();
 			break;
-		case mngmnt::enumId::PORT_SERVICE_STATS_NP:
+		case mngmnt::enumId::kPortServiceStatsNp:
 			pData = std::make_shared<tlvPortServiceStatsNP>();
 			break;
-		case mngmnt::enumId::PORT_DATA_SET_NP:
+		case mngmnt::enumId::kPortDataSetNp:
 			pData = std::make_shared<tlvPortDataSetNP>();
 		default:
 			pData = nullptr;
@@ -872,7 +872,7 @@ managementTlvResponse::managementTlvResponse(mngmnt::enumType eT, mngmnt::enumGe
 
 void managementTlvResponse::CreateMessage(std::vector<unsigned char>& vMessage) const
 {
-	FromU16(static_cast<uint16_t>(mngmnt::enumType::MANAGEMENT), vMessage);
+	FromU16(static_cast<uint16_t>(mngmnt::enumType::kManagement), vMessage);
 	if(pData)
 	{
 		auto vTlv = pData->CreateMessage();
@@ -900,81 +900,81 @@ void managementTlvResponse::ParseTlv(const std::vector<unsigned char>& vMessage)
 
 	switch(eId)
 	{
-		case mngmnt::enumId::CLOCK_DESCRIPTION:
+		case mngmnt::enumId::kClockDescription:
 			pData = std::make_shared<tlvClockDescription>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::USER_DESCRIPTION:
+		case mngmnt::enumId::kUserDescription:
 			pData = std::make_shared<tlvUserDescription>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::DEFAULT_DATA_SET:
+		case mngmnt::enumId::kDefaultDataSet:
 			pData = std::make_shared<tlvDefaultDataSet>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::CURRENT_DATA_SET:
+		case mngmnt::enumId::kCurrentDataSet:
 			pData = std::make_shared<tlvCurrentDataSet>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::PORT_DATA_SET:
+		case mngmnt::enumId::kPortDataSet:
 			pData = std::make_shared<tlvPortDataSet>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::PARENT_DATA_SET:
+		case mngmnt::enumId::kParentDataSet:
 			pData = std::make_shared<tlvParentDataSet>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::TIME_PROPERTIES_DATA_SET:
+		case mngmnt::enumId::kTimePropertiesDataSet:
 			pData = std::make_shared<tlvTimePropertiesDataSet>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::TIME:
+		case mngmnt::enumId::kTime:
 			pData = std::make_shared<tlvTime>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::PRIORITY1:
-		case mngmnt::enumId::PRIORITY2:
-		case mngmnt::enumId::DOMAIN:
-		case mngmnt::enumId::SLAVE_ONLY:
-		case mngmnt::enumId::MASTER_ONLY:
-		case mngmnt::enumId::SYNCHRONIZATION_UNCERTAIN_NP:
-		case mngmnt::enumId::LOG_ANNOUNCE_INTERVAL:
-		case mngmnt::enumId::LOG_MIN_PDELAY_REQ_INTERVAL:
-		case mngmnt::enumId::DELAY_MECHANISM:
-		case mngmnt::enumId::LOG_SYNC_INTERVAL:
-		case mngmnt::enumId::ANNOUNCE_RECEIPT_TIMEOUT:
-		case mngmnt::enumId::ALTERNATE_TIME_OFFSET_ENABLE:
+		case mngmnt::enumId::kPriority1:
+		case mngmnt::enumId::kPriority2:
+		case mngmnt::enumId::kDomain:
+		case mngmnt::enumId::kSlaveOnly:
+		case mngmnt::enumId::kMasterOnly:
+		case mngmnt::enumId::kSynchronizationUncertainNp:
+		case mngmnt::enumId::kLogAnnounceInterval:
+		case mngmnt::enumId::kLogMinPdelayReqInterval:
+		case mngmnt::enumId::kDelayMechanism:
+		case mngmnt::enumId::kLogSyncInterval:
+		case mngmnt::enumId::kAnnounceReceiptTimeout:
+		case mngmnt::enumId::kAlternateTimeOffsetEnable:
 			pData = std::make_shared<tlvBasic>(eId, std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::CLOCK_ACCURACY:
+		case mngmnt::enumId::kClockAccuracy:
 			pData = std::make_shared<tlvClockAccuracy>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::TRACEABILITY_PROPERTIES:
+		case mngmnt::enumId::kTraceabilityProperties:
 			pData = std::make_shared<tlvTraceable>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::TIMESCALE_PROPERTIES:
+		case mngmnt::enumId::kTimescaleProperties:
 			pData = std::make_shared<tlvTimescale>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::VERSION_NUMBER:
+		case mngmnt::enumId::kVersionNumber:
 			pData = std::make_shared<tlvVersion>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::ALTERNATE_TIME_OFFSET_NAME:
+		case mngmnt::enumId::kAlternateTimeOffsetName:
 			pData = std::make_shared<tlvAlternateTimeOffsetName>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::ALTERNATE_TIME_OFFSET_PROPERTIES:
+		case mngmnt::enumId::kAlternateTimeOffsetProperties:
 			pData = std::make_shared<tlvAlternateTimeOffsetProperties>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::TIME_STATUS_NP:
+		case mngmnt::enumId::kTimeStatusNp:
 			pData = std::make_shared<tlvTimeStatusNP>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::GRANDMASTER_SETTINGS_NP:
+		case mngmnt::enumId::kGrandmasterSettingsNp:
 			pData = std::make_shared<tlvGrandmasterSettingsNP>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::SUBSCRIBE_EVENTS_NP:
+		case mngmnt::enumId::kSubscribeEventsNp:
 			// @todo
 			break;
-		case mngmnt::enumId::PORT_PROPERTIES_NP:
+		case mngmnt::enumId::kPortPropertiesNp:
 			pData = std::make_shared<tlvPortPropertiesNP>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::PORT_STATS_NP:
+		case mngmnt::enumId::kPortStatsNp:
 			pData = std::make_shared<tlvPortStatsNP>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::PORT_SERVICE_STATS_NP:
+		case mngmnt::enumId::kPortServiceStatsNp:
 			pData = std::make_shared<tlvPortServiceStatsNP>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			break;
-		case mngmnt::enumId::PORT_DATA_SET_NP:
+		case mngmnt::enumId::kPortDataSetNp:
 			pData = std::make_shared<tlvPortDataSetNP>(std::vector<unsigned char>(vMessage.begin()+6, vMessage.end()));
 			
 		/*
@@ -1059,14 +1059,14 @@ std::vector<unsigned char> tlvBasic::CreateMessage() const
 	return vMessage;
 }
 
-tlvClockAccuracy::tlvClockAccuracy(const std::vector<unsigned char>& vMessage) : tlvBasic(mngmnt::enumId::CLOCK_ACCURACY, vMessage)
+tlvClockAccuracy::tlvClockAccuracy(const std::vector<unsigned char>& vMessage) : tlvBasic(mngmnt::enumId::kClockAccuracy, vMessage)
 {
 
 }
 
 void tlvClockAccuracy::OutputValues() const
 {
-	if(auto itAccuracy = clockQuality::ACCURACY.find(static_cast<clck::enumAccuracy>(nValue)); itAccuracy != clockQuality::ACCURACY.end())
+	if(auto itAccuracy = clockQuality::kAccuracy.find(static_cast<clck::enumAccuracy>(nValue)); itAccuracy != clockQuality::kAccuracy.end())
 	{
 		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Accuracy =  " << itAccuracy->second;
 	}
@@ -1076,17 +1076,17 @@ void tlvClockAccuracy::OutputValues() const
 	}
 }
 
-tlvTraceable::tlvTraceable(const std::vector<unsigned char>& vMessage) : tlvBasic(mngmnt::enumId::TRACEABILITY_PROPERTIES, vMessage)
+tlvTraceable::tlvTraceable(const std::vector<unsigned char>& vMessage) : tlvBasic(mngmnt::enumId::kTraceabilityProperties, vMessage)
 {
-	bTimeTraceable = nValue & static_cast<uint8_t>(hdr::enumFlags::TIME_TRACEABLE);
-	bFrequencyTraceable = nValue & static_cast<uint8_t>(hdr::enumFlags::FREQ_TRACEABLE);
+	bTimeTraceable = nValue & static_cast<uint8_t>(hdr::enumFlags::kTimeTraceable);
+	bFrequencyTraceable = nValue & static_cast<uint8_t>(hdr::enumFlags::kFreqTraceable);
 }
 
 std::vector<unsigned char> tlvTraceable::CreateMessage() const
 {
 	std::vector<unsigned char> vMessage;
-	uint8_t nValue = (bTimeTraceable ? static_cast<uint8_t>(hdr::enumFlags::TIME_TRACEABLE) : 0) + 
-					 (bFrequencyTraceable ? static_cast<uint8_t>(hdr::enumFlags::TIME_TRACEABLE) : 0);
+	uint8_t nValue = (bTimeTraceable ? static_cast<uint8_t>(hdr::enumFlags::kTimeTraceable) : 0) + 
+					 (bFrequencyTraceable ? static_cast<uint8_t>(hdr::enumFlags::kTimeTraceable) : 0);
 	
 	FromU8(nValue, vMessage);
 	FromU8(0, vMessage);
@@ -1099,16 +1099,16 @@ void tlvTraceable::OutputValues() const
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Freq Traceable = " << (bFrequencyTraceable ? "true" : "false");
 }
 
-tlvTimescale::tlvTimescale(const std::vector<unsigned char>& vMessage) : tlvBasic(mngmnt::enumId::TIMESCALE_PROPERTIES, vMessage)
+tlvTimescale::tlvTimescale(const std::vector<unsigned char>& vMessage) : tlvBasic(mngmnt::enumId::kTimescaleProperties, vMessage)
 {
-	bPtpTimescale = nValue & static_cast<uint8_t>(hdr::enumFlags::TIMESCALE);
+	bPtpTimescale = nValue & static_cast<uint8_t>(hdr::enumFlags::kTimescale);
 }
 
 
 std::vector<unsigned char> tlvTimescale::CreateMessage() const
 {
 	std::vector<unsigned char> vMessage;
-	FromU8(bPtpTimescale ? static_cast<uint8_t>(hdr::enumFlags::TIMESCALE) : 0, vMessage);
+	FromU8(bPtpTimescale ? static_cast<uint8_t>(hdr::enumFlags::kTimescale) : 0, vMessage);
 	FromU8(0, vMessage);
 	return vMessage;
 }
@@ -1118,7 +1118,7 @@ void tlvTimescale::OutputValues() const
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "PTP Timescale = " << (bPtpTimescale ? "true" : "false");
 }
 
-tlvVersion::tlvVersion(const std::vector<unsigned char>& vMessage) : tlvBasic(mngmnt::enumId::VERSION_NUMBER, vMessage)
+tlvVersion::tlvVersion(const std::vector<unsigned char>& vMessage) : tlvBasic(mngmnt::enumId::kVersionNumber, vMessage)
 {
 	nVersion = nValue & 0x0f;
 }
@@ -1137,7 +1137,7 @@ std::vector<unsigned char> tlvVersion::CreateMessage() const
 	return vMessage;
 }
 
-tlvUserDescription::tlvUserDescription(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::USER_DESCRIPTION)
+tlvUserDescription::tlvUserDescription(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::kUserDescription)
 {
 	auto vSplit = SplitString(ToStr8(vMessage, nPos), ';');
 	if(vSplit.size() > 1)
@@ -1166,7 +1166,7 @@ std::vector<unsigned char> tlvUserDescription::CreateMessage() const
 }
 
 
-tlvClockDescription::tlvClockDescription(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::CLOCK_DESCRIPTION)
+tlvClockDescription::tlvClockDescription(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::kClockDescription)
 {
 	auto nFlags = ToU16(vMessage, nPos);
 	
@@ -1205,11 +1205,11 @@ std::vector<unsigned char> tlvClockDescription::CreateMessage() const
 	std::vector<unsigned char> vMessage;
 
 	//create flag
-	uint16_t nFlags = bClockOrdinary      ? (static_cast<uint16_t>(clck::enumType::ORDINARY)) : 0 +
-					  bClockBoundary      ? (static_cast<uint16_t>(clck::enumType::BOUNDARY)) : 0 +
-					  bClockTranparentP2P ? (static_cast<uint16_t>(clck::enumType::TRANSPARENT_P2P)) : 0 +
-					  bClockTranparentE2E ? (static_cast<uint16_t>(clck::enumType::TRANSPARENT_E2E)) : 0 +
-					  bClockManagement    ? (static_cast<uint16_t>(clck::enumType::MANAGEMENT)) : 0;
+	uint16_t nFlags = bClockOrdinary      ? (static_cast<uint16_t>(clck::enumType::kOrdinary)) : 0 +
+					  bClockBoundary      ? (static_cast<uint16_t>(clck::enumType::kBoundary)) : 0 +
+					  bClockTranparentP2P ? (static_cast<uint16_t>(clck::enumType::kTransparentP2P)) : 0 +
+					  bClockTranparentE2E ? (static_cast<uint16_t>(clck::enumType::kTransparentE2E)) : 0 +
+					  bClockManagement    ? (static_cast<uint16_t>(clck::enumType::kManagement)) : 0;
 					  
 	FromU16(nFlags, vMessage);
 	FromStr(sPhysicalLayerProtocol, vMessage);
@@ -1256,7 +1256,7 @@ void tlvClockDescription::OutputValues() const
 
 
 
-tlvDefaultDataSet::tlvDefaultDataSet(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::DEFAULT_DATA_SET)
+tlvDefaultDataSet::tlvDefaultDataSet(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::kDefaultDataSet)
 {
 	auto nFlags = ToU8(vMessage, nPos);
 	nReserved1 = ToU8(vMessage, nPos);
@@ -1303,7 +1303,7 @@ void tlvDefaultDataSet::OutputValues() const
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Priority2                 =  " << (int)nPriority2;
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Class               =  " << (int)quality.nClass;
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Class               =  " << (int)quality.nClass;
-	if(auto itAccuracy = clockQuality::ACCURACY.find(quality.eAccuracy); itAccuracy != clockQuality::ACCURACY.end())
+	if(auto itAccuracy = clockQuality::kAccuracy.find(quality.eAccuracy); itAccuracy != clockQuality::kAccuracy.end())
 	{
 		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Accuracy            =  " << itAccuracy->second;
 	}
@@ -1315,7 +1315,7 @@ void tlvDefaultDataSet::OutputValues() const
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Offset Log Variance =  " << std::hex << "0x" << quality.nOffsetScaledLogVariance;
 }
 
-tlvCurrentDataSet::tlvCurrentDataSet(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::CURRENT_DATA_SET)
+tlvCurrentDataSet::tlvCurrentDataSet(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::kCurrentDataSet)
 {
 	nStepsRemoved = ToU16(vMessage, nPos);
 	offsetFromMaster = ToSubNano(vMessage, nPos);
@@ -1338,7 +1338,7 @@ void tlvCurrentDataSet::OutputValues() const
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Mean Delay    = " << meanPathDelay.nano.count() << "." << offsetFromMaster.sub;
 }
 
-tlvParentDataSet::tlvParentDataSet(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::PARENT_DATA_SET)
+tlvParentDataSet::tlvParentDataSet(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::kParentDataSet)
 {
 	sParentPortIdentity = ToPidStr(vMessage, nPos);
 	nParentStats = ToU8(vMessage, nPos);
@@ -1383,7 +1383,7 @@ void tlvParentDataSet::OutputValues() const
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Grandmaster Priority2                 = " << (int)nGrandmasterPriority2;
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Grandmaster Clock Class               = " << (int)grandmasterClockQuality.nClass;
 	
-	if(auto itAccuracy = clockQuality::ACCURACY.find(grandmasterClockQuality.eAccuracy); itAccuracy != clockQuality::ACCURACY.end())
+	if(auto itAccuracy = clockQuality::kAccuracy.find(grandmasterClockQuality.eAccuracy); itAccuracy != clockQuality::kAccuracy.end())
 	{
 		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Accuracy                        =  " << itAccuracy->second;	
 	}
@@ -1395,18 +1395,18 @@ void tlvParentDataSet::OutputValues() const
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Grandmaster Offset Log Variance       = " << std::hex << "0x" << (int)grandmasterClockQuality.nOffsetScaledLogVariance;
 }
 
-tlvTimePropertiesDataSet::tlvTimePropertiesDataSet(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::TIME_PROPERTIES_DATA_SET)
+tlvTimePropertiesDataSet::tlvTimePropertiesDataSet(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::kTimePropertiesDataSet)
 {
 	nCurrentUtcOffset = ToU16(vMessage, nPos);
 	auto nFlags = ToU8(vMessage, nPos);
 	eTimeSource = static_cast<clck::enumTimeSource>(ToU8(vMessage, nPos));
 
-	bLeap61 		= nFlags & static_cast<uint8_t>(hdr::enumFlags::LI_61);
-	bLeap59 		= nFlags & static_cast<uint8_t>(hdr::enumFlags::LI_59);
-	bUtcOffsetValid = nFlags & static_cast<uint8_t>(hdr::enumFlags::UTC_OFFSET_VALID);
-	bPtpTimescale 	= nFlags & static_cast<uint8_t>(hdr::enumFlags::TIMESCALE);
-	bTimeTraceable 	= nFlags & static_cast<uint8_t>(hdr::enumFlags::TIME_TRACEABLE);
-	bFreqTraceable	= nFlags & static_cast<uint8_t>(hdr::enumFlags::FREQ_TRACEABLE);
+	bLeap61 		= nFlags & static_cast<uint8_t>(hdr::enumFlags::kLI_61);
+	bLeap59 		= nFlags & static_cast<uint8_t>(hdr::enumFlags::kLI_59);
+	bUtcOffsetValid = nFlags & static_cast<uint8_t>(hdr::enumFlags::kUtcOffsetValid);
+	bPtpTimescale 	= nFlags & static_cast<uint8_t>(hdr::enumFlags::kTimescale);
+	bTimeTraceable 	= nFlags & static_cast<uint8_t>(hdr::enumFlags::kTimeTraceable);
+	bFreqTraceable	= nFlags & static_cast<uint8_t>(hdr::enumFlags::kFreqTraceable);
 };
 
 std::vector<unsigned char> tlvTimePropertiesDataSet::CreateMessage() const
@@ -1414,12 +1414,12 @@ std::vector<unsigned char> tlvTimePropertiesDataSet::CreateMessage() const
 	std::vector<unsigned char> vMessage;
 	FromU16(nCurrentUtcOffset, vMessage);
 
-	uint8_t nFlags = bLeap61 		 ? static_cast<uint8_t>(hdr::enumFlags::LI_61) : 0 +
-					 bLeap59 		 ? static_cast<uint8_t>(hdr::enumFlags::LI_59) : 0 +
-					 bUtcOffsetValid ? static_cast<uint8_t>(hdr::enumFlags::UTC_OFFSET_VALID) : 0 +
-					 bPtpTimescale 	 ? static_cast<uint8_t>(hdr::enumFlags::TIMESCALE) : 0 +
-					 bTimeTraceable  ? static_cast<uint8_t>(hdr::enumFlags::TIME_TRACEABLE) : 0 +
-					 bFreqTraceable	 ? static_cast<uint8_t>(hdr::enumFlags::FREQ_TRACEABLE) : 0;
+	uint8_t nFlags = bLeap61 		 ? static_cast<uint8_t>(hdr::enumFlags::kLI_61) : 0 +
+					 bLeap59 		 ? static_cast<uint8_t>(hdr::enumFlags::kLI_59) : 0 +
+					 bUtcOffsetValid ? static_cast<uint8_t>(hdr::enumFlags::kUtcOffsetValid) : 0 +
+					 bPtpTimescale 	 ? static_cast<uint8_t>(hdr::enumFlags::kTimescale) : 0 +
+					 bTimeTraceable  ? static_cast<uint8_t>(hdr::enumFlags::kTimeTraceable) : 0 +
+					 bFreqTraceable	 ? static_cast<uint8_t>(hdr::enumFlags::kFreqTraceable) : 0;
 
 	FromU8(nFlags, vMessage);
 	FromU8(static_cast<uint8_t>(eTimeSource), vMessage);
@@ -1429,7 +1429,7 @@ std::vector<unsigned char> tlvTimePropertiesDataSet::CreateMessage() const
 void tlvTimePropertiesDataSet::OutputValues() const
 {
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Current UTC Offset  = " << nCurrentUtcOffset;
-	if(auto itSource = clockQuality::SOURCE.find(eTimeSource); itSource != clockQuality::SOURCE.end())
+	if(auto itSource = clockQuality::kSource.find(eTimeSource); itSource != clockQuality::kSource.end())
 	{
 		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Time Source               = " << itSource->second;
 	}
@@ -1447,7 +1447,7 @@ void tlvTimePropertiesDataSet::OutputValues() const
 }
 
 
-tlvPortDataSet::tlvPortDataSet(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::PORT_DATA_SET)
+tlvPortDataSet::tlvPortDataSet(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::kPortDataSet)
 {
 	sPortIdentity  = ToPidStr(vMessage, nPos);
 	nPortState = ToU8(vMessage, nPos);
@@ -1482,7 +1482,7 @@ std::vector<unsigned char> tlvPortDataSet::CreateMessage() const
 void tlvPortDataSet::OutputValues() const
 {
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Port Id                = " << sPortIdentity;
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "State                  = " << PORT_STATES[nPortState];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "State                  = " << kPortStates[nPortState];
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Min Delay Req Interval =  " << (int)nLogMinDelayReqInterval;
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Peer Mean Path Delay   =  " << peerMeanPathDelay.nano.count() << "." << peerMeanPathDelay.sub;
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Announce Interval      =  " << (int)nLogAnnounceInterval;
@@ -1493,7 +1493,7 @@ void tlvPortDataSet::OutputValues() const
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Version =  " << (int)nVersionNumber;
 }
 
-tlvAlternateTimeOffsetName::tlvAlternateTimeOffsetName(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::ALTERNATE_TIME_OFFSET_NAME)
+tlvAlternateTimeOffsetName::tlvAlternateTimeOffsetName(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::kAlternateTimeOffsetName)
 {
 	nKeyField = ToU8(vMessage, nPos);
 	
@@ -1515,7 +1515,7 @@ void tlvAlternateTimeOffsetName::OutputValues() const
 }
 
 
-tlvAlternateTimeOffsetProperties::tlvAlternateTimeOffsetProperties(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::ALTERNATE_TIME_OFFSET_PROPERTIES)
+tlvAlternateTimeOffsetProperties::tlvAlternateTimeOffsetProperties(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::kAlternateTimeOffsetProperties)
 {
 	nKeyField = ToU8(vMessage, nPos);
 	nCurrentOffset = To32(vMessage, nPos);
@@ -1544,7 +1544,7 @@ void tlvAlternateTimeOffsetProperties::OutputValues() const
 }
 
 
-tlvTimeStatusNP::tlvTimeStatusNP(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::TIME_STATUS_NP)
+tlvTimeStatusNP::tlvTimeStatusNP(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::kTimeStatusNp)
 {
 	masterOffset = std::chrono::nanoseconds(ToU64(vMessage, nPos));
 	ingressTime = std::chrono::nanoseconds(ToU64(vMessage, nPos));
@@ -1588,7 +1588,7 @@ void tlvTimeStatusNP::OutputValues() const
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "GM Id                = " << sGmIdentity;
 }
 
-tlvGrandmasterSettingsNP::tlvGrandmasterSettingsNP(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::GRANDMASTER_SETTINGS_NP)
+tlvGrandmasterSettingsNP::tlvGrandmasterSettingsNP(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::kGrandmasterSettingsNp)
 {
 	quality.nClass = ToU8(vMessage, nPos);
 	quality.eAccuracy = static_cast<clck::enumAccuracy>(ToU8(vMessage, nPos));
@@ -1598,12 +1598,12 @@ tlvGrandmasterSettingsNP::tlvGrandmasterSettingsNP(const std::vector<unsigned ch
 	auto nFlags = ToU8(vMessage, nPos);
 	eTimeSource = static_cast<clck::enumTimeSource>(ToU8(vMessage, nPos));
 
-	bLeap61 				= nFlags & static_cast<uint8_t>(hdr::enumFlags::LI_61);
-	bLeap59 				= nFlags & static_cast<uint8_t>(hdr::enumFlags::LI_59);
-	bCurrentUtcOffsetValid  = nFlags & static_cast<uint8_t>(hdr::enumFlags::UTC_OFFSET_VALID);
-	bPtpTimescale 			= nFlags & static_cast<uint8_t>(hdr::enumFlags::TIMESCALE);
-	bTimeTraceable 			= nFlags & static_cast<uint8_t>(hdr::enumFlags::TIME_TRACEABLE);
-	bFrequencyTraceable		= nFlags & static_cast<uint8_t>(hdr::enumFlags::FREQ_TRACEABLE);
+	bLeap61 				= nFlags & static_cast<uint8_t>(hdr::enumFlags::kLI_61);
+	bLeap59 				= nFlags & static_cast<uint8_t>(hdr::enumFlags::kLI_59);
+	bCurrentUtcOffsetValid  = nFlags & static_cast<uint8_t>(hdr::enumFlags::kUtcOffsetValid);
+	bPtpTimescale 			= nFlags & static_cast<uint8_t>(hdr::enumFlags::kTimescale);
+	bTimeTraceable 			= nFlags & static_cast<uint8_t>(hdr::enumFlags::kTimeTraceable);
+	bFrequencyTraceable		= nFlags & static_cast<uint8_t>(hdr::enumFlags::kFreqTraceable);
 }
 
 std::vector<unsigned char> tlvGrandmasterSettingsNP::CreateMessage() const
@@ -1614,12 +1614,12 @@ std::vector<unsigned char> tlvGrandmasterSettingsNP::CreateMessage() const
 	FromU16(quality.nOffsetScaledLogVariance, vMessage);
 	FromU16(nUtcOffset, vMessage);
 
-	uint8_t nFlags = bLeap61 		         ? static_cast<uint8_t>(hdr::enumFlags::LI_61) : 0 +
-					 bLeap59 		         ? static_cast<uint8_t>(hdr::enumFlags::LI_59) : 0 +
-					 bCurrentUtcOffsetValid  ? static_cast<uint8_t>(hdr::enumFlags::UTC_OFFSET_VALID) : 0 +
-					 bPtpTimescale 	         ? static_cast<uint8_t>(hdr::enumFlags::TIMESCALE) : 0 +
-					 bTimeTraceable          ? static_cast<uint8_t>(hdr::enumFlags::TIME_TRACEABLE) : 0 +
-					 bFrequencyTraceable	 ? static_cast<uint8_t>(hdr::enumFlags::FREQ_TRACEABLE) : 0;
+	uint8_t nFlags = bLeap61 		         ? static_cast<uint8_t>(hdr::enumFlags::kLI_61) : 0 +
+					 bLeap59 		         ? static_cast<uint8_t>(hdr::enumFlags::kLI_59) : 0 +
+					 bCurrentUtcOffsetValid  ? static_cast<uint8_t>(hdr::enumFlags::kUtcOffsetValid) : 0 +
+					 bPtpTimescale 	         ? static_cast<uint8_t>(hdr::enumFlags::kTimescale) : 0 +
+					 bTimeTraceable          ? static_cast<uint8_t>(hdr::enumFlags::kTimeTraceable) : 0 +
+					 bFrequencyTraceable	 ? static_cast<uint8_t>(hdr::enumFlags::kFreqTraceable) : 0;
 
 	FromU8(nFlags, vMessage);
 	FromU8(static_cast<uint8_t>(eTimeSource), vMessage);
@@ -1631,7 +1631,7 @@ void tlvGrandmasterSettingsNP::OutputValues() const
 {
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Class               = " << (int)quality.nClass;
 	
-	if(auto itAccuracy = clockQuality::ACCURACY.find(quality.eAccuracy); itAccuracy != clockQuality::ACCURACY.end())
+	if(auto itAccuracy = clockQuality::kAccuracy.find(quality.eAccuracy); itAccuracy != clockQuality::kAccuracy.end())
 	{
 		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Accuracy            =  " << itAccuracy->second;	
 	}
@@ -1642,7 +1642,7 @@ void tlvGrandmasterSettingsNP::OutputValues() const
 
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Clock Offset Log Variance = " << quality.nOffsetScaledLogVariance;
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "UTC Offset                = " << nUtcOffset;
-	if(auto itSource = clockQuality::SOURCE.find(eTimeSource); itSource != clockQuality::SOURCE.end())
+	if(auto itSource = clockQuality::kSource.find(eTimeSource); itSource != clockQuality::kSource.end())
 	{
 		pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Time Source               = " << itSource->second;
 	}
@@ -1660,7 +1660,7 @@ void tlvGrandmasterSettingsNP::OutputValues() const
 }
 
 
-tlvPortPropertiesNP::tlvPortPropertiesNP(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::PORT_PROPERTIES_NP)
+tlvPortPropertiesNP::tlvPortPropertiesNP(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::kPortPropertiesNp)
 {
 	sPortIdentity = ToPidStr(vMessage, nPos);
 
@@ -1686,12 +1686,12 @@ std::vector<unsigned char> tlvPortPropertiesNP::CreateMessage() const
 void tlvPortPropertiesNP::OutputValues() const
 {
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Port ID      = " << sPortIdentity;
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Port State   = " << tlvPortDataSet::PORT_STATES[nPortState];
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Timestamping = " << tlvPortDataSet::TIMESTAMPING[nTimestamping];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Port State   = " << tlvPortDataSet::kPortStates[nPortState];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Timestamping = " << tlvPortDataSet::kTimestamping[nTimestamping];
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Interface    = " << sInterface;
 }
 
-tlvPortStatsNP::tlvPortStatsNP(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::PORT_STATS_NP)
+tlvPortStatsNP::tlvPortStatsNP(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::kPortStatsNp)
 {
 	sPortIdentity = ToPidStr(vMessage, nPos);
 	for(auto& value : rx)
@@ -1715,27 +1715,27 @@ std::vector<unsigned char> tlvPortStatsNP::CreateMessage() const
 void tlvPortStatsNP::OutputValues() const
 {
 	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "Port ID                    = " << sPortIdentity;
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX Delay_Req               = " << rx[static_cast<size_t>(hdr::enumType::DELAY_REQ)];
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX Delay_Resp              = " << rx[static_cast<size_t>(hdr::enumType::DELAY_RESP)];
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX Follow_Up               = " << rx[static_cast<size_t>(hdr::enumType::FOLLOW_UP)];
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX Management              = " << rx[static_cast<size_t>(hdr::enumType::MANAGEMENT)];
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX P_Delay_Resp            = " << rx[static_cast<size_t>(hdr::enumType::PEER_DELAY_RESP)];
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX P_Delay_Resp_Follow_Up  = " << rx[static_cast<size_t>(hdr::enumType::PEER_DELAY_RESP_FOLLOW_UP)];
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX P_Delay_Req             = " << rx[static_cast<size_t>(hdr::enumType::PEER_DLEAY_REQ)];
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX Signalling              = " << rx[static_cast<size_t>(hdr::enumType::SIGNALLING)];
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX Sync                    = " << rx[static_cast<size_t>(hdr::enumType::SYNC)];
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX Delay_Req               = " << tx[static_cast<size_t>(hdr::enumType::DELAY_REQ)];
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX Delay_Resp              = " << tx[static_cast<size_t>(hdr::enumType::DELAY_RESP)];
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX Follow_Up               = " << tx[static_cast<size_t>(hdr::enumType::FOLLOW_UP)];
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX Management              = " << tx[static_cast<size_t>(hdr::enumType::MANAGEMENT)];
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX P_Delay_Resp            = " << tx[static_cast<size_t>(hdr::enumType::PEER_DELAY_RESP)];
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX P_Delay_Resp_Follow_Up  = " << tx[static_cast<size_t>(hdr::enumType::PEER_DELAY_RESP_FOLLOW_UP)];
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX P_Delay_Req             = " << tx[static_cast<size_t>(hdr::enumType::PEER_DLEAY_REQ)];
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX Signalling              = " << tx[static_cast<size_t>(hdr::enumType::SIGNALLING)];
-	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX Sync                    = " << tx[static_cast<size_t>(hdr::enumType::SYNC)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX Delay_Req               = " << rx[static_cast<size_t>(hdr::enumType::kDelayReq)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX Delay_Resp              = " << rx[static_cast<size_t>(hdr::enumType::kDelayResp)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX Follow_Up               = " << rx[static_cast<size_t>(hdr::enumType::kFollowUp)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX Management              = " << rx[static_cast<size_t>(hdr::enumType::kManagement)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX P_Delay_Resp            = " << rx[static_cast<size_t>(hdr::enumType::kPeerDelayResp)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX P_Delay_Resp_Follow_Up  = " << rx[static_cast<size_t>(hdr::enumType::kPeerDelayRespFollowUp)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX P_Delay_Req             = " << rx[static_cast<size_t>(hdr::enumType::kPeerDelayReq)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX Signalling              = " << rx[static_cast<size_t>(hdr::enumType::kSignalling)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "RX Sync                    = " << rx[static_cast<size_t>(hdr::enumType::kSync)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX Delay_Req               = " << tx[static_cast<size_t>(hdr::enumType::kDelayReq)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX Delay_Resp              = " << tx[static_cast<size_t>(hdr::enumType::kDelayResp)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX Follow_Up               = " << tx[static_cast<size_t>(hdr::enumType::kFollowUp)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX Management              = " << tx[static_cast<size_t>(hdr::enumType::kManagement)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX P_Delay_Resp            = " << tx[static_cast<size_t>(hdr::enumType::kPeerDelayResp)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX P_Delay_Resp_Follow_Up  = " << tx[static_cast<size_t>(hdr::enumType::kPeerDelayRespFollowUp)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX P_Delay_Req             = " << tx[static_cast<size_t>(hdr::enumType::kPeerDelayReq)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX Signalling              = " << tx[static_cast<size_t>(hdr::enumType::kSignalling)];
+	pml::log::log(pml::log::Level::kDebug, "pml::ptpmonkey") << "TX Sync                    = " << tx[static_cast<size_t>(hdr::enumType::kSync)];
 }
 
-tlvPortServiceStatsNP::tlvPortServiceStatsNP(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::PORT_SERVICE_STATS_NP)
+tlvPortServiceStatsNP::tlvPortServiceStatsNP(const std::vector<unsigned char>& vMessage) : tlv(mngmnt::enumId::kPortServiceStatsNp)
 {
 	sPortIdentity = ToPidStr(vMessage, nPos);	
 	nAnnounceTimeout = ToU64(vMessage, nPos);

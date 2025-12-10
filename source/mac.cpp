@@ -8,7 +8,7 @@
 #include <iomanip>
 #include "namedtypes.h"
 
-#ifdef __GNU__
+#ifdef __GNU
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>

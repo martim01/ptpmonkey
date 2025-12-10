@@ -68,7 +68,7 @@ namespace pml::ptpmonkey
             std::shared_ptr<asio::local::datagram_protocol::socket> m_pSocket = nullptr;
             uint16_t m_nSequence{0};
 
-            static const std::string TARGET_ID_ALL;
-            static const uint16_t TARGET_NUMBER_ALL;
+            static const std::string kTargetIdAll;
+            static const uint16_t kTargetNumberAll;
     };
 }
