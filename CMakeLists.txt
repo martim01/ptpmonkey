@@ -36,8 +36,8 @@ target_include_directories(ptpmonkey PUBLIC ${CMAKE_BINARY_DIR}/include)
 
 #Get log
 message(STATUS "Find pml::log")
-add_external_library(pml_log ${DIR_LOG} "https://github.com/martim01/log.git" "")
-add_external_library(pml_log ${DIR_ASIO} "https://github.com/chriskohlhoff/asio" "")
+add_external_library(pml_log ${DIR_LOG} "https://github.com/martim01/log.git" "" TRUE "CMakeLists.txt")
+add_external_library(pml_log ${DIR_ASIO} "https://github.com/chriskohlhoff/asio" "" FALSE "README")
 
 target_include_directories(ptpmonkey PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(ptpmonkey PUBLIC ${DIR_LOG}/include)
